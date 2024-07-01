@@ -77,7 +77,8 @@ export class RecoveryPage  implements OnInit {
       duration: 1500,
       position: position,
     });
-    
+  }
+
   async passwordRecovery() {
     this.wait = true;
     if (this.credentials.valid

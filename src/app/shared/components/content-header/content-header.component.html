@@ -1,0 +1,16 @@
+<ion-header collapse="condense">
+  <ion-toolbar>
+    @if (hasError) {
+      <ion-icon name="warning" class="center-left"></ion-icon>
+    }
+    <ion-title size="large">
+      {{ title }}
+    </ion-title>
+    <ion-avatar>
+      <!-- <img src="{{ user.picture }}" /> -->
+    </ion-avatar>
+    @if (loggedIn) {
+      <ion-icon name="log-out" class="center-right"></ion-icon>
+    }
+  </ion-toolbar>
+</ion-header>

@@ -1,0 +1,25 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (hasError) {
+      <ion-icon name="warning" size="large" slot="start" class="warn-icon"></ion-icon> <!--  class="center-left" -->
+    }
+    <ion-title>
+      {{ title }}
+    </ion-title>
+    @if (loggedIn) {
+      <ion-chip slot="end">
+        <ion-avatar>
+          <!-- 
+          <img mat-card-avatar class="thumb {{profileImgUrl ? '' : 'greyoutImg'}}" alt="user profile" src="{{profileImgUrl ? profileImgUrl : 'assets/user-info_icon.svg'}}">
+          -->
+          <img src="../../../../assets/icona-cesc.webp" />
+        </ion-avatar>
+        <ion-icon name="menu"></ion-icon> <!--  class="center-right" -->
+      </ion-chip>
+      <button ion-button icon-only clear slot="end" class="log-out-icon">
+        <ion-icon name="log-out" size="large"></ion-icon> <!--  class="center-right" -->
+      </button>
+    }
+  </ion-toolbar>
+</ion-header>
+

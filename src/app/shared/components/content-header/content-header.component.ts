@@ -15,6 +15,7 @@ import { AuthService } from '../../services/auth.service';
 export class ContentHeaderComponent  implements OnDestroy {
 
   @Input({ required: true }) title!: string;
+  @Input({ required: true }) loggedIn!: string;
   
   public get hasError() { return this.errorDetected; }
   private set hasError(value: boolean) { this.errorDetected = value; }
@@ -26,7 +27,6 @@ export class ContentHeaderComponent  implements OnDestroy {
   constructor(private messageService: MessageHubService,
               private authService: AuthService)
   { 
-      this.loggedIn = true; //required by route!
       this.errorDetected = false;
       // subscribe to home component messages
       this.subscription = this.messageService.onMessage().subscribe(message => {
@@ -39,8 +39,7 @@ export class ContentHeaderComponent  implements OnDestroy {
     });
   }
   
-  public loggedIn: boolean;
-  public get userUrlImage() { return this.authService.currentUser?.photoURL }
+  public get userUrlImage() { return (this.loggedIn? this.authService.currentUser?.photoURL ?? null : null)?? "./assets/person-outline.svg" }
 
   async logout() {
     this.authService.logout();

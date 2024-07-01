@@ -35,11 +35,13 @@ export class RegisterPage implements OnInit {
 
   // Easy access for form fields
   get email() {
-    return this.credentials.get('email');
+    const emailGroup = this.credentials.controls["emailGroup"];
+    return emailGroup.get('email');
   }
 
   get password() {
-    return this.credentials.get('password');
+    const passwordGroup = this.credentials.controls["passwordGroup"];
+    return passwordGroup.get('password');
   }
 
   get emailGroupOk() {
@@ -53,7 +55,6 @@ export class RegisterPage implements OnInit {
   }
 
   ngOnInit() {
-    
     const emailGroup = this.fb.group({
       email: new FormControl('', [Validators.required, Validators.email]),
       emailAgain: new FormControl('', [Validators.required, Validators.email])
@@ -84,7 +85,6 @@ export class RegisterPage implements OnInit {
   async register() {
     try {
       this.wait = true;
-      this.credentials.controls["emailGroup"].hasError
       if (this.credentials.valid) {
         const emailGroup: FormGroup = this.credentials.controls["emailGroup"] as FormGroup;
         const passwordGroup: FormGroup = this.credentials.controls["passwordGroup"] as FormGroup;

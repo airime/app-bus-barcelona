@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { OverlayEventDetail } from '@ionic/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { timer } from 'rxjs';
@@ -8,34 +9,22 @@ import { HttpStatusCode } from '@angular/common/http';
 
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 
-/*
-import { MatCard, MatCardContent, MatCardActions, MatCardHeader } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from '@angular/material/input';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar';
-*/
-
 import { userProfile } from '../../../shared/model/userProfile';
-import { GUIerrorType, getErrorMessage } from '../../../shared/util/errors';
-
+import { ErrorWithMessage, GUIerrorType, getErrorMessage, toErrorWithMessage } from '../../../shared/util/errors';
+import { IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton } from "@ionic/angular/standalone";
+import { PasswordValidator } from 'src/app/shared/util/custom.validator';
 
 @Component({
   selector: 'app-recovery',
   standalone: true,
   templateUrl: './recovery.page.html',
   styleUrls: ['./recovery.page.scss'],
-  imports: [ReactiveFormsModule, HeaderComponent, 
-    /* FooterComponent, MatFormFieldModule,
-    MatCard, MatCardHeader, MatCardContent, MatCardActions, MatInputModule, MatIconModule, MatButtonModule, RouterLink */
-    ],
+  imports: [ReactiveFormsModule, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton
+  ],
 })
-export class RecoveryPage  implements OnInit {
-  hidePassword: boolean;
+export class RecoveryPage implements OnInit {
   credentials!: FormGroup;
   currentUser!: userProfile | null;
-  emailSent: boolean;
   wait: boolean;
 
   constructor(
@@ -44,22 +33,38 @@ export class RecoveryPage  implements OnInit {
     private router: Router,
     private toastController: ToastController
   ) {
-    this.hidePassword = true;
-    this.emailSent = false;
+    this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
     this.wait = false;
   }
 
   // Easy access for form fields
   get email() {
-    return this.credentials.get('email');
+    const emailGroup = this.credentials.controls["emailGroup"];
+    return emailGroup.get('email');
   }
 
+  get emailGroupOk() {
+    if (!!this.currentUser) {
+      console.log("emailGroupOk", !!this.currentUser)
+      return true;
+    } else {
+      const emailGroup = this.credentials.controls["emailGroup"];
+      console.log("emailOk:", !emailGroup?.hasError('areEqual'));
+      return !emailGroup?.hasError('areEqual');
+    }
+  }
 
   ngOnInit() {
-    this.credentials = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
-    this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
+    console.log("OnInit", this.currentUser!!);
+    const emailGroup = !this.currentUser ?
+      this.fb.group({
+        email: new FormControl('', [Validators.required, Validators.email]),
+        emailAgain: new FormControl('', [Validators.required, Validators.email])
+      }, { validators: PasswordValidator.areEqual })
+      : this.fb.group({
+        email: ['', [Validators.required, Validators.email]]
+      });
+    this.credentials = this.fb.group({ emailGroup: emailGroup });
   }
 
   obrirCondicions() {
@@ -71,39 +76,57 @@ export class RecoveryPage  implements OnInit {
     window.open(url, '_blank');
   }
 
-  async presentToast(position: 'top' | 'middle' | 'bottom') {
+  private async presentToast(position: 'top' | 'middle' | 'bottom', message: string) {
     const toast = await this.toastController.create({
-      message: 'Hello World!',
-      duration: 1500,
+      message: message,
+      buttons: [
+        {
+          text: 'Entendido',
+          role: 'cancel',
+          handler: () => {
+            console.log('Toast error Cancel clicked');
+          }
+        }
+      ],
       position: position,
     });
+    const logoutError = "Ha fallado la operación. Si todavía se encuentra como usuario activo, por favor, use 'logout' para abandornar la aplicación.";
+    toast.onDidDismiss().then((val) => {
+      console.log('Toast dismissed', val);
+      const { role } = val;
+      this.wait = false;
+      try {
+        if (role == "cancel") {
+          if (!!this.currentUser) {
+            this.authService.logout()
+              .then(() => this.router.navigate(['login']))
+              .catch(() => {
+                const err = new Error(logoutError);
+                err.name = GUIerrorType.AuthenticationError;
+                throw err;
+              });
+          } else {
+            this.router.navigate(['login']);
+          }
+        }
+      } catch (err) {
+        throw toErrorWithMessage(err);
+      }
+    });  
+    await toast.present();
   }
 
   async passwordRecovery() {
+    const message = `Se ha enviado un email con un enlace que permite restablecer la contraseña.\n` 
+      + `Recuerde que debe incorporar al menos una mayúscula, una minúsculas, un dígito y un símbolo o espacio.`;
+    const formErrorMessage = "Error inesperado: Puede que no se cumplan las condiciones del formulario, o ha habido un error en el servicio.";
     this.wait = true;
     if (this.credentials.valid
       && (!this.currentUser || this.currentUser!.email == this.email!.value)) {
       this.authService.sendPasswordResetEmail(this.email!.value)
         .then(
           () => {
-            const toast = this.toastController.open(hintMessages["passwordRecoveryDone"], formActions['entente']);
-            toast.afterDismissed().subscribe(info => {
-              if (info.dismissedByAction) {
-                this.wait = false;
-                if (!!this.currentUser) {
-                  this.authService.logout()
-                  .then(() => this.router.navigate(['login']))
-                  .catch(() => {
-                    this.wait = false;
-                    const err = new Error(this.errors["serveiLogout"]);
-                    err.name = GUIerrorType.AuthenticationError;
-                    throw err;
-                  });
-                } else {
-                    this.router.navigate(['login']);
-                }
-              }
-            });
+            this.presentToast("middle", message);
           }
         ).catch(
           (err: any) => {
@@ -112,10 +135,12 @@ export class RecoveryPage  implements OnInit {
             error.name = GUIerrorType.AuthenticationError;
             throw error;
           }
+        ).finally(
+          () => this.wait = false
         );
     } else {
       this.wait = false;
-      const err = new Error(this.errors["formulari"]);
+      const err = new Error(formErrorMessage);
       err.name = GUIerrorType.FormError;
       throw err;
     }

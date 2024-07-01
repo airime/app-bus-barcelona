@@ -43,18 +43,18 @@
                                 <span><small>Las contraseñas son diferentes</small></span>
                             </ion-item>
                         </ion-item-group>
+                        <ion-item>
+                            <small><a [href]="'recovery'" color="primary">¿Contraseña olvidada?</a></small>
+                            <div slot="end">
+                                <small>Para acceder a los servicios es necesario registrarse.
+                                    Puede consultar los <a href="" (click)="obrirCondicions()" color="secondary">términos</a>
+                                    que accepta por el uso del servicio.</small>
+                                </div>
+                        </ion-item>
                     </ion-list>
                 </ion-card-content>
                 <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">Registrarse</ion-button>
                 <ion-button fill="clear" href="login">Acceder</ion-button>
-                <ion-item>
-                    <small><a [href]="'recovery'" color="primary">¿Contraseña olvidada?</a></small>
-                    <div slot="end">
-                        <small>Para acceder a los servicios es necesario registrarse.
-                            Puede consultar los <a href="" (click)="obrirCondicions()" color="secondary">términos</a>
-                            que accepta por el uso del servicio.</small>
-                        </div>
-                </ion-item>
             </ion-card>
         </form>
     </div>

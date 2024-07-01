@@ -10,11 +10,18 @@ Desenvolupat amb components *stand-alone*.
 
 ## Característiques
 
+`npm install -g @ionic/cli`
+
 - Components *stand-alone*.
 - Autenticació (login/registre/recuperació i canvi de contrasenya/ canvi de email d'usuari)
 - Perfil d'usuari amb un nom únic per usuari (gestionat amb Firebase)
 - Hub de missatges que permet la comunicació entre components (*messageHub.service.ts*)
 - Gestió centralitzada d'errors (*exceptionHandler.service.ts*): Mostra un Toast a l'usuari i comunica la situació pel hub de missatges (com a resultat, es mostra una icona d'error)
+
+`npm install @capacitor/camera`
+`npm install @capacitor/geolocation`
+`npm install @capacitor/app`
+`npm install @capacitor/browser`
 
 ### Firebase
 

@@ -58,18 +58,28 @@ export class ErrorService implements ErrorHandler {
         // if (!(err instanceof HttpErrorResponse)) {
         //     err = err.rejection; // get the error object
         // }
-        this.zone.run(() => {
-                err = toErrorWithMessage(err);
-                console.error(`ErrorService.handleError, ${err['name']?? "err"}` + " -> ", err);
-                const errText = err["message"];
-                const message = {
-                    tag: "error",
-                    name: err["name"]?? "Error",
-                    content: errText
-                } as IErrorMessage
-                this.messageService.sendMessage(message);
-                this.presentToast("bottom", message);
-            }
-        );
+        console.log(this.zone);
+        try {
+            this.zone.run(() => {
+                    try {
+                        console.log(`ErrorService.handleError, ${err['name']?? "err"}` + " -> ", err);
+                        const errText = err["message"];
+                        const message = {
+                            tag: "error",
+                            name: err["name"]?? "Error",
+                            content: errText
+                        } as IErrorMessage
+                        this.messageService.sendMessage(message);
+                        this.presentToast("bottom", message);
+                    }
+                    catch (err) {
+                        console.log("Error handler run error: ", toErrorWithMessage(err));
+                    }
+                }
+            );
+        }
+        catch (err) {
+            console.log("Error handler error: ", toErrorWithMessage(err));
+        }
     }
 }

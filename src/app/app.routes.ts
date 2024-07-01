@@ -29,6 +29,10 @@ export const routes: Routes = [
         path: 'change-email',
           loadComponent: () => import('./pages/auth/change-email/change-email.page').then(m => m.ChangeEmailPage)
       },
+      {
+        path: 'change-password',
+          loadComponent: () => import('./pages/auth/recovery/recovery.page').then(m => m.RecoveryPage)
+      },
       { path: '**', pathMatch: 'full', 
           loadComponent: () => import('./pages/pagenotfound/pagenotfound.page').then( m => m.PagenotfoundPage)
       },

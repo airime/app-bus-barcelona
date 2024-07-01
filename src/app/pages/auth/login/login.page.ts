@@ -16,7 +16,7 @@ import { regExps } from '../../../shared/util/custom.validator';
             IonLabel, IonList, IonItem, IonInput, IonInputPasswordToggle, IonButton]
 })
 export class LoginPage  implements OnInit {
-  hidePassword: boolean;
+  wait: boolean;
   credentials!: FormGroup;
 
   constructor(
@@ -24,7 +24,7 @@ export class LoginPage  implements OnInit {
     private authService: AuthService,
     private router: Router
   ) { 
-    this.hidePassword = true;
+    this.wait = false;
   }
 
   // Easy access for form fields
@@ -55,13 +55,24 @@ export class LoginPage  implements OnInit {
   }
 
   async login() {
-    const user = await this.authService.login(this.credentials.value);
-    if (user) {
-      this.router.navigateByUrl('private/home', { replaceUrl: true });
-    } else {
-      const err = new Error("A fallado la operación de login. Por favor, pruebe de nuevo!");
-      err.name = GUIerrorType.FormError;
-      throw err;
+    try {
+      this.wait = true;
+      if (this.credentials.valid) {
+        const user = await this.authService.login(this.credentials.value);
+        if (user) {
+          this.router.navigateByUrl('private/home', { replaceUrl: true });
+        } else {
+          const err = new Error("A fallado la operación de login. Por favor, pruebe de nuevo!");
+          err.name = GUIerrorType.FormError;
+          throw err;
+        }
+      } else {
+        const err = new Error("Error inesperado. Puede que no se cumplan las condiciones del formulario, o se habrá dado un error en el servicio.");
+        err.name = GUIerrorType.FormError;
+        throw err;
+      }
+    } finally {
+      this.wait = false;
     }
   }
 

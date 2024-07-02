@@ -74,6 +74,21 @@ export class AuthService implements OnDestroy {
     }
   }
 
+  async resendEmailVerification({ email, password }: { email: string; password: string }) {
+    try {
+      await this.auth.setPersistence(browserSessionPersistence);
+      const credential = await signInWithEmailAndPassword(this.auth, email, password);
+      if (!!credential?.user) {
+        if (credential.user.emailVerified) throw new Error("The identity of the e-mail user is already verified.");         
+        else await sendEmailVerification(credential.user);
+      }
+      else throw new Error("Error in user credentials.");
+      return credential;
+    } catch (error) {
+      throw (error);
+    }
+  }
+
   async login({ email, password }: { email: string; password: string }) {
     try {
       await this.auth.setPersistence(browserSessionPersistence);

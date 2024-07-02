@@ -34,6 +34,11 @@ export const routes: Routes = [
       ...canActivate(redirectUnauthorizedToLogin)
   },
   {
+    path: 'resend-verification',
+    loadComponent: () => import('./pages/auth/resend-verification/resend-verification.page').then( m => m.ResendVerificationPage),
+    ...canActivate(redirectUnauthorizedToLogin)
+  },
+  {
     path: 'private', ...canActivate(redirectUnverifiedToProfile), children: [
       {
         path: 'home', loadChildren: () => import('./pages/tabs/tabs.routes').then(m => m.routes)
@@ -53,5 +58,5 @@ export const routes: Routes = [
   */
   { path: '**', pathMatch: 'full', 
     loadComponent: () => import('./pages/pagenotfound/pagenotfound.page').then( m => m.PagenotfoundPage)
-  }
+  },
 ];

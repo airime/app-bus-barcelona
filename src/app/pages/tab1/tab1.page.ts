@@ -4,6 +4,7 @@ import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ContentHeaderComponent } from '../../shared/components/content-header/content-header.component';
 import { GoogleMap } from '@capacitor/google-maps';
+import { googleMapsApiKey } from '../../api.key
 
 
 @Component({
@@ -23,14 +24,14 @@ export class Tab1Page {
 
 
   private async createMap() {
-    const apiKey = 'AIzaSyAa4g9PQs_0cyvZxrd9PeibHvcRoKKgD18';
+
 
     const mapRef = document.getElementById('map')!;
 
     const newMap = await GoogleMap.create({
       id: 'my-map', // Unique identifier for this map instance
       element: mapRef, // reference to the capacitor-google-map element
-      apiKey: apiKey, // Your Google Maps API Key
+      apiKey: googleMapsApiKey, // Your Google Maps API Key
       config: {
         center: {
           // The initial position to be rendered by the map

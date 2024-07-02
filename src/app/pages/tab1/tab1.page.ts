@@ -4,7 +4,7 @@ import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ContentHeaderComponent } from '../../shared/components/content-header/content-header.component';
 import { GoogleMap } from '@capacitor/google-maps';
-import { googleMapsApiKey } from '../../api.key
+import { googleMapsApiKey } from '../../api.key';
 
 
 @Component({

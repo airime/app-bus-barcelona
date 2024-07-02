@@ -15,7 +15,7 @@ Desenvolupat amb components *stand-alone*.
 
 > Per tant, fem servir les ordres:
 > - `ionic cap copy` per reflectir els canvis en el codi.
-> - `ionic cap sync` per reflectir la incorporació de nous plugins
+> - `ionic cap sync android` per reflectir la incorporació de nous plugins
 
 
 - Components *stand-alone*.
@@ -27,6 +27,7 @@ Desenvolupat amb components *stand-alone*.
 - `npm install ts-md5`
 - `npm install @ionic/pwa-elements` (incorpora `defineCustomElements(window);` en main.ts)
 - `npm install @capacitor/camera @capacitor/preferences @capacitor/filesystem` (els plugins de base de dades s'instal·len després)
+- `npm install @capacitor/google-maps --legacy-peer-deps`
 - `npm install @capacitor/geolocation`
 - `npm install @capacitor/app`
 - `npm install @capacitor/browser`

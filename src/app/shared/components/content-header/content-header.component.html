@@ -7,7 +7,7 @@
       {{ title }}
     </ion-title>
     @if (loggedIn) {
-      <ion-avatar>
+      <ion-avatar (click)="userProfile()" >
         <img src="{{ userUrlImage }}" />
       </ion-avatar>
       <ion-button class="log-out-icon" icon-only clear color="secondary" slot="end" (click)="logout()" href="login">

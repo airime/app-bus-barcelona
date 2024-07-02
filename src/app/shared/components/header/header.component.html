@@ -7,7 +7,7 @@
       {{ title }}
     </ion-title>
     @if (loggedIn) {
-      <ion-chip slot="end">
+      <ion-chip slot="end" (click)="userProfile()" >
         <ion-avatar>
           <img src="{{ userUrlImage }}" />
         </ion-avatar>

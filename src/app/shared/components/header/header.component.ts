@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, booleanAttribute } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonHeader, IonToolbar, IonTitle, IonIcon, IonAvatar, IonChip, IonButton } from "@ionic/angular/standalone";
 import { Subscription } from 'rxjs';
 import { MessageHubService } from '../../services/messageHub.service';
@@ -23,7 +24,9 @@ export class HeaderComponent implements OnDestroy {
   private subscription: Subscription;
   private errorDetected: boolean;
 
-  constructor(private messageService: MessageHubService,
+  constructor(private route: ActivatedRoute,
+              private router: Router,
+              private messageService: MessageHubService,
               private authService: AuthService) {
       this.errorDetected = false;
       // subscribe to home component messages
@@ -38,6 +41,10 @@ export class HeaderComponent implements OnDestroy {
   }
 
   public get userUrlImage() { return (this.loggedIn? this.authService.currentUser?.photoURL ?? null : null)?? "./assets/person-outline.svg" }
+
+  userProfile() {
+    this.router.navigate(['/','user-profile']);
+  }
 
   async logout() {
     this.authService.logout();

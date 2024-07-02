@@ -46,6 +46,8 @@ export const routes: Routes = [
   { path: 'register', loadComponent: () => import('./pages/auth/register/register.page').then(m => m.RegisterPage) },
   { path: 'service-terms', loadComponent: () => import('./pages/auth/service-terms/service-terms.page').then(m => m.ServiceTermsPage) },
   { path: 'recovery', loadComponent: () => import('./pages/auth/recovery/recovery.page').then(m => m.RecoveryPage) },
+  /* test */
+  { path: 'tabs', loadComponent: () => import('./pages/tab1/tab1.page').then(m => m.Tab1Page) },
   /*
   { path: 'aboutus', component: AboutusComponent },
   */

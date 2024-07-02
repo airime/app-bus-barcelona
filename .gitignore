@@ -73,3 +73,9 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
+
+# keys
+*.key
+*.keys
+*.key.ts
+*.keys.ts

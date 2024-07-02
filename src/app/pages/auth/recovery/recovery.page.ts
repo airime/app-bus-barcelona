@@ -4,14 +4,13 @@ import { OverlayEventDetail } from '@ionic/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
+import { IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton } from "@ionic/angular/standalone";
 import { timer } from 'rxjs';
 import { HttpStatusCode } from '@angular/common/http';
 
 import { HeaderComponent } from '../../../shared/components/header/header.component';
-
 import { userProfile } from '../../../shared/model/userProfile';
 import { ErrorWithMessage, GUIerrorType, getErrorMessage, toErrorWithMessage } from '../../../shared/util/errors';
-import { IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton } from "@ionic/angular/standalone";
 import { PasswordValidator } from 'src/app/shared/util/custom.validator';
 
 @Component({
@@ -19,7 +18,7 @@ import { PasswordValidator } from 'src/app/shared/util/custom.validator';
   standalone: true,
   templateUrl: './recovery.page.html',
   styleUrls: ['./recovery.page.scss'],
-  imports: [ReactiveFormsModule, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton
+  imports: [ ReactiveFormsModule, HeaderComponent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton
   ],
 })
 export class RecoveryPage implements OnInit {
@@ -35,6 +34,14 @@ export class RecoveryPage implements OnInit {
   ) {
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
     this.wait = false;
+  }
+
+  get title() {
+    return !!this.currentUser? "Cambiar la contraseña" : "Restablecer la contraseña"
+  }
+  
+  get loggedIn() {
+    return !!this.currentUser;
   }
 
   // Easy access for form fields

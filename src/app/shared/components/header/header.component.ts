@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, booleanAttribute } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonIcon, IonAvatar, IonChip, IonButton } from "@ionic/angular/standalone";
 import { Subscription } from 'rxjs';
 import { MessageHubService } from '../../services/messageHub.service';
@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
 export class HeaderComponent implements OnDestroy {
 
   @Input({ required: true }) title!: string;
-  @Input({ required: true }) loggedIn!: string;
+  @Input({ required: true, transform: booleanAttribute}) loggedIn!: boolean;
   
   public get hasError() { return this.errorDetected; }
   private set hasError(value: boolean) { this.errorDetected = value; }

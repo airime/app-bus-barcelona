@@ -1,25 +1,9 @@
-<ion-menu content-id="main-content">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Menu Content</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content class="ion-padding">This is the menu content.</ion-content>
-</ion-menu>
+<app-menu></app-menu>
 
-<div class="ion-page" id="main-content">
-
-<ion-header translucent="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Parades preferides</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<main class="ion-page" id="main-content">
+  <app-header [title]="title" loggedIn="true"></app-header>
+  <!--
+  <ion-header translucent="true">
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
@@ -27,6 +11,19 @@
       <ion-title>Parades preferides</ion-title>
     </ion-toolbar>
   </ion-header>
-</ion-content>
+  -->
+  <ion-content [fullscreen]="true">
+    <app-content-header [title]="title" loggedIn="true"></app-content-header>
+    <!--
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Parades preferides</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    -->
+  </ion-content>
 
-</div>
+</main>

@@ -1,5 +1,8 @@
 <main class="main">
-  <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
+    @if (!!currentUser) {
+      <app-header [title]="title" [loggedIn]="loggedIn"></app-header>
+    }
+    <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
     <ion-card color="secondary">
       <ion-card-header>
         <ion-card-title><h2>{{ !!currentUser? "Cambiar la contraseña" : "Restablecer la contraseña"}}</h2></ion-card-title>

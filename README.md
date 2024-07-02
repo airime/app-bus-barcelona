@@ -10,7 +10,13 @@ Desenvolupat amb components *stand-alone*.
 
 ## Característiques
 
-`npm install -g @ionic/cli`
+- `npm install -g @ionic/cli`
+- `ionic cap add android`
+
+> Per tant, fem servir les ordres:
+> - `ionic cap copy` per reflectir els canvis en el codi.
+> - `ionic cap sync` per reflectir la incorporació de nous plugins
+
 
 - Components *stand-alone*.
 - Autenticació (login/registre/recuperació i canvi de contrasenya/ canvi de email d'usuari)
@@ -18,14 +24,16 @@ Desenvolupat amb components *stand-alone*.
 - Hub de missatges que permet la comunicació entre components (*messageHub.service.ts*)
 - Gestió centralitzada d'errors (*exceptionHandler.service.ts*): Mostra un Toast a l'usuari i comunica la situació pel hub de missatges (com a resultat, es mostra una icona d'error)
 
-`npm install @capacitor/camera`
-`npm install @capacitor/geolocation`
-`npm install @capacitor/app`
-`npm install @capacitor/browser`
+- `npm install ts-md5`
+- `npm install @ionic/pwa-elements` (incorpora `defineCustomElements(window);` en main.ts)
+- `npm install @capacitor/camera @capacitor/preferences @capacitor/filesystem` (els plugins de base de dades s'instal·len després)
+- `npm install @capacitor/geolocation`
+- `npm install @capacitor/app`
+- `npm install @capacitor/browser`
 
 ### Firebase
 
-`ng add @angular/fire`
+- `ng add @angular/fire`
 
 #### Authentication
 

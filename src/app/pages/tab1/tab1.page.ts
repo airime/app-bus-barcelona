@@ -1,47 +1,44 @@
-import { CUSTOM_ELEMENTS_SCHEMA, Component } from '@angular/core';
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
+
 import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ContentHeaderComponent } from '../../shared/components/content-header/content-header.component';
-import { GoogleMap } from '@capacitor/google-maps';
-import { googleMapsApiKey } from '../../api.key';
+import { GmapComponent } from '../../shared/components/gmap/gmap.component';
+//import { Geolocation, Position, PermissionStatus } from '@capacitor/geolocation';
+//import { App } from '@capacitor/app';
 
 
 @Component({
   selector: 'app-tab1',
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  standalone: true,
-  imports: [ MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [ MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent, GmapComponent ]
 })
-export class Tab1Page {
-  constructor() {
-    this.createMap();
-  }
+export class Tab1Page implements OnInit {
+
+  @ViewChild(GmapComponent) private gMapComponent!: GmapComponent;
 
   readonly title = "Mapa busos Barcelona";
 
+  private geoPosPermision!: PermissionStatus;
 
-  private async createMap() {
-
-
-    const mapRef = document.getElementById('map')!;
-
-    const newMap = await GoogleMap.create({
-      id: 'my-map', // Unique identifier for this map instance
-      element: mapRef, // reference to the capacitor-google-map element
-      apiKey: googleMapsApiKey, // Your Google Maps API Key
-      config: {
-        center: {
-          // The initial position to be rendered by the map
-          lat: 33.6,
-          lng: -117.9,
-        },
-        zoom: 8, // The initial zoom level to be rendered by the map
-      },
-    });
-
+  constructor() {
   }
+
+  ngOnInit(): void {
+  }
+
+  // ionViewWillEnter() {
+  // }
+
+  // ionViewDidEnter() {
+  //    if (!!this.newMap) {
+  //      this.newMap.enableCurrentLocation(true);
+  //    }
+  // }
+
 
 }

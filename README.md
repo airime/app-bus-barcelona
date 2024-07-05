@@ -25,10 +25,17 @@ Desenvolupat amb components *stand-alone*.
 - Gestió centralitzada d'errors (*exceptionHandler.service.ts*): Mostra un Toast a l'usuari i comunica la situació pel hub de missatges (com a resultat, es mostra una icona d'error)
 
 - `npm install ts-md5`
-- `npm install @ionic/pwa-elements` (incorpora `defineCustomElements(window);` en main.ts)
+- `npm install @ionic/pwa-elements` (also added `defineCustomElements(window);` in main.ts)
 - `npm install @capacitor/camera @capacitor/preferences @capacitor/filesystem` (els plugins de base de dades s'instal·len després)
-- `npm install @capacitor/google-maps --legacy-peer-deps`
+- `npm install @capacitor/google-maps@next` (note de @next version, needed because version for capacitor 6 isn't ready yet)
+  - Using --legacy-peer-deps didn't work `npm install @capacitor/google-maps --legacy-peer-deps`. Moreover, when using the option `--legacy-peer-deps`, it will be needed again each time `ionic cap sync` or `ionic cap copy` is done.
 - `npm install @capacitor/geolocation`
+  - **Pendent**: s'ha d'incloure en els permisos d'Android: [Vure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
+
+> [TODO!] Pendent permisos d'Android
+> /* TODO */
+> [Vure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
+
 - `npm install @capacitor/app`
 - `npm install @capacitor/browser`
 

@@ -3,30 +3,11 @@
 <main class="ion-page" id="main-content">
   <app-header [title]="title" loggedIn="true"></app-header>
 
-  <!--
-  <ion-header translucent="true">
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-menu-button></ion-menu-button>
-      </ion-buttons>
-      <ion-title>Mapa busos Barcelona</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  -->
-
   <ion-content [fullscreen]="true">
     <app-content-header [title]="title" loggedIn="true"></app-content-header>
-    <capacitor-google-map id="map"></capacitor-google-map>
-    <!-- 
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button></ion-menu-button>
-        </ion-buttons>
-        <ion-title>Mapa busos Barcelona</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    -->
+
+    <app-gmap appId='App-Bus-Barcelona'></app-gmap>
+
   </ion-content>
 
 </main>

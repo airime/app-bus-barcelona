@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonList, IonItem, IonLabel, IonInput, IonInputPasswordToggle, IonButton, 
          IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
@@ -22,7 +23,8 @@ export class ResendVerificationPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private navCtrl: NavController
   ) { 
     this.wait = false;
   }
@@ -52,6 +54,10 @@ export class ResendVerificationPage implements OnInit {
       this.router.createUrlTree([`service-terms`])
     );
     window.open(url, '_blank');
+  }
+
+  goBack() {
+    this.navCtrl.back();
   }
 
   async submit() {

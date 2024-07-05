@@ -27,7 +27,7 @@ export class ErrorService implements ErrorHandler {
     private async presentToast(position: 'top' | 'middle' | 'bottom',
                                 message: IErrorMessage) {
         const toast = await this.toastController.create({
-            message: (message.name?? 'Error' + ': ') + message.content,
+            message: (message.name?? 'Error') + ': ' + message.content,
             buttons: [
                 {
                   text: 'Entendido',
@@ -58,7 +58,6 @@ export class ErrorService implements ErrorHandler {
         // if (!(err instanceof HttpErrorResponse)) {
         //     err = err.rejection; // get the error object
         // }
-        console.log(this.zone);
         try {
             this.zone.run(() => {
                     try {

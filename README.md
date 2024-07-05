@@ -32,6 +32,12 @@ Desenvolupat amb components *stand-alone*.
 - `npm install @capacitor/geolocation`
   - **Pendent**: s'ha d'incloure en els permisos d'Android: [Vure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
 
+> Revisió de Google Maps
+> S'afegeix la versió nativa
+> https://developers.google.com/maps/documentation/javascript/examples/map-simple
+> `npm i -D @types/google.maps`
+> `/// <reference types="@types/google.maps" />`
+
 > [TODO!] Pendent permisos d'Android
 > /* TODO */
 > [Vure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)

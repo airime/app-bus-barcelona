@@ -21,25 +21,27 @@ import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlace
 export class GmapComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input({ required: true }) appId!: string;
   @Input({ transform: numberAttribute }) set latitude(value: number) {
-    this.coordinates.lat = value;
+    this.location.lat = value;
   }
   @Input({ transform: numberAttribute }) set longitude(value: number) {
-    this.coordinates.lat = value;
+    this.location.lat = value;
   }
   @ViewChild('popover') popover?: IonPopover;
   @ViewChild('map') mapRef!: ElementRef<HTMLElement>;
 
   get latitude() : number {
-    return this.coordinates.lat;
+    return this.location.lat;
   }
   get longitude() : number {
-    return this.coordinates.lng;
+    return this.location.lng;
   }
 
 get markerIsOpen(): boolean { return !!this.markerId; }
 closeMarker() { this.markerId = undefined; }
 
-  private coordinates: LatLng;
+
+
+  private location: LatLng;
   private newMap!: GoogleMap;
   private watchId?: CallbackID;
 
@@ -61,7 +63,7 @@ closeMarker() { this.markerId = undefined; }
 
   constructor() {
     /* TODO read initial coordinates from user preferences? */
-    this.coordinates = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+    this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
     /*
       ERROR: App.getInfo() not implemented for Web; introduced as an @Input parameter to avoid error
       if (Capacitor.getPlatform() != 'web') {
@@ -108,9 +110,9 @@ closeMarker() { this.markerId = undefined; }
           if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted')
           {
             const pos = await Geolocation.getCurrentPosition();
-            this.coordinates = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            this.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
           }
-          else this.coordinates = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+          else this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
       });
   }
 
@@ -122,12 +124,17 @@ closeMarker() { this.markerId = undefined; }
   async createMap(): Promise<void> {
     /* TODO use environtment for apiKey? */
     try {
+      const coordinates = await Geolocation.getCurrentPosition();
+      const location = {
+        lat: coordinates.coords.latitude,
+        lng: coordinates.coords.longitude
+      };
       this.newMap = await GoogleMap.create({
           id: this.appId,
           element: this.mapRef.nativeElement,
           apiKey: googleMapsApiKey,
           config: {
-            center: this.coordinates,
+            center: location,
             zoom: 17,
             zoomControl: false,
             streetViewControl: false,
@@ -136,7 +143,8 @@ closeMarker() { this.markerId = undefined; }
         },
         (mapIdResult) => { this.mapId = mapIdResult.mapId; console.log("MAP-ID: ", mapIdResult)});
         /* CALLBACK NOT WORKING (maybe there is not MapId? ) */
-        console.log("CREATE-MAP CALLED: ", this.coordinates);
+        this.location = location;
+        console.log("CREATE-MAP CALLED: ", this.location);
       this.mapInitialActions();
     } catch(err) {
       console.log(err);
@@ -157,9 +165,9 @@ closeMarker() { this.markerId = undefined; }
     });    
     await this.newMap.enableTrafficLayer(true).then(() => {
         this.getPosition().then(() => {
-          this.addMarker(this.coordinates.lat, this.coordinates.lng)
+          this.addMarker(this.location.lat, this.location.lng)
           this.mapRef.nativeElement.classList.add('show-map'); 
-          console.log("enableTrafficLayer & show map", this.coordinates);
+          console.log("enableTrafficLayer & show map", this.location);
         });
       });
     //await this.newMap.setCamera
@@ -180,8 +188,8 @@ closeMarker() { this.markerId = undefined; }
     this.newMap.setOnMyLocationClickListener((t) => { console.log("setOnMyLocationClickListener", t) });
 
     //prova marker (¿?)
-    console.log("marker:", this.coordinates);
-    await this.addMarker(this.coordinates.lat, this.coordinates.lng);
+    console.log("marker:", this.location);
+    await this.addMarker(this.location.lat, this.location.lng);
   }
 
   async addMarker(lat: number, lng: number): Promise<void> {

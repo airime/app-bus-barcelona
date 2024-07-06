@@ -7,7 +7,7 @@ import { LatLng, Marker } from '@capacitor/google-maps/dist/typings/definitions'
 import { getElement } from 'ionicons/dist/types/stencil-public-runtime';
 import { App } from '@capacitor/app';
 
-import { googleMapsApiKey, mapId } from '../../../api.key';
+import { googleMapsApiKey, googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 
 @Component({
@@ -138,7 +138,7 @@ closeMarker() { this.markerId = undefined; }
     try {
       const location = await this.getPosition();
       this.newMap = await GoogleMap.create({
-          id: mapId, // this.appId,
+          id: googleMapId, // this.appId,
           element: this.mapRef.nativeElement,
           apiKey: googleMapsApiKey,
           config: {

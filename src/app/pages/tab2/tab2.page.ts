@@ -15,6 +15,7 @@ export class Tab2Page {
 
   constructor() {}
 
-  readonly title = "Parades preferides";
+  readonly title = "Buscador de línies";
+  readonly userValidated = "true";
 
 }

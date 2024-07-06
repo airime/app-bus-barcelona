@@ -1,9 +1,11 @@
+<app-menu></app-menu>
+
 @if (userValidated) {
     <app-menu></app-menu>
 }
 
 <main class="main">
-    <app-header title="" loggedIn="true"></app-header>
+    <app-header [title]="title" loggedIn="true" userValidated="userValidated"></app-header>
     <ion-grid>
         <ion-row>
             <ion-col size="12" size-sm="6">

@@ -1,10 +1,10 @@
 <app-menu></app-menu>
 
 <main class="ion-page" id="main-content">
-  <app-header [title]="title" loggedIn="true"></app-header>
+  <app-header [title]="title" loggedIn="true" userValidated="userValidated"></app-header>
 
   <ion-content [fullscreen]="true">
-    <app-content-header [title]="title" loggedIn="true"></app-content-header>
+    <app-content-header [title]="title" loggedIn="true" userValidated="userValidated"></app-content-header>
 
     <app-gmap appId='App-Bus-Barcelona'></app-gmap>
 

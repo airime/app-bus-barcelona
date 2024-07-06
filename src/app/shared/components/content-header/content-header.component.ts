@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, booleanAttribute } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonHeader, IonToolbar, IonTitle, IonIcon, IonAvatar, IonButton } from "@ionic/angular/standalone";
+import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonButton, IonTitle, IonIcon, IonAvatar } from "@ionic/angular/standalone";
 import { MessageHubService } from '../../services/messageHub.service';
 import { Subscription } from 'rxjs';
 import { IErrorMessage } from '../../interfaces/IMessage';
@@ -11,12 +11,13 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-content-header',
   templateUrl: './content-header.component.html',
   styleUrls: ['./content-header.component.scss'],
-  imports: [IonButton, IonAvatar, IonIcon, IonTitle, IonToolbar, IonHeader]
+  imports: [IonButtons, IonMenuButton, IonButton, IonAvatar, IonIcon, IonTitle, IonToolbar, IonHeader]
 })
 export class ContentHeaderComponent  implements OnDestroy {
 
   @Input({ required: true }) title!: string;
   @Input({ required: true, transform: booleanAttribute }) loggedIn!: boolean;
+  @Input({ required: true, transform: booleanAttribute}) userValidated!: boolean;
   
   public get hasError() { return this.errorDetected; }
   private set hasError(value: boolean) { this.errorDetected = value; }

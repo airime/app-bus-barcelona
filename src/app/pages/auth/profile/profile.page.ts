@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Md5 } from 'ts-md5';
-import { IonRow, IonGrid, IonCol, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonCardSubtitle, 
-    IonTitle, IonButtons, IonButton, IonList, IonItem, IonInput, IonInputPasswordToggle, IonAvatar, IonIcon, IonText, IonLabel } from "@ionic/angular/standalone";
+import {
+  IonRow, IonGrid, IonCol, IonCard, IonCardHeader, IonCardContent, IonCardTitle, IonCardSubtitle,
+  IonTitle, IonButtons, IonButton, IonList, IonItem, IonInput, IonInputPasswordToggle, IonAvatar, IonIcon, IonText, IonLabel
+} from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { retry } from 'rxjs';
 
@@ -20,22 +22,23 @@ import { isNullOrEmpty, plainLowerCaseString, removeSpacesAlsoNonbreakables } fr
   standalone: true,
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
-  imports: [IonLabel,  IonText, IonIcon, MenuComponent, HeaderComponent, ReactiveFormsModule, IonTitle,
+  imports: [IonLabel, IonText, IonIcon, MenuComponent, HeaderComponent, ReactiveFormsModule, IonTitle,
     IonGrid, IonCol, IonRow, IonList, IonItem, IonInput, IonInputPasswordToggle, IonAvatar, IonButtons, IonButton,
-    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent ]
+    IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent]
 })
-export class ProfilePage  implements OnInit {
+export class ProfilePage implements OnInit {
   private _email: string;
   private _displayName?: string | null;
   private _profileImgUrl?: string | null;
   private _profileForm: FormGroup;
+
   //private profileOptionsForm: FormGroup;
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private fb: FormBuilder
-  ) { 
+  ) {
     this.authService.refreshCurrentUser();
     this._email = "";
     this._profileForm = this.createForm(fb);
@@ -46,24 +49,24 @@ export class ProfilePage  implements OnInit {
   ngOnInit() {
     addIcons({
       gravatar: 'assets/gravatar.svg'
-      });
+    });
     const currentUser = this.authService.currentUser;
     if (currentUser && currentUser.email) {
       this.fillForm(currentUser);
     } else {
       /* PAGE ERROR! */
       this.router.navigateByUrl('login', { replaceUrl: true });
-      const err =  new Error("Ningún usuario ha iniciado la sesión.");
+      const err = new Error("Ningún usuario ha iniciado la sesión.");
       err.name = GUIerrorType.FormError;
       throw err;
     }
   }
 
-  private createForm(fb: FormBuilder) : FormGroup {
+  private createForm(fb: FormBuilder): FormGroup {
     return fb.group({
-      newDisplayName: ['', 
-                      [Validators.required, Validators.minLength(3), Validators.maxLength(30)],
-                      [DisplayNameValidator.createValidator(this.authService)]],
+      newDisplayName: ['',
+        [Validators.required, Validators.minLength(3), Validators.maxLength(30)],
+        [DisplayNameValidator.createValidator(this.authService)]],
       photoURL: [''],
       password: ['', [
         Validators.required,
@@ -73,24 +76,24 @@ export class ProfilePage  implements OnInit {
     });
   }
 
-/* 
-  //OPCIO PER A PREFERÈNCIES ADDICIONALS DE L'USUARI (pe. Idioma)
-  private createForm2(fb: FormBuilder) : FormGroup {
-    return fb.group({
-      firstProfile: [''],
-      secondProfile: [''],
-      thirdProfile: [''],
-    });
-  }
- */
+  /* 
+    //OPCIO PER A PREFERÈNCIES ADDICIONALS DE L'USUARI (pe. Idioma)
+    private createForm2(fb: FormBuilder) : FormGroup {
+      return fb.group({
+        firstProfile: [''],
+        secondProfile: [''],
+        thirdProfile: [''],
+      });
+    }
+   */
 
   private fillForm(usr: userProfile) {
     /* dades que depenen de usr */
     const userVerified = usr.emailVerified;
-    this._email = usr.email! + (userVerified? "" : " ?");
-    console.log(userVerified? "User verified" : "User email pending verification");
-    this._displayName = usr.displayName?? undefined;
-    this._profileImgUrl = usr.photoURL?? null;
+    this._email = usr.email! + (userVerified ? "" : " ?");
+    console.log(userVerified ? "User verified" : "User email pending verification");
+    this._displayName = usr.displayName ?? undefined;
+    this._profileImgUrl = usr.photoURL ?? null;
     /* primer form */
     this._profileForm.controls["newDisplayName"].setValue(usr.displayName);
     this._profileForm.controls["photoURL"].setValue(usr.photoURL);
@@ -100,7 +103,7 @@ export class ProfilePage  implements OnInit {
 
   get title() { return "Perfil del usuario"; }
   get previewTitle() { return "Previsualización"; }
-  get showDisplayName() { return "Nombre público para mostrar"}
+  get showDisplayName() { return "Nombre público para mostrar" }
   get profileForm() { return this._profileForm; }
   get email() { return this._email; }
   get displayName() { return this._displayName; }
@@ -136,10 +139,10 @@ export class ProfilePage  implements OnInit {
 
 
   nomInputEvent($event: any) {
-    const newValue = isNullOrEmpty($event.target.value as string | null | undefined)?
-       null : $event.target.value as string;
+    const newValue = isNullOrEmpty($event.target.value as string | null | undefined) ?
+      null : $event.target.value as string;
     const newValueTransformed = newValue === null ? null : plainLowerCaseString(newValue);
-    this._displayName = isNullOrEmpty(newValueTransformed)? null : newValue;
+    this._displayName = isNullOrEmpty(newValueTransformed) ? null : newValue;
   }
 
   imgUrlInputEvent($event: any) {
@@ -156,7 +159,7 @@ export class ProfilePage  implements OnInit {
     const currentUser = this.authService.currentUser;
     if (currentUser && currentUser.emailVerified) {
       this._profileImgUrl = removeSpacesAlsoNonbreakables("https://www.gravatar.com/avatar/"
-                           + Md5.hashStr(currentUser.email.trim().toLowerCase())+"?d=mp");
+        + Md5.hashStr(currentUser.email.trim().toLowerCase()) + "?d=mp");
       this._profileForm.controls['photoURL'].setValue(this.profileImgUrl);
     }
   }
@@ -167,7 +170,7 @@ export class ProfilePage  implements OnInit {
     this._profileForm.controls["photoURL"].reset();
   }
 
-  get UsuariNoValidat() { return "Usuario no validado."}
+  get UsuariNoValidat() { return "Usuario no validado." }
   get HintUsuariNoValidat() {
     return "Recuerde revisar el email y validarlo, y entonces será reconocido como usuario." +
       "Después, refresque la página, y podrá introducir el nombre público."

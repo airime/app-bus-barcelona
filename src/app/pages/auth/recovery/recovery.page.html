@@ -1,6 +1,6 @@
 <main class="main">
     @if (!!currentUser) {
-      <app-header [title]="title" [loggedIn]="loggedIn"></app-header>
+      <app-header [title]="title" [loggedIn]="loggedIn" userValidated="userValidated"></app-header>
     }
     <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
     <ion-card color="secondary">

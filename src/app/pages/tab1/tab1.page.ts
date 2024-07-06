@@ -22,6 +22,7 @@ export class Tab1Page implements OnInit {
   @ViewChild(GmapComponent) private gMapComponent!: GmapComponent;
 
   readonly title = "Mapa busos Barcelona";
+  readonly userValidated = "true";
 
   private geoPosPermision!: PermissionStatus;
 

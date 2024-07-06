@@ -26,24 +26,56 @@ Desenvolupat amb components *stand-alone*.
 
 - `npm install ts-md5`
 - `npm install @ionic/pwa-elements` (also added `defineCustomElements(window);` in main.ts)
+- `npm install @capacitor/push-notifications`
 - `npm install @capacitor/camera @capacitor/preferences @capacitor/filesystem` (els plugins de base de dades s'instal·len després)
 - `npm install @capacitor/google-maps@next` (note de @next version, needed because version for capacitor 6 isn't ready yet)
   - Using --legacy-peer-deps didn't work `npm install @capacitor/google-maps --legacy-peer-deps`. Moreover, when using the option `--legacy-peer-deps`, it will be needed again each time `ionic cap sync` or `ionic cap copy` is done.
-- `npm install @capacitor/geolocation`
-  - **Pendent**: s'ha d'incloure en els permisos d'Android: [Vure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
 
 > Revisió de Google Maps
 > S'afegeix la versió nativa
-> https://developers.google.com/maps/documentation/javascript/examples/map-simple
-> `npm i -D @types/google.maps`
-> `/// <reference types="@types/google.maps" />`
+> ([veure documentació](https://developers.google.com/maps/documentation/javascript/examples/map-simple))
+> 
+> 1. `npm i -D @types/google.maps`
+>
+> 2. En `<head>` de `index.html` s'ha d'afegir `<script>...</script>` referent a l'API de GMaps
+> 
+> 3. `/// <reference types="@types/google.maps" />` en el component que fa servir gMaps
+>
+> 4. Afegir l'import que es requereixi
 
-> [TODO!] Pendent permisos d'Android
-> /* TODO */
-> [Vure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
+- `npm install @capacitor/geolocation`
+
+> - [TODO!] /* TODO */ Pendent permisos d'Android
+> - **Pendent**: [Veure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
 
 - `npm install @capacitor/app`
 - `npm install @capacitor/browser`
+- [TMB API](https://developer.tmb.cat/) incorpora el seu id d'aplicació i una clau.
+  - Veure [TMB samples](https://tmb-barcelona.github.io/TMB-API-samples/) (crides en javascript fent servir ajax)
+- Icones [fontawesome](https://fontawesome.com/search?m=free&o=r):
+  - index.html: `<script src="https://kit.fontawesome.com/e65ff45c32.js" crossorigin="anonymous"></script>`
+  - example in-line: `<i class="fa-duotone fa-bus-alt" style="--fa-primary-color: orangered;"></i>`
+  - [Ús en maps](https://developers.google.com/maps/documentation/javascript/examples/marker-modern):
+    > `import { faBus } from "@fortawesome/free-solid-svg-icons";`
+    ~~~  // use a FontAwesome svg
+        new google.maps.Marker({
+          position: { lat: 36.6163, lng: -100.61 },
+          map,
+          icon: {
+            path: faBus.icon[4] as string,
+            fillColor: "#0000ff",
+            fillOpacity: 1,
+            anchor: new google.maps.Point(
+              faBus.icon[0] / 2, // width
+              faBus.icon[1] // height
+            ),
+            strokeWeight: 1,
+            strokeColor: "#ffffff",
+            scale: 0.075,
+          },
+          title: "FontAwesome SVG Marker",
+        });
+    ~~~
 
 ### Firebase
 

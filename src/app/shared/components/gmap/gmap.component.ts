@@ -7,7 +7,7 @@ import { LatLng, Marker } from '@capacitor/google-maps/dist/typings/definitions'
 import { getElement } from 'ionicons/dist/types/stencil-public-runtime';
 import { App } from '@capacitor/app';
 
-import { googleMapsApiKey } from '../../../api.key';
+import { googleMapsApiKey, mapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 
 @Component({
@@ -103,17 +103,29 @@ closeMarker() { this.markerId = undefined; }
   //   .catch(err => console.log("Geolocation.watchPosition ERROR: ", err));
   }
 
-  private async getPosition(): Promise<void> {
-    await Geolocation.checkPermissions()
-      .then(async (geoPosPermision) => {
-          console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
-          if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted')
-          {
-            const pos = await Geolocation.getCurrentPosition();
-            this.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          }
-          else this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
-      });
+  private async getPosition(): Promise<LatLng> {
+    try {
+      let geoPosPermision = await Geolocation.checkPermissions();
+      console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
+      if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt')
+      {
+          geoPosPermision = await Geolocation.requestPermissions();
+      }
+      if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted')
+      {
+        const pos = await Geolocation.getCurrentPosition( { maximumAge:75000, timeout:25000 });
+        this.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        console.log("NEW location: ", this.location.lat, this.location.lng);
+      }
+      else {
+        this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+        console.log("Not granted??");
+      }
+    } catch(err) {
+      console.log("Geolocation error: ", err);
+      this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+    };
+    return this.location;
   }
 
   ngAfterViewInit(): void {
@@ -124,13 +136,9 @@ closeMarker() { this.markerId = undefined; }
   async createMap(): Promise<void> {
     /* TODO use environtment for apiKey? */
     try {
-      const coordinates = await Geolocation.getCurrentPosition();
-      const location = {
-        lat: coordinates.coords.latitude,
-        lng: coordinates.coords.longitude
-      };
+      const location = await this.getPosition();
       this.newMap = await GoogleMap.create({
-          id: this.appId,
+          id: mapId, // this.appId,
           element: this.mapRef.nativeElement,
           apiKey: googleMapsApiKey,
           config: {
@@ -143,7 +151,6 @@ closeMarker() { this.markerId = undefined; }
         },
         (mapIdResult) => { this.mapId = mapIdResult.mapId; console.log("MAP-ID: ", mapIdResult)});
         /* CALLBACK NOT WORKING (maybe there is not MapId? ) */
-        this.location = location;
         console.log("CREATE-MAP CALLED: ", this.location);
       this.mapInitialActions();
     } catch(err) {
@@ -156,28 +163,25 @@ closeMarker() { this.markerId = undefined; }
     await this.newMap.disableTouch();
     this.newMap.disableScrolling();
     if (Capacitor.getPlatform() != 'web') {
-      /* Not available features on web */
+      /* features not available on web */
       await this.newMap.enableIndoorMaps(false);
       await this.newMap.enableAccessibilityElements(true);
     }
-    await this.newMap.enableCurrentLocation(true).then(() => {
-      console.log("enableCurrentLocation");
-    });    
-    await this.newMap.enableTrafficLayer(true).then(() => {
-        this.getPosition().then(() => {
-          this.addMarker(this.location.lat, this.location.lng)
-          this.mapRef.nativeElement.classList.add('show-map'); 
-          console.log("enableTrafficLayer & show map", this.location);
-        });
-      });
-    //await this.newMap.setCamera
+    await this.newMap.enableTrafficLayer(true).then(() => { console.log("enableTrafficLayer"); });
+    this.mapRef.nativeElement.classList.add('show-map');
     //await newMap.setOnMarkerClickListener((event) => {});
     this.newMap.setOnMapClickListener(async (t) => { this.addMarker(t.latitude, t.longitude); });
 
-    this.newMap.setOnMarkerClickListener((t) => {
-      
+    this.newMap.setOnMarkerClickListener((t) => {      
       console.log("setOnMarkerClickListener", t)
      });
+
+    // pending fuctionalities:
+    //await this.newMap.setCamera
+    // enableCurrentLocation? Maybe not needed if the map can't be moved
+    // await this.newMap.enableCurrentLocation(true).then(() => {
+    //   console.log("enableCurrentLocation");
+    // });    
 
     /* no changes observed */
     this.newMap.enableClustering(2);

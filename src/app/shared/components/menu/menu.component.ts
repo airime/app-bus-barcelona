@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonMenuButton, IonMenu } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons } from '@ionic/angular/standalone';
 
 
 @Component({
@@ -7,7 +7,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonMenuButton, IonMenu } f
   standalone: true,
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
-  imports: [ IonMenuButton, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent ]
+  imports: [IonButtons,  IonMenuButton, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent ]
 })
 export class MenuComponent  implements OnInit {
 

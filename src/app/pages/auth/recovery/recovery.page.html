@@ -1,0 +1,59 @@
+@if (userValidated) {
+  <app-menu
+    [loggedIn]="loggedIn"
+    userValidated="true"
+    [displayNameDefined]="displayNameDefined"
+    pageId="changePassword">
+  </app-menu>
+}
+<main class="ion-page ion-justify-content-start" id="main-content">
+  @if (loggedIn) {
+    <app-header [title]="title"></app-header>
+  }
+  <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
+    <ion-card color="secondary">
+      <ion-card-header>
+        <ion-card-title>
+          <h2>{{ loggedIn? "Cambiar la contraseña" : "Restablecer la contraseña"}}</h2>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item-group formGroupName="emailGroup">
+            <ion-item>
+              <ion-input type="email" formControlName="email" label="E-Mail" fill="outline"
+                errorText="email no es válido" autocomplete="username" appAutofill>
+              </ion-input>
+            </ion-item>
+            @if (!loggedIn) {
+              <ion-item>
+                  <ion-input type="email" formControlName="emailAgain" label="Repetir e-Mail" fill="outline"
+                      helperText="Debe introducir de nuevo el email"
+                      errorText="email no es válido" autocomplete="email" appAutofill [readonly]="wait">
+                  </ion-input>
+              </ion-item>
+              @if (!emailGroupOk) {
+                <ion-item color="danger" [hidden]="emailGroupOk">
+                    <span><small>Los emails son diferentes</small></span>
+                </ion-item>
+              }
+            }
+          </ion-item-group>
+          <ion-item>
+            <p><span>Este formulario le enviará un correo electrónico con un enlace que le permitirá establecer de nuevo la contraseña.</span>
+              <span>&nbsp;<small>Recuerde seguir las normes de esta aplicación para las contraseñas:
+                Puede usar una frase que tenga al menos una mayúscula y un dígito.</small></span>
+            </p>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+      <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">
+        {{loggedIn? "Cambiar contraseña" : "Restablecer contraseña"}}
+      </ion-button>
+      @if (!loggedIn) {
+          <ion-button fill="clear" href="login" color="primary">Acceder</ion-button>
+          <ion-button fill="clear" href="register" color="primary">Registrarse</ion-button>
+      }
+    </ion-card>
+  </form>
+</main>

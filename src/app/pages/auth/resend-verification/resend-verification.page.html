@@ -1,0 +1,41 @@
+<app-menu
+  loggedIn="true"
+  userValidated="false"
+  [displayNameDefined]="displayNameDefined"
+  pageId="resendVerification">
+</app-menu>
+<main class="ion-page" id="main-content">
+  <form (ngSubmit)="submit()" [formGroup]="credentials">
+    <ion-card color="secondary">
+      <ion-card-header>
+        <ion-card-title>Login</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-input type="email" formControlName="email" label="E-Mail" fill="outline"
+              errorText="email no es válido" autocomplete="username" appAutofill [readonly]="wait">
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input type="password" formControlName="password" label="Contraseña" fill="outline"
+              helperText="Introduzca una contraseña con mayúsculas, minúsculas, números y símbolos; puede servir una frase con un dígito."
+              errorText="la contraseña no es válida" autocomplete="current-password" appAutofill [readonly]="wait">
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+          <ion-item>
+            <small><a href="recovery" color="primary">¿Contraseña olvidada?</a></small>
+            <div slot="end">
+                <small>Para acceder a los servicios es necesario registrarse.
+                    Puede consultar los <a href="" (click)="obrirCondicions()" color="secondary">términos</a>
+                    que accepta por el uso del servicio.</small>
+            </div>
+        </ion-item>
+      </ion-list>
+      </ion-card-content>
+      <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">Enviar</ion-button>
+      <ion-button fill="clear" (click)="goBack()" color="danger">Cancelar</ion-button>
+    </ion-card>
+  </form>
+</main>

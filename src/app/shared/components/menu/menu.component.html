@@ -1,0 +1,49 @@
+<ion-menu content-id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-menu-button slot="start"></ion-menu-button>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Usuario</ion-label>
+      </ion-list-header>
+      @if (loggedIn) {
+        @if (!userValidated) {
+          <ion-item id="resendVerification" [class.highlight]="selected('resendVerification')" [class.pointer]="!selected('resendVerification')"
+            [routerLink]="['/resend-verification']">
+            <ion-icon slot="start" name="checkmark-outline"></ion-icon>
+            <ion-label>Reenviar correo verificación email</ion-label>
+          </ion-item>
+        }
+        <ion-item id="profile" [class.highlight]="selected('profile')" [class.pointer]="!selected('profile')"
+            [routerLink]="['/user-profile']">
+          <ion-avatar slot="start"><img src="{{ profileImgUrl ?? '/assets/person-outline.svg' }}" /></ion-avatar>
+          <ion-label>Perfil</ion-label>
+        </ion-item>
+      }
+      @if (!loggedIn || !userValidated || displayNameDefined) {
+        <ion-item id="changePassword" [class.highlight]="selected('changePassword')" [class.pointer]="!selected('changePassword')"
+            [routerLink]="['/change-password']">
+          <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
+          <ion-label>{{ loggedIn? "Cambiar la contraseña" : "Restablecer la contraseña" }}</ion-label>
+        </ion-item>
+        @if (loggedIn) {
+          <ion-item id="changeEmail" [class.highlight]="selected('changeEmail')" [class.pointer]="!selected('changeEmail')"
+              [routerLink]="['/change-email']">
+            <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+            <ion-label>Cambiar email</ion-label>
+          </ion-item>
+        }
+      }
+      <ion-item id="terms" [class.highlight]="selected('terms')" [class.pointer]="!selected('terms')"
+          [routerLink]="['/service-terms']">
+        <ion-icon slot="start" name="contract-outline"></ion-icon>
+        <ion-label>Términos del servicio</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+

@@ -1,0 +1,169 @@
+<app-menu
+    loggedIn="true"
+    userValidated="true"
+    [displayNameDefined]="displayNameDefined"
+    pageId="profile">
+</app-menu>
+<main class="ion-page" id="main-content">
+    <app-header [title]="title"></app-header>
+    <ion-grid>
+        <ion-row>
+            <ion-col size="12" size-sm="6">
+                <ion-card color="success">
+                    <ion-card-header>
+                        <ion-card-title>{{previewTitle}}</ion-card-title>
+                        <ion-card-subtitle>
+                            {{email}}
+                        </ion-card-subtitle>
+                    </ion-card-header>
+                    <ion-card-content>
+                        <ion-item>
+                            <ion-label>
+                                {{displayName?? ('(*) ' + showDisplayName)}}
+                            </ion-label>
+                            <ion-avatar slot="end">
+                                <img alt="user profile avatar preview"
+                                    src="{{ profileImgUrl ?? '/assets/person-outline.svg' }}"/>
+                            </ion-avatar>
+                        </ion-item>
+                    </ion-card-content>
+                    @if (!userValidated || displayNameDefined) {
+                        <ion-buttons>
+                            <ion-button href="/change-email" color="primary">
+                                Cambiar email
+                            </ion-button>
+                            <ion-button href="/change-password" color="primary">
+                                Cambiar contraseña
+                            </ion-button>
+                        </ion-buttons>
+                    }
+                </ion-card>
+            </ion-col>
+            <ion-col size="12" size-sm="6">
+                <form [formGroup]="profileForm" (ngSubmit)="submit()">
+                    <ion-card>
+                        <ion-card-header>
+                            @if (!userValidated) {
+                                <ion-card-title class="errorMessage">{{UsuariNoValidat}}</ion-card-title>
+                                <p class="errorMessage">{{HintUsuariNoValidat}}
+                                </p>
+                            }
+                        </ion-card-header>
+                        <ion-card-content>
+                            @if (userValidated) {
+                                <ion-list>
+                                    <ion-item>
+                                        <ion-input type="text" id="newDisplayName" required
+                                            autocomplete="nickname" [readonly]="!userValidated"
+                                            label="display-name"
+                                            placeholder="Nombre público para mostrar"
+                                            helperText="El display-name permite a otros usuarios identificarle."
+                                            errorText="El display-name debe ser único, y tener como mínimo 3 carácteres."
+                                            (input)="nomInputEvent($event)" formControlName="newDisplayName">
+                                        </ion-input>
+                                    </ion-item>
+                                    <ion-item>
+                                        <ion-input type='url' id="photoURL"
+                                            autocomplete="url" [readonly]="!userValidated"
+                                            label="URL de la imagen"
+                                            placeholder="(sin avatar)"
+                                            (input)="imgUrlInputEvent($event)" formControlName="photoURL">
+                                            <ion-icon slot="end" name="gravatar" (click)="imgFromGravatar()"></ion-icon>
+                                            <ion-icon slot="end" name="trash-outline" (click)="removeImg()"></ion-icon>
+                                        </ion-input>
+                                    </ion-item>
+                                    <ion-item>
+                                        <ion-text><small>Un icono puede definirse, por ejemplo, en 
+                                            <a href="https://es.gravatar.com/site/login" target="_blank">
+                                                <span class="hintLink">Gravatar.com</span></a></small>
+                                        </ion-text>
+                                    </ion-item>
+                                </ion-list>
+                                @if (readyToSubmit) {
+                                    <ion-buttons>
+                                        <ion-input type="password" label="Contraseña" fill="outline"
+                                            autocomplete="current-password" [readonly]="!userValidated"
+                                            placeholder="Debe validar la operación con la contraseña."
+                                            errorText="la contraseña no es válida"
+                                            formControlName="password">
+                                            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+                                        </ion-input>
+                                        <ion-button id="profile_button" type="submit" [disabled]="!profileForm.valid || !userValidated">
+                                            Enviar
+                                        </ion-button>
+                                    </ion-buttons>
+                                }
+                            }
+                            @else {
+                                <ion-button href="/resend-verification" color="primary">
+                                    Reenviar verificación
+                                </ion-button>        
+                            }
+                    </ion-card-content>
+                    </ion-card>
+                </form>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+        <!-- OPCIO PER A PREFERÈNCIES ADDICIONALS DE L'USUARI (pe. Idioma) -->
+        <!-- No implementat -->
+        <!-- Algunes preferències es podrien desar en fitxer local? -->
+        <!-- Si es fa servir Firebase cal modificar les Rules -->
+        <!--
+        @if (userValidatedWithDisplayname) {
+            <form class="grid-container" [style]="'flex-basis:'+(userValidated?'40':'60')+'%;'"
+            [formGroup]="profileOptionsForm">
+            <mat-card  class="grid-container" class="formCard">
+                <mat-card-header style="display: block;">
+                    <h2 style="text-align: center;">{{hints["nonPublicStaff"]}}</h2>
+                    <p>{{hints["nonPublicStaffDetail"]}}</p>
+                </mat-card-header>
+                <mat-card-content>
+                    <img src='{{langFlag}}' style="width: 3rem;margin: 4px;">
+                    <mat-form-field>
+                        <mat-label>Idioma</mat-label>
+                        <mat-select [(value)]="idioma">
+                            @for (idioma of idiomes; track idioma.value) {
+                                <mat-option [value]="idioma.value">
+                                    <img src='{{idioma.img}}' style="width: 3rem;margin:4px; vertical-align:middle;"> {{idioma.viewValue}}
+                                </mat-option>                                        
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field style="width: 100%;">
+                        <mat-label class="form-label" for="firstProfile">{{formLabels['firstProfile']}}: </mat-label>
+                        <input matInput class="form-control" type='url' [(ngModel)]="firstProfileName"
+                            formControlName="firstProfile" placeholder="{{hints['firstProfile']}}">
+                    </mat-form-field>
+                    @if (!!firstProfileName) {
+                        <mat-form-field style="width: 100%;">
+                            <mat-label class="form-label" for="secondProfile">{{formLabels['secondProfile']}}: </mat-label>
+                            <input matInput class="form-control" type='url'  [(ngModel)]="secondProfileName"
+                                formControlName="secondProfile" placeholder="{{hints['secondProfile']}}">
+                        </mat-form-field>
+                        @if (!!secondProfileName) {
+                            <mat-form-field style="width: 100%;">
+                                <mat-label class="form-label" for="thirdProfile">{{formLabels['thirdProfile']}}: </mat-label>
+                                <input matInput class="form-control" type='url' [(ngModel)]="thirdProfileName"
+                                    formControlName="thirdProfile" placeholder="{{hints['thirdProfile']}}">
+                            </mat-form-field>
+                        }
+                    }
+                    <mat-tab-group>
+                        @if (!!firstProfileName) {
+                            <mat-tab label="{{firstProfileName}}"> perfil dietetic 1 </mat-tab>
+                            @if (!!secondProfileName) {
+                                <mat-tab label="{{secondProfileName}}"> perfil dietetic 2 </mat-tab>
+                                @if (!!thirdProfileName) {
+                                    <mat-tab label="{{thirdProfileName}}"> perfil dietetic 3 </mat-tab>
+                                }
+                            }
+                        }
+                    </mat-tab-group>
+                </mat-card-content>
+                </mat-card>
+            </form>
+        }
+        -->
+</main>

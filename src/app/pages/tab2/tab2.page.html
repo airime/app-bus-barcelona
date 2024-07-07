@@ -1,0 +1,15 @@
+<app-menu
+  loggedIn="true"
+  userValidated="true"
+  [displayNameDefined]="displayNameDefined"
+  pageId="tab2">
+</app-menu>
+
+<main class="ion-page" id="main-content">
+  <app-header [title]="title"></app-header>
+ 
+  <ion-content [fullscreen]="true">
+    <app-content-header [title]="title"></app-content-header>
+  </ion-content>
+
+</main>

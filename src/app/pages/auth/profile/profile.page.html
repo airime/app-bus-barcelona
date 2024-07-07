@@ -27,16 +27,19 @@
                             </ion-avatar>
                         </ion-item>
                     </ion-card-content>
-                    @if (!userValidated || displayNameDefined) {
-                        <ion-buttons>
+                    <ion-buttons>
+                        <ion-button (click)="refreshPage()" color="primary">
+                            Reinicia
+                        </ion-button>
+                        @if (!userValidated || displayNameDefined) {
                             <ion-button href="/change-email" color="primary">
                                 Cambiar email
                             </ion-button>
                             <ion-button href="/change-password" color="primary">
                                 Cambiar contraseña
                             </ion-button>
-                        </ion-buttons>
-                    }
+                        }
+                    </ion-buttons>
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="6">

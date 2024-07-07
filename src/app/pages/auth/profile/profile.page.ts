@@ -44,13 +44,17 @@ export class ProfilePage implements OnInit {
     // OPCIO PER A PREFERÈNCIES ADDICIONALS DE L'USUARI (pe. Idioma)
     //this.profileOptionsForm = this.createForm2(fb);
   }
+  
+  async refreshPage() {
+    await this.authService.refreshCurrentUser().then(() => this.ngOnInit());   
+  }
 
   ngOnInit() {
     addIcons({
       gravatar: 'assets/gravatar.svg'
     });
     const currentUser = this.authService.currentUser;
-    if (currentUser && currentUser.email) {
+    if (currentUser && !!currentUser.email) {
       this.fillForm(currentUser);
     } else {
       /* PAGE ERROR! */

@@ -1,4 +1,4 @@
-import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
 
 import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
@@ -8,8 +8,6 @@ import { GmapComponent } from '../../shared/components/gmap/gmap.component';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { userProfile } from 'src/app/shared/model/userProfile';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
-//import { Geolocation, Position, PermissionStatus } from '@capacitor/geolocation';
-//import { App } from '@capacitor/app';
 
 
 @Component({
@@ -20,10 +18,7 @@ import { isNullOrEmpty } from 'src/app/shared/util/util';
   styleUrls: ['tab1.page.scss'],
   imports: [ MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent, GmapComponent ]
 })
-export class Tab1Page implements OnInit {
-
-  @ViewChild(GmapComponent) private gMapComponent!: GmapComponent;
-
+export class Tab1Page {
   readonly title = "Mapa busos Barcelona";
 
   private currentUser!: userProfile | null;
@@ -35,18 +30,5 @@ export class Tab1Page implements OnInit {
   get displayNameDefined() {
     return !isNullOrEmpty(this.currentUser?.displayName);
   }
-
-  ngOnInit(): void {
-  }
-
-  // ionViewWillEnter() {
-  // }
-
-  // ionViewDidEnter() {
-  //    if (!!this.newMap) {
-  //      this.newMap.enableCurrentLocation(true);
-  //    }
-  // }
-
 
 }

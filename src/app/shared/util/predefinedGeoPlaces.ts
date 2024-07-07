@@ -1,6 +1,4 @@
-import { LatLng } from '@capacitor/google-maps/dist/typings/definitions';
-
-export enum geoPlaces { BarcelonaCenter, 
+export enum geoPlaces { BarcelonaCenter,
     BarcelonaCiutatVella,
     BarcelonaEixample,
     BarcelonaSants,
@@ -12,7 +10,7 @@ export enum geoPlaces { BarcelonaCenter,
     BarcelonaStAndreu,
     BarcelonaStMarti };
 
-export const PredefinedGeoPositions: Record<geoPlaces, LatLng> = {
+export const PredefinedGeoPositions: Record<geoPlaces, google.maps.LatLngLiteral> = {
     [geoPlaces.BarcelonaCenter]: { lat: 41.38719562452725, lng: 2.170042343172259 },
     [geoPlaces.BarcelonaCiutatVella]: { lat: 41.380237127671805, lng: 2.1752313818505113 },
     [geoPlaces.BarcelonaEixample]: { lat: 41.39399187579082, lng: 2.164702064906218 },

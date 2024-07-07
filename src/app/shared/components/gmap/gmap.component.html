@@ -1,12 +1,37 @@
-<capacitor-google-map #map
-  [latitude]="latitude"
-  [longitude]="longitude">
-</capacitor-google-map>
-<ion-popover
-  [is-open]="markerIsOpen"
-  size="cover"
-  (didDismiss)="closeMarker()">
-  <ion-content class="ion-padding">
-    <div>{{ markerTitle }}</div>
-  </ion-content>
-</ion-popover>
+@defer(when this.location.lat !== 0) {
+
+  <google-map
+    id="map"
+    width="100%"
+    height="100%"
+    [mapId]="mapId"
+    [center]="location"
+    [options]="options">
+    @for (m of properties; track m.title) {
+      <map-advanced-marker
+        #marker="mapAdvancedMarker"
+        [position]="m.posicion"
+        (mapClick)="openInfoWindow(marker, infoWindow)" >
+      </map-advanced-marker>
+      <map-info-window
+        #infoWindow="mapInfoWindow"
+        >
+        <h3>{{m.title}}</h3>
+        <div>{{m.descripcion}}</div>
+      </map-info-window>
+    }
+  </google-map>
+
+} @placeholder {
+
+  <div>displayed until user.name is not equal to Angular</div>
+
+} @loading(after 100ms; minimum 1s) {
+
+  <mat-spinner></mat-spinner>
+
+} @error {
+
+  <div>ERROR</div>
+
+}

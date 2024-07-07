@@ -1,4 +1,10 @@
-<main class="main">
+<app-menu
+  loggedIn="true"
+  userValidated="false"
+  [displayNameDefined]="displayNameDefined"
+  pageId="resendVerification">
+</app-menu>
+<main class="ion-page" id="main-content">
   <form (ngSubmit)="submit()" [formGroup]="credentials">
     <ion-card color="secondary">
       <ion-card-header>

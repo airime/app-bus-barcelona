@@ -3,6 +3,9 @@ import { IonContent } from '@ionic/angular/standalone';
 import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ContentHeaderComponent } from '../../shared/components/content-header/content-header.component';
+import { AuthService } from 'src/app/shared/services/auth.service';
+import { userProfile } from 'src/app/shared/model/userProfile';
+import { isNullOrEmpty } from 'src/app/shared/util/util';
 
 @Component({
   selector: 'app-tab2',
@@ -13,9 +16,15 @@ import { ContentHeaderComponent } from '../../shared/components/content-header/c
 })
 export class Tab2Page {
 
-  constructor() {}
+  constructor(private authService: AuthService) {
+    this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
+  }
 
   readonly title = "Buscador de línies";
-  readonly userValidated = "true";
+  private currentUser!: userProfile | null;
+
+  get displayNameDefined() {
+    return !isNullOrEmpty(this.currentUser?.displayName);
+  }
 
 }

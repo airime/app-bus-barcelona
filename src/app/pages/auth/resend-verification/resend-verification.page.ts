@@ -4,21 +4,25 @@ import { NavController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonList, IonItem, IonLabel, IonInput, IonInputPasswordToggle, IonButton, 
          IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
+import { MenuComponent } from '../../../shared/components/menu/menu.component';
 import { AuthService } from '../../../shared/services/auth.service';
 import { GUIerrorType } from '../../../shared/util/errors';
 import { regExps } from '../../../shared/util/custom.validator';
+import { isNullOrEmpty } from 'src/app/shared/util/util';
+import { userProfile } from 'src/app/shared/model/userProfile';
 
 @Component({
   selector: 'app-resend-verification',
   standalone: true,
   templateUrl: './resend-verification.page.html',
   styleUrls: ['./resend-verification.page.scss'],
-  imports: [ReactiveFormsModule, IonCardTitle, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
+  imports: [ReactiveFormsModule, MenuComponent, IonCardTitle, IonCard, IonCardHeader, IonCardTitle, IonCardContent,
             IonLabel, IonList, IonItem, IonInput, IonInputPasswordToggle, IonButton]
 })
 export class ResendVerificationPage implements OnInit {
   wait: boolean;
   credentials!: FormGroup;
+  private currentUser!: userProfile | null;
 
   constructor(
     private fb: FormBuilder,
@@ -26,6 +30,7 @@ export class ResendVerificationPage implements OnInit {
     private router: Router,
     private navCtrl: NavController
   ) { 
+    this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
     this.wait = false;
   }
 
@@ -36,6 +41,10 @@ export class ResendVerificationPage implements OnInit {
 
   get password() {
     return this.credentials.get('password');
+  }
+
+  get displayNameDefined() {
+    return !isNullOrEmpty(this.currentUser?.displayName);
   }
 
   ngOnInit() {

@@ -7,7 +7,6 @@ import {
   IonTitle, IonButtons, IonButton, IonList, IonItem, IonInput, IonInputPasswordToggle, IonAvatar, IonIcon, IonText, IonLabel
 } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
-import { retry } from 'rxjs';
 
 import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
@@ -114,8 +113,9 @@ export class ProfilePage implements OnInit {
     return currentUser?.emailVerified ?? false;
   }
 
-  get currentDisplayNameDefined() {
-    return !isNullOrEmpty(this._displayName);
+  get displayNameDefined() {
+    const currentUser = this.authService.currentUser;
+    return !isNullOrEmpty(currentUser?.displayName);
   }
 
   get userValidatedWithDisplayname(): boolean {
@@ -128,11 +128,12 @@ export class ProfilePage implements OnInit {
   get readyToSubmit(): boolean {
     const currentUser = this.authService.currentUser;
     if (!!currentUser) {
-      return (currentUser.emailVerified ?? false) &&
+      const value = (currentUser.emailVerified ?? false) &&
         this._profileForm.controls["newDisplayName"].valid &&
         this._profileForm.controls['photoURL'].valid &&
         (this._profileForm.controls['newDisplayName'].value != currentUser.displayName
           || this._profileForm.controls['photoURL'].value != currentUser.photoURL);
+      return value;
     }
     else return false;
   }
@@ -183,7 +184,6 @@ export class ProfilePage implements OnInit {
       const password = formValue["password"];
       delete formValue["password"];
       await this.authService.updateUserProfile(password, formValue);
-      this._profileForm.controls["password"].setValue("");
     } else {
       const err = new Error("Ningún usuario ha iniciado la sesión:" + " - " + this.UsuariNoValidat);
       err.name = GUIerrorType.AuthenticationError;

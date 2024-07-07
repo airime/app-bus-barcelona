@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, booleanAttribute } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonButton, IonTitle, IonIcon, IonAvatar } from "@ionic/angular/standalone";
 import { MessageHubService } from '../../services/messageHub.service';
@@ -16,8 +16,6 @@ import { AuthService } from '../../services/auth.service';
 export class ContentHeaderComponent  implements OnDestroy {
 
   @Input({ required: true }) title!: string;
-  @Input({ required: true, transform: booleanAttribute }) loggedIn!: boolean;
-  @Input({ required: true, transform: booleanAttribute}) userValidated!: boolean;
   
   public get hasError() { return this.errorDetected; }
   private set hasError(value: boolean) { this.errorDetected = value; }
@@ -43,7 +41,7 @@ export class ContentHeaderComponent  implements OnDestroy {
     });
   }
   
-  public get userUrlImage() { return (this.loggedIn? this.authService.currentUser?.photoURL ?? null : null)?? "./assets/person-outline.svg" }
+  public get userUrlImage() { return this.authService.currentUser?.photoURL ?? "./assets/person-outline.svg" }
 
   userProfile() {
     this.router.navigate(['/','user-profile']);

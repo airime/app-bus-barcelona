@@ -1,12 +1,12 @@
-<app-menu></app-menu>
-
-@if (userValidated) {
-    <app-menu></app-menu>
-}
-
-<main class="main">
-    <app-header [title]="title" loggedIn="true" userValidated="userValidated"></app-header>
-    <ion-grid>
+<app-menu
+    loggedIn="true"
+    userValidated="true"
+    [displayNameDefined]="displayNameDefined"
+    pageId="profile">
+</app-menu>
+<main class="ion-page" id="main-content">
+    <app-header [title]="title"></app-header>
+    <ion-grid style="width:100%">
         <ion-row>
             <ion-col size="12" size-sm="6">
                 <ion-card>
@@ -27,14 +27,16 @@
                             </ion-avatar>
                         </ion-item>
                     </ion-card-content>
-                    <ion-buttons>
-                        <ion-button href="/change-email" [disabled]="userValidated && !currentDisplayNameDefined" color="primary">
-                            Cambiar email
-                        </ion-button>
-                        <ion-button href="/change-password" [disabled]="userValidated && !currentDisplayNameDefined" color="primary">
-                            Cambiar contraseña
-                        </ion-button>
-                    </ion-buttons>
+                    @if (!userValidated || displayNameDefined) {
+                        <ion-buttons>
+                            <ion-button href="/change-email" color="primary">
+                                Cambiar email
+                            </ion-button>
+                            <ion-button href="/change-password" color="primary">
+                                Cambiar contraseña
+                            </ion-button>
+                        </ion-buttons>
+                    }
                 </ion-card>
             </ion-col>
             <ion-col size="12" size-sm="6">
@@ -52,7 +54,7 @@
                                 <ion-list>
                                     <ion-item>
                                         <ion-input type="text" id="newDisplayName" required
-                                            autocomplete="nickname" [disabled]="!userValidated"
+                                            autocomplete="nickname" [readonly]="!userValidated"
                                             label="display-name"
                                             placeholder="Nombre público para mostrar"
                                             helperText="El display-name permite a otros usuarios identificarle."
@@ -62,7 +64,7 @@
                                     </ion-item>
                                     <ion-item>
                                         <ion-input type='url' id="photoURL"
-                                            autocomplete="url" [disabled]="!userValidated"
+                                            autocomplete="url" [readonly]="!userValidated"
                                             label="URL de la imagen"
                                             placeholder="(sin avatar)"
                                             (input)="imgUrlInputEvent($event)" formControlName="photoURL">
@@ -71,24 +73,26 @@
                                         </ion-input>
                                     </ion-item>
                                     <ion-item>
-                                        <ion-text>Un icono puede definirse, por ejemplo, en 
+                                        <ion-text><small>Un icono puede definirse, por ejemplo, en 
                                             <a href="https://es.gravatar.com/site/login" target="_blank">
-                                                <span class="hintLink">Gravatar.com</span></a>
+                                                <span class="hintLink">Gravatar.com</span></a></small>
                                         </ion-text>
                                     </ion-item>
                                 </ion-list>
-                                <ion-buttons [hidden]="!readyToSubmit">
-                                    <ion-input type="password" label="Contraseña" fill="outline"
-                                        autocomplete="current-password" [disabled]="!userValidated"
-                                        placeholder="Debe validar la operación con la contraseña."
-                                        errorText="la contraseña no es válida"
-                                        formControlName="password">
-                                        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-                                    </ion-input>
-                                    <ion-button id="profile_button" type="submit" [disabled]="!profileForm.valid || !userValidated">
-                                        Enviar
-                                    </ion-button>
-                                </ion-buttons>
+                                @if (readyToSubmit) {
+                                    <ion-buttons>
+                                        <ion-input type="password" label="Contraseña" fill="outline"
+                                            autocomplete="current-password" [readonly]="!userValidated"
+                                            placeholder="Debe validar la operación con la contraseña."
+                                            errorText="la contraseña no es válida"
+                                            formControlName="password">
+                                            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+                                        </ion-input>
+                                        <ion-button id="profile_button" type="submit" [disabled]="!profileForm.valid || !userValidated">
+                                            Enviar
+                                        </ion-button>
+                                    </ion-buttons>
+                                }
                             }
                             @else {
                                 <ion-button href="/resend-verification" color="primary">
@@ -101,6 +105,7 @@
             </ion-col>
         </ion-row>
     </ion-grid>
+
         <!-- OPCIO PER A PREFERÈNCIES ADDICIONALS DE L'USUARI (pe. Idioma) -->
         <!-- No implementat -->
         <!-- Algunes preferències es podrien desar en fitxer local? -->

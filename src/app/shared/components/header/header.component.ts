@@ -1,7 +1,8 @@
-import { Component, Input, OnDestroy, booleanAttribute } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonHeader, IonToolbar, IonButtons, IonMenuButton, IonButton, IonTitle, IonIcon, IonAvatar, IonChip } from "@ionic/angular/standalone";
+import { IonHeader, IonToolbar, IonButtons, IonMenuToggle, IonMenuButton, IonButton, IonTitle, IonIcon, IonAvatar, IonChip } from "@ionic/angular/standalone";
 
+import { MenuComponent } from '../menu/menu.component';
 import { Subscription } from 'rxjs';
 import { MessageHubService } from '../../services/messageHub.service';
 import { IErrorMessage } from '../../interfaces/IMessage';
@@ -12,13 +13,11 @@ import { AuthService } from '../../services/auth.service';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  imports: [IonButtons, IonMenuButton, IonButton, IonChip, IonAvatar, IonIcon, IonTitle, IonToolbar, IonHeader]
+  imports: [MenuComponent, IonMenuToggle, IonButtons, IonMenuButton, IonButton, IonChip, IonAvatar, IonIcon, IonTitle, IonToolbar, IonHeader]
 })
 export class HeaderComponent implements OnDestroy {
 
   @Input({ required: true }) title!: string;
-  @Input({ required: true, transform: booleanAttribute}) loggedIn!: boolean;
-  @Input({ required: true, transform: booleanAttribute}) userValidated!: boolean;
   
   public get hasError() { return this.errorDetected; }
   private set hasError(value: boolean) { this.errorDetected = value; }
@@ -42,7 +41,9 @@ export class HeaderComponent implements OnDestroy {
       });
   }
 
-  public get userUrlImage() { return (this.loggedIn? this.authService.currentUser?.photoURL ?? null : null)?? "./assets/person-outline.svg" }
+  public get userUrlImage() { 
+    return (this.authService.currentUser?.photoURL ?? null)?? "./assets/person-outline.svg";
+  }
 
   userProfile() {
     this.router.navigate(['/','user-profile']);

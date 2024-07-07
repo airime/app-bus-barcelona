@@ -1,11 +1,21 @@
-<main class="main">
-    @if (!!currentUser) {
-      <app-header [title]="title" [loggedIn]="loggedIn" userValidated="userValidated"></app-header>
-    }
-    <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
+@if (userValidated) {
+  <app-menu
+    [loggedIn]="loggedIn"
+    [userValidated]="userValidated"
+    [displayNameDefined]="displayNameDefined"
+    pageId="changePassword">
+  </app-menu>
+}
+<main class="ion-page" id="main-content">
+  @if (loggedIn) {
+    <app-header [title]="title"></app-header>
+  }
+  <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
     <ion-card color="secondary">
       <ion-card-header>
-        <ion-card-title><h2>{{ !!currentUser? "Cambiar la contraseña" : "Restablecer la contraseña"}}</h2></ion-card-title>
+        <ion-card-title>
+          <h2>{{ loggedIn? "Cambiar la contraseña" : "Restablecer la contraseña"}}</h2>
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
@@ -15,7 +25,7 @@
                 errorText="email no es válido" autocomplete="username" appAutofill>
               </ion-input>
             </ion-item>
-            @if (!currentUser) {
+            @if (!loggedIn) {
               <ion-item>
                   <ion-input type="email" formControlName="emailAgain" label="Repetir e-Mail" fill="outline"
                       helperText="Debe introducir de nuevo el email"
@@ -38,9 +48,9 @@
         </ion-list>
       </ion-card-content>
       <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">
-        {{!!currentUser? "Cambiar contraseña" : "Restablecer contraseña"}}
+        {{loggedIn? "Cambiar contraseña" : "Restablecer contraseña"}}
       </ion-button>
-      @if (!currentUser) {
+      @if (!loggedIn) {
           <ion-button fill="clear" href="login" color="primary">Acceder</ion-button>
           <ion-button fill="clear" href="register" color="primary">Registrarse</ion-button>
       }

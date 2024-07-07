@@ -7,7 +7,6 @@ import { IonCard, IonCardHeader, IonCardTitle, IonCardContent,
 import { AuthService } from '../../../shared/services/auth.service';
 import { PasswordValidator, regExps } from '../../../shared/util/custom.validator';
 import { GUIerrorType } from '../../../shared/util/errors';
-import { isNull } from 'src/app/shared/util/util';
 
 @Component({
   selector: 'app-register',

@@ -4,8 +4,6 @@ import { Capacitor } from '@capacitor/core';
 import { GoogleMap } from '@capacitor/google-maps';
 import { Geolocation, PermissionStatus, CallbackID } from '@capacitor/geolocation';
 import { LatLng, Marker } from '@capacitor/google-maps/dist/typings/definitions';
-import { getElement } from 'ionicons/dist/types/stencil-public-runtime';
-import { App } from '@capacitor/app';
 
 import { googleMapsApiKey, googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';

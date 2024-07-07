@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons } from '@ionic/angular/standalone';
+import { Component, Input, OnInit, booleanAttribute } from '@angular/core';
+
+import { IonHeader, IonToolbar, IonMenuToggle, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons, IonList, IonListHeader, IonLabel, IonItem, IonIcon, IonAvatar } from '@ionic/angular/standalone';
+import { AuthService } from '../../services/auth.service';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
@@ -7,12 +10,28 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonMenuButton, IonMenu, Io
   standalone: true,
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
-  imports: [IonButtons,  IonMenuButton, IonMenu, IonHeader, IonToolbar, IonTitle, IonContent ]
+  imports: [IonAvatar, IonMenuToggle, IonIcon, IonItem, IonLabel,
+      IonListHeader, IonList, IonButtons,  IonMenuButton, IonMenu, IonHeader, IonToolbar, 
+      RouterLink, IonTitle, IonContent ]
 })
 export class MenuComponent  implements OnInit {
+  @Input({ required: true, transform: booleanAttribute}) loggedIn!: boolean;
+  @Input({ required: true, transform: booleanAttribute}) userValidated!: boolean;
+  @Input({ required: true, transform: booleanAttribute}) displayNameDefined!: boolean;
+  @Input({ required: true }) pageId!: string;
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
-  ngOnInit() {}
+  get profileImgUrl() { 
+    const usr = this.authService.currentUser;
+    return usr?.photoURL ?? null;
+  }
 
+  selected(id: string): boolean {
+    return this.pageId == id;
+  }
+
+  ngOnInit() {
+    
+  }
 }

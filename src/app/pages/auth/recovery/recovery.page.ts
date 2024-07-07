@@ -1,30 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
-import { OverlayEventDetail } from '@ionic/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton } from "@ionic/angular/standalone";
-import { timer } from 'rxjs';
-import { HttpStatusCode } from '@angular/common/http';
 
+import { MenuComponent } from '../../../shared/components/menu/menu.component';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 import { userProfile } from '../../../shared/model/userProfile';
-import { ErrorWithMessage, GUIerrorType, getErrorMessage, toErrorWithMessage } from '../../../shared/util/errors';
+import { GUIerrorType, getErrorMessage, toErrorWithMessage } from '../../../shared/util/errors';
 import { PasswordValidator } from 'src/app/shared/util/custom.validator';
+import { isNullOrEmpty } from 'src/app/shared/util/util';
 
 @Component({
   selector: 'app-recovery',
   standalone: true,
   templateUrl: './recovery.page.html',
   styleUrls: ['./recovery.page.scss'],
-  imports: [ ReactiveFormsModule, HeaderComponent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton
+  imports: [ MenuComponent, ReactiveFormsModule, HeaderComponent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton
   ],
 })
 export class RecoveryPage implements OnInit {
   credentials!: FormGroup;
-  currentUser!: userProfile | null;
   wait: boolean;
+  private currentUser!: userProfile | null;
 
   constructor(
     private fb: FormBuilder,
@@ -44,6 +43,14 @@ export class RecoveryPage implements OnInit {
     return !!this.currentUser;
   }
 
+  get userValidated() {
+    return this.currentUser?.emailVerified?? false;
+  }
+
+  get displayNameDefined() {
+    return !isNullOrEmpty(this.currentUser?.displayName);
+  }
+
   // Easy access for form fields
   get email() {
     const emailGroup = this.credentials.controls["emailGroup"];
@@ -52,17 +59,14 @@ export class RecoveryPage implements OnInit {
 
   get emailGroupOk() {
     if (!!this.currentUser) {
-      console.log("emailGroupOk", !!this.currentUser)
       return true;
     } else {
       const emailGroup = this.credentials.controls["emailGroup"];
-      console.log("emailOk:", !emailGroup?.hasError('areEqual'));
       return !emailGroup?.hasError('areEqual');
     }
   }
 
   ngOnInit() {
-    console.log("OnInit", this.currentUser!!);
     const emailGroup = !this.currentUser ?
       this.fb.group({
         email: new FormControl('', [Validators.required, Validators.email]),

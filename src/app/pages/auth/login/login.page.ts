@@ -7,6 +7,7 @@ import { IonList, IonItem, IonLabel, IonInput, IonInputPasswordToggle, IonButton
 import { AuthService } from '../../../shared/services/auth.service';
 import { GUIerrorType } from '../../../shared/util/errors';
 import { regExps } from '../../../shared/util/custom.validator';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +25,8 @@ export class LoginPage  implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation
   ) { 
     this.wait = false;
   }
@@ -47,8 +49,14 @@ export class LoginPage  implements OnInit {
     });
   }
 
-  goBack() {
-    this.navCtrl.navigateBack('/register');
+  recovery() {
+    this.navCtrl.navigateForward('/recovery',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
+  register() {
+    this.navCtrl.navigateForward('/register',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
   obrirCondicions() {

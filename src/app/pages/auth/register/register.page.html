@@ -44,10 +44,10 @@
                             </ion-item>
                         </ion-item-group>
                         <ion-item>
-                            <small><a [href]="'recovery'" color="primary">¿Contraseña olvidada?</a></small>
+                            <small><a (click)="recovery()" color="primary">¿Contraseña olvidada?</a></small>
                             <div slot="end">
                                 <small>Para acceder a los servicios es necesario registrarse.
-                                    Puede consultar los <a href="" (click)="obrirCondicions()" color="secondary">términos</a>
+                                    Puede consultar los <a (click)="obrirCondicions()" color="secondary">términos</a>
                                     que accepta por el uso del servicio.</small>
                                 </div>
                         </ion-item>

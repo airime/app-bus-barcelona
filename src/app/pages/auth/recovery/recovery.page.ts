@@ -12,6 +12,7 @@ import { userProfile } from '../../../shared/model/userProfile';
 import { GUIerrorType, getErrorMessage, toErrorWithMessage } from '../../../shared/util/errors';
 import { PasswordValidator } from 'src/app/shared/util/custom.validator';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-recovery',
@@ -31,6 +32,7 @@ export class RecoveryPage implements OnInit {
     private authService: AuthService,
     private router: Router,
     private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation,
     private toastController: ToastController
   ) {
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
@@ -81,7 +83,7 @@ export class RecoveryPage implements OnInit {
   }
 
   goBack() {
-    this.navCtrl.back();
+    this.navCtrl.back({ animated: true, animation: this.myCustomAnimation.customAnimation, animationDirection: "back" });
   }
 
   obrirCondicions() {

@@ -8,6 +8,7 @@ import { IonCard, IonCardHeader, IonCardTitle, IonCardContent,
 import { AuthService } from '../../../shared/services/auth.service';
 import { PasswordValidator, regExps } from '../../../shared/util/custom.validator';
 import { GUIerrorType } from '../../../shared/util/errors';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-register',
@@ -25,7 +26,8 @@ export class RegisterPage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation
   ) { 
     this.wait = false;
   }
@@ -74,8 +76,14 @@ export class RegisterPage implements OnInit {
     });
   }
 
+  recovery() {
+    this.navCtrl.navigateBack('/recovery',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
   goBack() {
-    this.navCtrl.navigateBack('/login');
+    this.navCtrl.navigateBack('/login',
+                              { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
   obrirCondicions() {

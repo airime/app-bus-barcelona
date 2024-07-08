@@ -1,5 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, AfterViewInit } from '@angular/core';
 import {GoogleMap, MapAdvancedMarker, MapInfoWindow} from "@angular/google-maps";
+import { Capacitor } from '@capacitor/core';
+import { Geolocation } from '@capacitor/geolocation';
 import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 
@@ -19,49 +21,54 @@ export class GmapComponent implements AfterViewInit {
   //TODO: adapt this to our predefined geoplaces
   properties = [
     {
-      direccion: 'Carrer de Mallorca, 401, 08013 Barcelona, España',
       title: 'Posicion 1',
-      descripcion: 'Cerca de la Sagrada Familia',
-      posicion: {
-        lat: 41.4036299,
-        lng: 2.1743558
-      }
+      descripcion: 'Barcelona Ciutat Vella',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaCiutatVella]
     },
     {
-      direccion: 'La Rambla, 91, 08002 Barcelona, España',
       title: 'Posicion 2',
-      descripcion: 'Cerca del Mercado de La Boqueria',
-      posicion: {
-        lat: 41.3825648,
-        lng: 2.1722458
-      }
+      descripcion: 'Barcelona Eixample',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaEixample]
     },
     {
-      direccion: 'Passeig de Gràcia, 43, 08007 Barcelona, España',
       title: 'Posicion 3',
-      descripcion: 'Cerca de la Casa Batlló',
-      posicion: {
-        lat: 41.3916407,
-        lng: 2.1651224
-      }
+      descripcion: 'Barcelona Sants',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaSants]
     },
     {
-      direccion: 'Parc Güell, 08024 Barcelona, España',
       title: 'Posicion 4',
-      descripcion: 'Parque Güell',
-      posicion: {
-        lat: 41.4144949,
-        lng: 2.1526944
-      }
+      descripcion: 'Barcelona Les Corts',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaLesCorts]
     },
     {
-      direccion: 'Avinguda Diagonal, 686, 08034 Barcelona, España',
       title: 'Posicion 5',
-      descripcion: 'Cerca del Camp Nou',
-      posicion: {
-        lat: 41.3808961,
-        lng: 2.1228208
-      }
+      descripcion: 'Barcelona Sarrià',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaSarria]
+    },
+    {
+      title: 'Posicion 6',
+      descripcion: 'Barcelona Gràcia',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaGracia]
+    },
+    {
+      title: 'Posicion 7',
+      descripcion: 'Barcelona Horta',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaHorta]
+    },
+    {
+      title: 'Posicion 8',
+      descripcion: 'Barcelona Nou Barris',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaNouBarris]
+    },
+    {
+      title: 'Posicion 9',
+      descripcion: 'Barcelona Sant Andreu',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaStAndreu]
+    },
+    {
+      title: 'Posicion 10',
+      descripcion: 'Barcelona Sant Martí',
+      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaStMarti]
     }
   ];
 
@@ -89,31 +96,49 @@ export class GmapComponent implements AfterViewInit {
   }
 
   async getCurrentLocation(): Promise<google.maps.LatLngLiteral> {
-    return new Promise((resolve, reject) => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            if (position) {
-              console.log(
-                'Latitude: ' +
-                position.coords.latitude +
-                'Longitude: ' +
-                position.coords.longitude
-              );
-              let lat = position.coords.latitude;
-              let lng = position.coords.longitude;
-
-              const location = {
-                lat,
-                lng,
-              };
-              resolve(location);
+    return new Promise(async (resolve, reject) => {
+      if (Capacitor.getPlatform() === 'web') {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              if (position) {
+                const location = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                };
+                resolve(location);
+              }
+            },
+            (error) => {
+              console.log('not granted', error);
+              throw(error);
             }
-          },
-          (error) => console.log(error)
-        );
+          );
+        } else {
+          reject('Geolocation is not supported by this browser.');
+        }
       } else {
-        reject('Geolocation is not supported by this browser.');
+        try {
+          let geoPosPermision = await Geolocation.checkPermissions();
+          console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
+          if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt')
+          {
+              geoPosPermision = await Geolocation.requestPermissions();
+          }
+          if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted')
+          {
+            const pos = await Geolocation.getCurrentPosition( { maximumAge:75000, timeout:25000 });
+            this.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            console.log("NEW location: ", this.location.lat, this.location.lng);
+            resolve(this.location);
+          }
+          else {
+            reject('Mobile: not granted');
+          }
+        } catch(err) {
+          reject(`Geolocation error: ${err}`);
+          throw('Error accessing geolocation on mobile');
+        };
       }
     });
   }

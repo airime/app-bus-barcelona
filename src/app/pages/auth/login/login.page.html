@@ -29,7 +29,10 @@
       </ion-list>
       </ion-card-content>
       <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">Acceder</ion-button>
+      <ion-button fill="clear" (click)="goBack()">Registrarse</ion-button>
+      <!--
       <ion-button fill="clear" href="register">Registrarse</ion-button>
+      -->
     </ion-card>
   </form>
 </main>

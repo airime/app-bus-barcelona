@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardContent,
           IonList, IonItem, IonLabel, IonInput, IonInputPasswordToggle, IonButton, IonItemGroup, IonItemDivider } from '@ionic/angular/standalone';
 
@@ -23,7 +24,8 @@ export class RegisterPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private navCtrl: NavController
   ) { 
     this.wait = false;
   }
@@ -70,6 +72,10 @@ export class RegisterPage implements OnInit {
       emailGroup: emailGroup,
       passwordGroup: passwordGroup
     });
+  }
+
+  goBack() {
+    this.navCtrl.navigateBack('/login');
   }
 
   obrirCondicions() {

@@ -50,10 +50,15 @@
       <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">
         {{loggedIn? "Cambiar contraseña" : "Restablecer contraseña"}}
       </ion-button>
+      <!--
       @if (!loggedIn) {
           <ion-button fill="clear" href="login" color="primary">Acceder</ion-button>
           <ion-button fill="clear" href="register" color="primary">Registrarse</ion-button>
       }
+      -->
+      <ion-button fill="clear" (click)="goBack()" color="warning">
+        Cancelar
+      </ion-button>
     </ion-card>
   </form>
 </main>

@@ -3,6 +3,7 @@ import { ToastController } from '@ionic/angular';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonInput, IonButton } from "@ionic/angular/standalone";
 
 import { MenuComponent } from '../../../shared/components/menu/menu.component';
@@ -29,6 +30,7 @@ export class RecoveryPage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
+    private navCtrl: NavController,
     private toastController: ToastController
   ) {
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
@@ -76,6 +78,10 @@ export class RecoveryPage implements OnInit {
         email: ['', [Validators.required, Validators.email]]
       });
     this.credentials = this.fb.group({ emailGroup: emailGroup });
+  }
+
+  goBack() {
+    this.navCtrl.back();
   }
 
   obrirCondicions() {

@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, Component, AfterViewInit } from '@angular/core';
-import {GoogleMap, MapAdvancedMarker, MapInfoWindow} from "@angular/google-maps";
+import { GoogleMap, MapAdvancedMarker, MapInfoWindow } from "@angular/google-maps";
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { googleMapId } from '../../../api.key';
@@ -72,7 +72,7 @@ export class GmapComponent implements AfterViewInit {
     }
   ];
 
-  constructor() {}
+  constructor() { }
 
   ngAfterViewInit(): void {
     this.createMap();
@@ -85,9 +85,9 @@ export class GmapComponent implements AfterViewInit {
         zoom: 17
       };
       console.log("CREATE-MAP CALLED: ", this.location);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
-      throw(err);
+      throw (err);
     }
   }
 
@@ -111,7 +111,7 @@ export class GmapComponent implements AfterViewInit {
             },
             (error) => {
               console.log('not granted', error);
-              throw(error);
+              throw (error);
             }
           );
         } else {
@@ -121,13 +121,11 @@ export class GmapComponent implements AfterViewInit {
         try {
           let geoPosPermision = await Geolocation.checkPermissions();
           console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
-          if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt')
-          {
-              geoPosPermision = await Geolocation.requestPermissions();
+          if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt') {
+            geoPosPermision = await Geolocation.requestPermissions();
           }
-          if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted')
-          {
-            const pos = await Geolocation.getCurrentPosition( { maximumAge:75000, timeout:25000 });
+          if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted') {
+            const pos = await Geolocation.getCurrentPosition({ maximumAge: 75000, timeout: 25000 });
             this.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
             console.log("NEW location: ", this.location.lat, this.location.lng);
             resolve(this.location);
@@ -135,9 +133,9 @@ export class GmapComponent implements AfterViewInit {
           else {
             reject('Mobile: not granted');
           }
-        } catch(err) {
+        } catch (err) {
           reject(`Geolocation error: ${err}`);
-          throw('Error accessing geolocation on mobile');
+          throw ('Error accessing geolocation on mobile');
         };
       }
     });

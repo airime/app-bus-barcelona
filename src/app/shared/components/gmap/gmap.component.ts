@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
+import { IonSpinner } from '@ionic/angular/standalone'
 
 @Component({
   standalone: true,
@@ -11,10 +12,10 @@ import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlace
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'],
-  imports: [GoogleMap, MapAdvancedMarker, MapInfoWindow]
+  imports: [GoogleMap, MapAdvancedMarker, MapInfoWindow, IonSpinner]
 })
 export class GmapComponent implements AfterViewInit {
-  location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+  location: google.maps.LatLngLiteral = {lat: 0 , lng: 0} //PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   mapId: string = googleMapId;
   options!: google.maps.MapOptions;
 

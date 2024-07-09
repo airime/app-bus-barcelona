@@ -32,8 +32,13 @@ export class MyCustomAnimation {
         const rootTransition = this.animationCtrl
             .create()
             .duration(opts.duration || 1200)
-            .easing('cubic-bezier(0.7,0,0.3,1)');
+            .easing('cubic-bezier(0.7,0,0.3,1.275)');
 
+        //.afterStyles({'transform-style': 'preserve-3d', 'box-shadow': 'rgba(255, 0, 50, 0.4) 0px 4px 16px 6px'})
+        //transform-style: preserve-3d
+        //cubic-bezier(0.175, 0.885, 0.32, 1.275)
+        //cubic-bezier(0.7,0,0.3,1)
+        //duration 0.8s
         const enterTransition = this.animationCtrl.create().addElement(opts.enteringEl);
         const exitTransition = this.animationCtrl.create().addElement(opts.leavingEl);
 

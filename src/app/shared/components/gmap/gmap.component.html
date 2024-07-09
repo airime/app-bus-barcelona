@@ -24,11 +24,13 @@
 
 } @placeholder {
 
-  <div>displayed until user.name is not equal to Angular</div>
+  <div class="ion-spinner">waiting for location...&nbsp;
+    <ion-spinner></ion-spinner>
+  </div>
 
-} @loading(after 100ms; minimum 1s) {
+} @loading(after 100ms; minimum 500ms) {
 
-  <mat-spinner></mat-spinner>
+  <ion-spinner></ion-spinner>
 
 } @error {
 

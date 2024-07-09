@@ -28,14 +28,14 @@
                         </ion-item>
                     </ion-card-content>
                     <ion-buttons>
-                        <ion-button (click)="refreshPage()" color="primary">
+                        <ion-button (click)="refreshPage()" color="danger">
                             Reinicia
                         </ion-button>
                         @if (!userValidated || displayNameDefined) {
                             <ion-button href="/change-email" color="primary">
                                 Cambiar email
                             </ion-button>
-                            <ion-button href="/change-password" color="primary">
+                            <ion-button (click)="changePassword()" color="primary">
                                 Cambiar contraseña
                             </ion-button>
                         }
@@ -98,7 +98,7 @@
                                 }
                             }
                             @else {
-                                <ion-button href="/resend-verification" color="primary">
+                                <ion-button (click)="resendVerification()" color="primary">
                                     Reenviar verificación
                                 </ion-button>        
                             }

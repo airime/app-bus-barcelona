@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Md5 } from 'ts-md5';
 import {
@@ -15,6 +16,7 @@ import { userProfile } from 'src/app/shared/model/userProfile';
 import { DisplayNameValidator, regExps } from 'src/app/shared/util/custom.validator';
 import { GUIerrorType } from 'src/app/shared/util/errors';
 import { isNullOrEmpty, plainLowerCaseString, removeSpacesAlsoNonbreakables } from 'src/app/shared/util/util';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-profile',
@@ -36,7 +38,9 @@ export class ProfilePage implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation
   ) {
     this.authService.refreshCurrentUser();
     this._email = "";
@@ -140,6 +144,16 @@ export class ProfilePage implements OnInit {
       return value;
     }
     else return false;
+  }
+
+  resendVerification() {
+    this.navCtrl.navigateForward('/resend-verification',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
+  changePassword() {
+    this.navCtrl.navigateForward('/change-password',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
 

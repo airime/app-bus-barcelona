@@ -10,6 +10,7 @@ import { GUIerrorType } from '../../../shared/util/errors';
 import { regExps } from '../../../shared/util/custom.validator';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
 import { userProfile } from 'src/app/shared/model/userProfile';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-resend-verification',
@@ -28,7 +29,8 @@ export class ResendVerificationPage implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation
   ) { 
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
     this.wait = false;
@@ -65,8 +67,13 @@ export class ResendVerificationPage implements OnInit {
     window.open(url, '_blank');
   }
 
+  recovery() {
+    this.navCtrl.navigateForward('/recovery',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
   goBack() {
-    this.navCtrl.back();
+    this.navCtrl.back({ animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
   async submit() {

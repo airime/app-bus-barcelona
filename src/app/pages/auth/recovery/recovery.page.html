@@ -47,18 +47,20 @@
           </ion-item>
         </ion-list>
       </ion-card-content>
-      <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">
-        {{loggedIn? "Cambiar contraseña" : "Restablecer contraseña"}}
-      </ion-button>
-      <!--
-      @if (!loggedIn) {
-          <ion-button fill="clear" href="login" color="primary">Acceder</ion-button>
-          <ion-button fill="clear" href="register" color="primary">Registrarse</ion-button>
-      }
-      -->
-      <ion-button fill="clear" (click)="goBack()" color="warning">
-        Cancelar
-      </ion-button>
+      <ion-buttons>
+        <ion-button type="submit" color="primary" [disabled]="!credentials.valid || wait">
+          {{loggedIn? "Cambiar contraseña" : "Restablecer contraseña"}}
+        </ion-button>
+        <!--
+        @if (!loggedIn) {
+            <ion-button fill="clear" href="login" color="primary">Acceder</ion-button>
+            <ion-button fill="clear" href="register" color="primary">Registrarse</ion-button>
+        }
+        -->
+        <ion-button (click)="goBack()" color="danger">
+          Cancelar
+        </ion-button>
+      </ion-buttons>
     </ion-card>
   </form>
 </main>

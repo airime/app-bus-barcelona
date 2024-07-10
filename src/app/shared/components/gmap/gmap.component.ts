@@ -4,6 +4,8 @@ import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
+import { Stop } from '../../model/busStop';
+import { RouterLink } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -11,30 +13,30 @@ import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlace
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'],
-  imports: [GoogleMap, MapAdvancedMarker, MapInfoWindow]
+  imports: [GoogleMap, MapAdvancedMarker, MapInfoWindow, RouterLink]
 })
 export class GmapComponent implements AfterViewInit {
   location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   mapId: string = googleMapId;
   options!: google.maps.MapOptions;
 
-  properties = [
+  properties: Stop[] = [
     {
       NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
       CODI_PARADA: 1210,
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaBus1210],
+      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1210],
       linies: ['55', 'D50', 'H16', 'N11']
     },
     {
       NOM_PARADA: 'Pl. de Catalunya - Ronda Sant Pere',
       CODI_PARADA: 1257,
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaBus1257],
+      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1257],
       linies: ['D50', 'N5', 'N6', 'N7']
     },
     {
       NOM_PARADA: 'Pl. Catalunya - Bergara',
       CODI_PARADA: 1271,
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaBus1271],
+      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1271],
       linies: ['V13', 'N17']
     },
   ];
@@ -58,7 +60,7 @@ export class GmapComponent implements AfterViewInit {
     }
   }
 
-  openInfoWindow(marker: any, infoWindow: MapInfoWindow) {
+  openInfoWindow(marker: any, infoWindow: MapInfoWindow, stop: Stop) {
     infoWindow.open(marker);
   }
 

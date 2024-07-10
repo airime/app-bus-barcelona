@@ -8,17 +8,18 @@ height="100%"
 @for (m of properties; track m.NOM_PARADA) {
   <map-advanced-marker
     #marker="mapAdvancedMarker"
-    [position]="m.posicion"
-    (mapClick)="openInfoWindow(marker, infoWindow)" >
+    [position]="m.posicio"
+    (mapClick)="openInfoWindow(marker, infoWindow, m)" >
   </map-advanced-marker>
   <map-info-window
-    #infoWindow="mapInfoWindow"
-    >
-    <h5>{{m.NOM_PARADA}}</h5>
-    <div>Parada núm {{m.CODI_PARADA}}</div>
-    @for (line of m.linies; track line) {
-      <ion-badge>{{line}}</ion-badge>
-    }
+    #infoWindow="mapInfoWindow">
+    <a  [routerLink]="['/stop', m.CODI_PARADA]">
+      <h5>{{m.NOM_PARADA}}</h5>
+      <div>Parada núm {{m.CODI_PARADA}}</div>
+      @for (line of m.linies; track line) {
+        <ion-badge>{{line}}</ion-badge>
+      }
+    </a>
   </map-info-window>
 }
 </google-map>

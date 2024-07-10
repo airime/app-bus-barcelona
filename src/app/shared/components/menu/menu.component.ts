@@ -2,7 +2,7 @@ import { Component, Input, OnInit, booleanAttribute } from '@angular/core';
 import { NavController, MenuController } from '@ionic/angular';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
-import { IonHeader, IonToolbar, IonMenuToggle, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons, IonList, IonListHeader, IonLabel, IonItem, IonIcon, IonAvatar, IonButton } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonMenuToggle, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons, IonList, IonListHeader, IonLabel, IonItem, IonIcon, IonAvatar, IonButton, IonAccordion, IonAccordionGroup } from '@ionic/angular/standalone';
 import { AuthService } from '../../services/auth.service';
 import { MyCustomAnimation } from '../../services/myCustom.animation';
 
@@ -12,7 +12,7 @@ import { MyCustomAnimation } from '../../services/myCustom.animation';
   standalone: true,
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
-  imports: [IonButton, IonAvatar, IonMenuToggle, IonIcon, IonItem, IonLabel,
+  imports: [IonAccordionGroup, IonAccordion, IonButton, IonAvatar, IonMenuToggle, IonIcon, IonItem, IonLabel,
       IonListHeader, IonList, IonButtons,  IonMenuButton, IonMenu, IonHeader, IonToolbar, 
       RouterLink, RouterLinkActive, IonTitle, IonContent ]
 })
@@ -37,6 +37,7 @@ export class MenuComponent  implements OnInit {
     return usr?.photoURL ?? null;
   }
 
+  /* TODO note selected is no longer needed!! [routerLinkActive] do the trick when you also have [routerLink] */
   selected(id: string): boolean {
     return this.pageId == id;
   }
@@ -74,6 +75,18 @@ export class MenuComponent  implements OnInit {
       this.router.createUrlTree([`service-terms`])
     );
     window.open(url, '_blank');
+  }
+
+  async showMap() {
+    await this.menuCtrl.close();
+    this.navCtrl.navigateRoot('/private/home/tab1',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
+  async showLines() {
+    await this.menuCtrl.close();
+    this.navCtrl.navigateRoot('/private/home/tab2',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
   ngOnInit() {

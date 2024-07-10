@@ -58,4 +58,8 @@ export const routes: Routes = [
   { path: '**', pathMatch: 'full', 
     loadComponent: () => import('./pages/pagenotfound/pagenotfound.page').then( m => m.PagenotfoundPage)
   },
+  {
+    path: 'tab3',
+    loadComponent: () => import('./pages/tab3/tab3.page').then( m => m.Tab3Page)
+  },
 ];

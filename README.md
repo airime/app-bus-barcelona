@@ -49,6 +49,7 @@ Desenvolupat amb components *stand-alone*.
 > - [TODO!] /* TODO */ Pendent permisos d'Android
 > - **Pendent**: [Veure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
 
+- `npm install @capacitor/preferences`
 - `npm install @capacitor/app`
 - `npm install @capacitor/browser`
 - [TMB API](https://developer.tmb.cat/) incorpora el seu id d'aplicació i una clau.

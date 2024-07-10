@@ -26,7 +26,7 @@ export class LoginPage  implements OnInit {
     private authService: AuthService,
     private router: Router,
     private navCtrl: NavController,
-    private myCustomAnimation: MyCustomAnimation
+    private myCustomAnimation: MyCustomAnimation,
   ) { 
     this.wait = false;
   }
@@ -74,6 +74,7 @@ export class LoginPage  implements OnInit {
       if (this.credentials.valid) {
         const user = await this.authService.login(this.credentials.value);
         if (user) {
+          
           this.router.navigateByUrl('private/home', { replaceUrl: true });
         } else {
           const err = new Error("A fallado la operación de login. Por favor, pruebe de nuevo!");

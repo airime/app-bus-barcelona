@@ -1,0 +1,24 @@
+<app-menu
+  id="mainMenu"
+  loggedIn="true"
+  userValidated="true"
+  [displayNameDefined]="displayNameDefined"
+  pageId="map">
+</app-menu>
+
+<main class="ion-page" id="main-content">
+  <app-header [title]="title"></app-header>
+
+  <ion-content [fullscreen]="true">
+    <app-content-header [title]="title"></app-content-header>
+    <ion-item>
+		  <ion-text [hidden]="isSelectLine" >Seleccione una linea:</ion-text>
+      <ion-select id="lines" (ionChange)="onSelectChange($event)">
+        <!-- placeholder -->      
+        <ion-select-option *ngFor="let linia of linies; let i = index" [value]="linia[1]">
+            {{linia[0]}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-content>
+</main>

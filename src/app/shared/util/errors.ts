@@ -36,3 +36,21 @@ export function getErrorMessage(error: unknown) {
 	return toErrorWithMessage(error)['message'];
 }
 
+export abstract class CustomError extends Error {
+	abstract statusCode: number;
+
+	constructor(message: string) {
+		super(message);
+		Object.setPrototypeOf(this, new.target.prototype);
+	}
+}
+
+export class NotFoundError extends CustomError {
+	statusCode = 404;
+	constructor(message: string) {
+		super(message);
+		this.name = 'NotFoundError';
+	}
+}
+
+

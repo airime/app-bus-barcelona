@@ -15,5 +15,8 @@ export class TabsPage {
 
   constructor() {
     addIcons({mapOutline, starOutline });
+    addIcons({
+      lines: 'assets/lines.svg'
+    });
   }
 }

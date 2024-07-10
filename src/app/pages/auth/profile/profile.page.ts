@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { NavController, MenuController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Md5 } from 'ts-md5';
 import {
@@ -39,6 +39,7 @@ export class ProfilePage implements OnInit {
     private router: Router,
     private authService: AuthService,
     private fb: FormBuilder,
+    private menuCtrl: MenuController,
     private navCtrl: NavController,
     private myCustomAnimation: MyCustomAnimation
   ) {
@@ -147,12 +148,14 @@ export class ProfilePage implements OnInit {
   }
 
   resendVerification() {
-    this.navCtrl.navigateForward('/resend-verification',
-                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+    this.menuCtrl.close();
+    this.navCtrl.navigateRoot('/resend-verification',
+                               { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
   changePassword() {
-    this.navCtrl.navigateForward('/change-password',
+    this.menuCtrl.close();
+    this.navCtrl.navigateRoot('/change-password',
                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 

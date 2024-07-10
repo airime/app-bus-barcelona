@@ -1,7 +1,11 @@
-
 .highlight {
     color: #FFFF33 !important;
- }
- .pointer {
+}
+
+.pointer {
     cursor: pointer
+}
+
+.pointer:hover {
+    color: #FFFF33 !important;
 }

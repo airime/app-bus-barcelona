@@ -1,9 +1,13 @@
-<app-menu
-  loggedIn="true"
-  userValidated="false"
-  [displayNameDefined]="displayNameDefined"
-  pageId="resendVerification">
-</app-menu>
+@if (false) {
+  /* removed code */
+  <app-menu
+    id="mainMenu"
+    loggedIn="true"
+    userValidated="false"
+    [displayNameDefined]="displayNameDefined"
+    pageId="resendVerification">
+  </app-menu>
+}
 <main class="ion-page" id="main-content">
   <form (ngSubmit)="submit()" [formGroup]="credentials">
     <ion-card color="secondary">

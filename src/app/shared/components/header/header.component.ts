@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy } from '@angular/core';
+import { NavController, MenuController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonHeader, IonToolbar, IonButtons, IonMenuToggle, IonMenuButton, IonButton, IonTitle, IonIcon, IonAvatar, IonChip } from "@ionic/angular/standalone";
 
@@ -7,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { MessageHubService } from '../../services/messageHub.service';
 import { IErrorMessage } from '../../interfaces/IMessage';
 import { AuthService } from '../../services/auth.service';
+import { MyCustomAnimation } from '../../services/myCustom.animation';
 
 @Component({
   standalone: true,
@@ -27,8 +29,11 @@ export class HeaderComponent implements OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private router: Router,
+              private menuCtrl: MenuController,
+              private navCtrl: NavController,
               private messageService: MessageHubService,
-              private authService: AuthService) {
+              private authService: AuthService,
+              private myCustomAnimation: MyCustomAnimation) {
       this.errorDetected = false;
       // subscribe to home component messages
       this.subscription = this.messageService.onMessage().subscribe(message => {
@@ -41,12 +46,18 @@ export class HeaderComponent implements OnDestroy {
       });
   }
 
+  public get showMenu(): boolean {
+    return this.authService.currentUser?.emailVerified ?? false;
+  }
+
   public get userUrlImage() { 
     return (this.authService.currentUser?.photoURL ?? null)?? "./assets/person-outline.svg";
   }
 
-  userProfile() {
-    this.router.navigate(['/','user-profile']);
+  async userProfile() {
+    await this.menuCtrl.close();
+    this.navCtrl.navigateRoot('/user-profile',
+                                { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
   async logout() {

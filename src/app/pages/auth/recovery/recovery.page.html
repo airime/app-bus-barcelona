@@ -1,14 +1,21 @@
-@if (userValidated) {
-  <app-menu
-    [loggedIn]="loggedIn"
-    userValidated="true"
-    [displayNameDefined]="displayNameDefined"
-    pageId="changePassword">
-  </app-menu>
+@if (false) {
+  /* removed code */
+  @if (userValidated) {
+    <app-menu
+      id="mainMenu"
+      loggedIn="true"
+      userValidated="true"
+      [displayNameDefined]="displayNameDefined"
+      pageId="changePassword">
+    </app-menu>
+  }
 }
 <main class="ion-page ion-justify-content-start" id="main-content">
-  @if (loggedIn) {
-    <app-header [title]="title"></app-header>
+  @if (false) {
+    /* removed code */
+    @if (loggedIn && userValidated) {
+      <app-header [title]="title"></app-header>
+    }
   }
   <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
     <ion-card color="secondary">
@@ -51,12 +58,6 @@
         <ion-button type="submit" color="primary" [disabled]="!credentials.valid || wait">
           {{loggedIn? "Cambiar contraseña" : "Restablecer contraseña"}}
         </ion-button>
-        <!--
-        @if (!loggedIn) {
-            <ion-button fill="clear" href="login" color="primary">Acceder</ion-button>
-            <ion-button fill="clear" href="register" color="primary">Registrarse</ion-button>
-        }
-        -->
         <ion-button (click)="goBack()" color="danger">
           Cancelar
         </ion-button>

@@ -60,7 +60,7 @@ export class GmapComponent implements AfterViewInit {
     }
   }
 
-  openInfoWindow(marker: any, infoWindow: MapInfoWindow, stop: Stop) {
+  openInfoWindow(marker: any, infoWindow: MapInfoWindow) {
     infoWindow.open(marker);
   }
 

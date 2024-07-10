@@ -20,6 +20,9 @@ export class MenuComponent  implements OnInit {
   @Input({ required: true, transform: booleanAttribute}) loggedIn!: boolean;
   @Input({ required: true, transform: booleanAttribute}) userValidated!: boolean;
   @Input({ required: true, transform: booleanAttribute}) displayNameDefined!: boolean;
+  /* TODO note pageId is no longer needed!! [routerLinkActive] do the trick when you also have [routerLink] */
+  /* but you need to navegate (on click) instead of using the [routerLink] to avoid multiple menu instances to be created */
+  /* When multiple menu instances are created the menu stops working */
   @Input({ required: true }) pageId!: string;
 
   constructor(private authService: AuthService,

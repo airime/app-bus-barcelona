@@ -1,0 +1,31 @@
+<app-menu
+  loggedIn="true"
+  userValidated="true"
+  [displayNameDefined]="displayNameDefined"
+  pageId="map">
+</app-menu>
+
+<main class="ion-page" id="main-content">
+  <app-header [title]="title"></app-header>
+
+  <ion-content [fullscreen]="true">
+    <app-content-header [title]="title"></app-content-header>
+    <ion-list>
+      <ion-item [button]="true" (click)="getStop()">
+        <ion-label>Parada número {{currentStop}}</ion-label>
+        <ion-note color="secondary" slot="end">Actualitzar</ion-note>
+      </ion-item>
+      <ion-item>
+      </ion-item>
+      @for (bus of buses; track bus.line) {
+        <ion-item>
+          <ion-badge slot="start">{{bus.line}}</ion-badge>
+          <ion-label>{{bus.destination}}</ion-label>
+          <ion-note color="primary" slot="end">{{bus['text-ca']}}</ion-note>
+        </ion-item>
+      }
+    </ion-list>
+
+  </ion-content>
+
+</main>

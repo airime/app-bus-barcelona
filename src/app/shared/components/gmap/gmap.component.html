@@ -1,25 +1,29 @@
 @defer(when this.location.lat !== 0) {
 
   <google-map
-    id="map"
-    width="100%"
-    height="100%"
-    [mapId]="mapId"
-    [center]="location"
-    [options]="options">
-    @for (m of properties; track m.title) {
-      <map-advanced-marker
-        #marker="mapAdvancedMarker"
-        [position]="m.posicion"
-        (mapClick)="openInfoWindow(marker, infoWindow)" >
-      </map-advanced-marker>
-      <map-info-window
-        #infoWindow="mapInfoWindow"
-        >
-        <h3>{{m.title}}</h3>
-        <div>{{m.descripcion}}</div>
-      </map-info-window>
-    }
+  id="map"
+  width="100%"
+  height="100%"
+  [mapId]="mapId"
+  [center]="location"
+  [options]="options">
+  @for (m of properties; track m.NOM_PARADA) {
+    <map-advanced-marker
+      #marker="mapAdvancedMarker"
+      [position]="m.posicio"
+      (mapClick)="openInfoWindow(marker, infoWindow)" >
+    </map-advanced-marker>
+    <map-info-window
+      #infoWindow="mapInfoWindow">
+      <a [routerLink]="['/private/stop', m.CODI_PARADA]">
+        <h5>{{m.NOM_PARADA}}</h5>
+        <div>Parada núm {{m.CODI_PARADA}}</div>
+        @for (line of m.linies; track line) {
+          <ion-badge>{{line}}</ion-badge>
+        }
+      </a>
+    </map-info-window>
+  }
   </google-map>
 
 } @placeholder {
@@ -35,8 +39,8 @@
   <ion-spinner></ion-spinner>
 
 } -->
+
 @error {
 
   <div>ERROR</div>
-
 }

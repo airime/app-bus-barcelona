@@ -6,6 +6,8 @@ import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 import { IonSpinner } from '@ionic/angular/standalone'
 import { LocalStorageService } from '../../services/local-storage.service';
+import { Stop } from '../../model/busStop';
+import { RouterLink } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -13,65 +15,32 @@ import { LocalStorageService } from '../../services/local-storage.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'],
-  imports: [GoogleMap, MapAdvancedMarker, MapInfoWindow, IonSpinner]
+  imports: [IonSpinner, GoogleMap, MapAdvancedMarker, MapInfoWindow, RouterLink]
 })
 export class GmapComponent implements AfterViewInit {
-  location: google.maps.LatLngLiteral = {lat: 0 , lng: 0} //PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+  location: google.maps.LatLngLiteral = {lat: 0, lng: 0};
   mapId: string = googleMapId;
   options!: google.maps.MapOptions;
 
-  //TODO: adapt this to our predefined geoplaces
-  properties = [
+  properties: Stop[] = [
     {
-      title: 'Posicion 1',
-      descripcion: 'Barcelona Ciutat Vella',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaCiutatVella]
+      NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
+      CODI_PARADA: 1210,
+      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1210],
+      linies: ['55', 'D50', 'H16', 'N11']
     },
     {
-      title: 'Posicion 2',
-      descripcion: 'Barcelona Eixample',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaEixample]
+      NOM_PARADA: 'Pl. de Catalunya - Ronda Sant Pere',
+      CODI_PARADA: 1257,
+      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1257],
+      linies: ['D50', 'N5', 'N6', 'N7']
     },
     {
-      title: 'Posicion 3',
-      descripcion: 'Barcelona Sants',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaSants]
+      NOM_PARADA: 'Pl. Catalunya - Bergara',
+      CODI_PARADA: 1271,
+      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1271],
+      linies: ['V13', 'N17']
     },
-    {
-      title: 'Posicion 4',
-      descripcion: 'Barcelona Les Corts',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaLesCorts]
-    },
-    {
-      title: 'Posicion 5',
-      descripcion: 'Barcelona Sarrià',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaSarria]
-    },
-    {
-      title: 'Posicion 6',
-      descripcion: 'Barcelona Gràcia',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaGracia]
-    },
-    {
-      title: 'Posicion 7',
-      descripcion: 'Barcelona Horta',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaHorta]
-    },
-    {
-      title: 'Posicion 8',
-      descripcion: 'Barcelona Nou Barris',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaNouBarris]
-    },
-    {
-      title: 'Posicion 9',
-      descripcion: 'Barcelona Sant Andreu',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaStAndreu]
-    },
-    {
-      title: 'Posicion 10',
-      descripcion: 'Barcelona Sant Martí',
-      posicion: PredefinedGeoPositions[geoPlaces.BarcelonaStMarti]
-    }
   ];
 
   constructor(private localStorage: LocalStorageService) { }
@@ -83,6 +52,9 @@ export class GmapComponent implements AfterViewInit {
   async createMap(): Promise<void> {
     try {
       this.location = await this.getCurrentLocation();
+      if (this.location.lat === 0) {
+        this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+      }
       this.options = {
         zoom: 17
       };

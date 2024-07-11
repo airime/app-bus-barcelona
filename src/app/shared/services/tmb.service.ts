@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; 
-import { Observable } from 'rxjs';
-
 import { urlTmbApi, TmbParamsType } from '../model/tmbParams';
+import { urlTmbApi, TmbParamsType } from '../model/tmbParams';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { tmb_api_id, tmb_api_key } from 'src/app/api.key';
+import { StopResponse } from '../model/busStop';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,6 @@ export class TmbService {
       propertyName: properties
     }
   }
-
 
   constructor(private http: HttpClient) { }
 
@@ -85,7 +85,7 @@ export class TmbService {
       properties.push(itemProperties);
     });
     return properties;
-  }  
+  }
 
   private encodeParams(params: TmbParamsType) {
     return "?" + (Object.keys(params) as Array<keyof typeof params>).map(function (name) {
@@ -93,5 +93,9 @@ export class TmbService {
     }).join("&");
   }
 
+  public getStop(codiParada: number): Observable<StopResponse> {
+    const url = `${urlTmbApi}/ibus/stops/${codiParada}?app_key=${tmb_api_key}&app_id=${tmb_api_id}`;
+    return this.http.get<StopResponse>(url);
+  }
 
 }

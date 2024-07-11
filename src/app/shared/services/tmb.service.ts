@@ -11,7 +11,7 @@ import { tmb_api_id, tmb_api_key } from 'src/app/api.key';
 export class TmbService {
 
   private readonly propertiesLinies = "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA";
-  private readonly propertiesParadesLinia = "SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
+  private readonly propertiesParadesLinia = "GEOMETRY,SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
   private readonly propertiesLineStopInfo = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
 
   private getParams(properties: string): TmbParamsType {
@@ -72,6 +72,20 @@ export class TmbService {
     console.log("GET: ", url);
     return this.http.get(url, options); 
   }
+
+  // Converts a GeoJSON FeatureCollection structure into a "flat" array of object properties.
+  // Geometries are discarded.
+  public properties(featureCollection: any) {
+    var properties: any = [];
+    featureCollection.features.forEach(function (feature: any) {
+      var itemProperties = feature.properties;
+      if (!!feature.geometry?.coordinates) {
+        Object.defineProperty(itemProperties, 'GEOMETRY', { value: feature.geometry.coordinates });
+      }
+      properties.push(itemProperties);
+    });
+    return properties;
+  }  
 
   private encodeParams(params: TmbParamsType) {
     return "?" + (Object.keys(params) as Array<keyof typeof params>).map(function (name) {

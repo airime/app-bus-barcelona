@@ -8,6 +8,7 @@ import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from 'src/app/shared/components/header/header.component';
 import { ContentHeaderComponent } from 'src/app/shared/components/content-header/content-header.component';
 import { TmbService } from 'src/app/shared/services/tmb.service';
+import { ArrayCoordinates } from 'src/app/shared/model/arrayCoordinates';
 
 @Component({
   selector: 'app-tab3',
@@ -72,8 +73,7 @@ export class Tab3Page implements OnInit {
       el.innerHTML = selected_line[3] /* DESTI_LINIA */;
     });
     this.tmbService.getLineStops(this.selectedLineKey).subscribe((result: any) => {
-      var stops = this.properties(result);
-      console.log(stops);
+      var stops = this.tmbService.properties(result);
 
       // anada
       this.anada = stops.filter(function (stop: any) {    // Filter by direction
@@ -98,10 +98,11 @@ export class Tab3Page implements OnInit {
     }
   }
 
-  async clickParada(codiParada: string) {
+  async clickParada(codiParada: string, coordParada: ArrayCoordinates) {
     if (!!this.selectedLineKey) {
       this.tmbService.getLineStopInfo(this.selectedLineKey, codiParada).subscribe((result: any) => {
-        var info = this.properties(result);
+        var info = this.tmbService.properties(result);
+        console.log(coordParada);
         console.log(info);
       });
     } else {
@@ -111,24 +112,14 @@ export class Tab3Page implements OnInit {
 
   async clickIntercanvi(codiIntercanvi: string) {
     this.tmbService.getIntercanviInfo(codiIntercanvi).subscribe((result: any) => {
-      var info = this.properties(result);
+      var info = this.tmbService.properties(result);
       console.log(info);
     });
   }
 
-  // Converts a GeoJSON FeatureCollection structure into a "flat" array of object properties.
-  // Geometries are discarded.
-  private properties(featureCollection: any) {
-    var properties: any = [];
-    featureCollection.features.forEach(function (feature: any) {
-      properties.push(feature.properties);
-    });
-    return properties;
-  }  
-
   private async ompleLinies() {
     this.tmbService.getLines().subscribe((result: any) => {
-      var lines = this.properties(result);
+      var lines = this.tmbService.properties(result);
       lines.sort(function (line1: any, line2: any) {
           if (line1.NOM_LINIA.charAt(0) == 'M') {
             if (line2.NOM_LINIA.charAt(0) == 'M') {
@@ -161,7 +152,7 @@ export class Tab3Page implements OnInit {
 
   private async ompleUnaLinia(codiLinia: string) {
     this.tmbService.getLineDescription(codiLinia).subscribe((result: any) => {
-      var linia = this.properties(result)[0];
+      var linia = this.tmbService.properties(result)[0];
       this.linies = [];
       this.linies.push([ linia.NOM_LINIA + ' - ' + linia.DESC_LINIA,
                          linia.CODI_LINIA,

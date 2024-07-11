@@ -11,11 +11,17 @@
   <ion-content [fullscreen]="true">
     <app-content-header [title]="title"></app-content-header>
     <ion-list>
-      @for (bus of buses; track bus) {
+      <ion-item [button]="true" (click)="getStop()">
+        <ion-label>Parada número {{currentStop}}</ion-label>
+        <ion-note color="secondary" slot="end">Actualitzar</ion-note>
+      </ion-item>
+      <ion-item>
+      </ion-item>
+      @for (bus of buses; track bus.line) {
         <ion-item>
           <ion-badge slot="start">{{bus.line}}</ion-badge>
           <ion-label>{{bus.destination}}</ion-label>
-          <ion-note color="danger" slot="end">{{bus['text-ca']}}</ion-note>
+          <ion-note color="primary" slot="end">{{bus['text-ca']}}</ion-note>
         </ion-item>
       }
     </ion-list>

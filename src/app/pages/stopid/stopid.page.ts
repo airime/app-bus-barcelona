@@ -7,7 +7,7 @@ import { ContentHeaderComponent } from '../../shared/components/content-header/c
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { userProfile } from 'src/app/shared/model/userProfile';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
-import { TmbApiService } from 'src/app/shared/services/tmbApi.service';
+import { TmbService } from 'src/app/shared/services/tmb.service';
 import { ActivatedRoute } from '@angular/router';
 import { Bus } from 'src/app/shared/model/busStop';
 
@@ -23,13 +23,14 @@ import { Bus } from 'src/app/shared/model/busStop';
 export class StopidPage implements OnInit {
   readonly title = "Mapa busos Barcelona";
 
+  public currentStop: number = -1;
   public buses: Bus[] = [];
 
   private currentUser!: userProfile | null;
 
   constructor(
     private route: ActivatedRoute,
-    private tmbApiService: TmbApiService,
+    private tmbApiService: TmbService,
     private location: Location,
     private authService: AuthService
   ) {
@@ -41,9 +42,12 @@ export class StopidPage implements OnInit {
   }
 
   getStop(): void {
-    const id = Number(this.route.snapshot.params['id']);
-    this.tmbApiService.getStop(id)
-    .subscribe(response => this.buses = response.data.ibus);
+    this.currentStop = Number(this.route.snapshot.params['id']);
+    this.tmbApiService.getStop(this.currentStop)
+    .subscribe(response => {
+      if (response.status === 'success') this.buses = response.data.ibus;
+      else throw('L\'obtenció de dades ha fallat, torna-ho a intentar');
+    });
   }
 
   goBack(): void {

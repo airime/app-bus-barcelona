@@ -7,7 +7,7 @@ import { StopResponse } from '../model/busStop';
 @Injectable({
   providedIn: 'root'
 })
-export class TmbApiService {
+export class TmbService {
   private tmbApiUrl = ' https://api.tmb.cat/v1/ibus/stops';  // URL to web api
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })

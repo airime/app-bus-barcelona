@@ -10,11 +10,18 @@ import { tmb_api_id, tmb_api_key } from 'src/app/api.key';
 })
 export class TmbService {
 
-  private readonly paramsLinia: TmbParamsType = {
+  private readonly paramsLinies: TmbParamsType = {
     app_key: tmb_api_key,
     app_id: tmb_api_id,
     // Undocumented API feature, use "propertyName" to select properties to be returned (& discard geometry)
     propertyName: "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA"
+  };
+
+  private readonly paramsParadesLinia = {
+    app_key: tmb_api_key,
+    app_id: tmb_api_id,
+    // Undocumented API feature, use "propertyName" to select properties to be returned (& discard geometry)
+    propertyName: "SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC"
   };
 
 
@@ -37,7 +44,13 @@ export class TmbService {
   
   public getLines(options?: any): Observable<any> { 
     const request = "transit/linies/bus/"
-    const url = urlTmbApi + request + this.encodeParams(this.paramsLinia)
+    const url = urlTmbApi + request + this.encodeParams(this.paramsLinies)
+    return this.http.get(url, options); 
+  } 
+  
+  public getLineStops(codiLinia: string, options?: any): Observable<any> { 
+    const request = "transit/linies/bus/" + codiLinia + "/parades/";
+    const url = urlTmbApi + request + this.encodeParams(this.paramsParadesLinia)
     return this.http.get(url, options); 
   } 
 

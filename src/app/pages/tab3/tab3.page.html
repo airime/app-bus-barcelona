@@ -1,11 +1,3 @@
-<app-menu
-  id="mainMenu"
-  loggedIn="true"
-  userValidated="true"
-  [displayNameDefined]="displayNameDefined"
-  pageId="map">
-</app-menu>
-
 <main class="ion-page" id="main-content">
   <app-header [title]="title"></app-header>
 
@@ -20,5 +12,36 @@
         </ion-select-option>
       </ion-select>
     </ion-item>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-sm="6">
+          <strong>
+              <span class="origen">From</span> => <span class="desti">To</span>
+          </strong>
+          <ul id="anada" class="line">
+            <li *ngFor="let stop of anada">
+              {{  stop.NOM_PARADA }}
+              @if (stop.CODI_INTERC) {
+                <ul><li><strong>Intercanvi: </strong>{{ stop.NOM_INTERC }}</li></ul>
+              }
+            </li>
+          </ul>
+        </ion-col>
+        <ion-col size="12" size-sm="6">
+          <strong>
+              <span class="desti">From</span> => <span class="origen">To</span>
+          </strong>
+          <ul id="tornada" class="line">
+            <li *ngFor="let stop of tornada">
+              {{  stop.NOM_PARADA }}
+              @if (stop.CODI_INTERC) {
+                <ul><li><strong>Intercanvi: </strong>{{ stop.NOM_INTERC }}</li></ul>
+              }
+            </li>
+          </ul>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
   </ion-content>
 </main>

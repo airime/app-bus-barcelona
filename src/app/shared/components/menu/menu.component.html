@@ -1,12 +1,7 @@
 <ion-menu menuId="mainMenu" content-id="main-content" #menu>
   <ion-header>
     <ion-toolbar>
-      <!--
-      <ion-buttons slot="end">
-        <ion-button icon-only (click)="menu.close()"><ion-icon name="menu"></ion-icon></ion-button>
-      </ion-buttons>
-      -->
-      <ion-menu-button menu="mainMenu" slot="start"></ion-menu-button>
+      <ion-menu-button menu="mainMenu" slot="end"></ion-menu-button>
       <ion-title>Menu</ion-title>
     </ion-toolbar>
   </ion-header>
@@ -56,23 +51,14 @@
           </ion-item>
         </div>
       </ion-accordion>
-      @if (loggedIn && userValidated) {
+      @if (loggedIn && userValidated && showServices) {
         <ion-accordion>
-          <ion-item slot="header">
-            <ion-label>Autobús</ion-label>
-          </ion-item>
-          <div slot="content">
-            <ion-item id="mapa" [routerLinkActive]="'highlight'" [routerLinkActiveOptions]="{exact:true}" class="pointer"
-              (click)="showMap()" [routerLink]="['/private/home/tab1']" >
+          <div slot="header">
+            <ion-item id="serveis" [routerLinkActive]="'highlight'" [routerLinkActiveOptions]="{exact:false}" class="pointer"
+              (click)="showMap()" [routerLink]="['/private/home/']" routerDirection="root" >
               <!--  [class.highlight]="selected('map')" [class.pointer]="!selected('map')" routerDirection="root" -->
               <ion-icon slot="start" name="map-outline"></ion-icon>
-              <ion-label>Mapa</ion-label>
-            </ion-item>
-            <ion-item id="mapa" [routerLinkActive]="'highlight'" [routerLinkActiveOptions]="{exact:true}" class="pointer"
-              (click)="showLines()" [routerLink]="['/private/home/tab2']" >
-              <!--  [class.highlight]="selected('tab2')" [class.pointer]="!selected('tab2')" routerDirection="root" -->
-              <ion-icon slot="start" name="map-outline"></ion-icon>
-              <ion-label>Linias</ion-label>
+              <ion-label>Serveis</ion-label>
             </ion-item>
           </div>
         </ion-accordion>

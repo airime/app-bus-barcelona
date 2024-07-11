@@ -1,8 +1,9 @@
-import { Component, Input, OnInit, booleanAttribute } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, booleanAttribute } from '@angular/core';
 import { NavController, MenuController } from '@ionic/angular';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-
 import { IonHeader, IonToolbar, IonMenuToggle, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons, IonList, IonListHeader, IonLabel, IonItem, IonIcon, IonAvatar, IonButton, IonAccordion, IonAccordionGroup } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+
 import { AuthService } from '../../services/auth.service';
 import { MyCustomAnimation } from '../../services/myCustom.animation';
 
@@ -20,17 +21,23 @@ export class MenuComponent  implements OnInit {
   @Input({ required: true, transform: booleanAttribute}) loggedIn!: boolean;
   @Input({ required: true, transform: booleanAttribute}) userValidated!: boolean;
   @Input({ required: true, transform: booleanAttribute}) displayNameDefined!: boolean;
+  @Input({transform: booleanAttribute}) showServices: boolean = true;
   /* TODO note pageId is no longer needed!! [routerLinkActive] do the trick when you also have [routerLink] */
   /* but you need to navegate (on click) instead of using the [routerLink] to avoid multiple menu instances to be created */
   /* When multiple menu instances are created the menu stops working */
   @Input({ required: true }) pageId!: string;
-
+  @ViewChild(RouterLinkActive) private routerLinkActive?: RouterLinkActive;
+  
   constructor(private authService: AuthService,
               private router: Router,
               private menuCtrl: MenuController,
               private navCtrl: NavController,
               private myCustomAnimation: MyCustomAnimation
-  ) { }
+  ) { 
+    addIcons({
+      lines: 'assets/lines.svg'
+    });
+  }
 
   get profileImgUrl() { 
     const usr = this.authService.currentUser;
@@ -79,13 +86,18 @@ export class MenuComponent  implements OnInit {
 
   async showMap() {
     await this.menuCtrl.close();
-    this.navCtrl.navigateRoot('/private/home/tab1',
+    this.navCtrl.navigateBack('/private/home/tab1',
                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
+  async showFavorite() {
+    await this.menuCtrl.close();
+    this.navCtrl.navigateBack('/private/home/tab2',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
   async showLines() {
     await this.menuCtrl.close();
-    this.navCtrl.navigateRoot('/private/home/tab2',
+    this.navCtrl.navigateBack('/private/home/tab3',
                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 

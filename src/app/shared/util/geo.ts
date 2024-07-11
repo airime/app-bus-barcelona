@@ -1,7 +1,5 @@
-import { LatLng } from '@capacitor/google-maps/dist/typings/definitions';
-
 // Haversine fòrmula
-export function getDistanceBetweenPoints(start: LatLng, end: LatLng, units: 'miles' | 'km'): number {
+export function getDistanceBetweenPoints(start: google.maps.LatLngLiteral, end: google.maps.LatLngLiteral, units: 'miles' | 'km'): number {
     function toRad(x: number) { return x * Math.PI / 180; }
 
     let earthRadius = {

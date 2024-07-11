@@ -19,11 +19,11 @@ export const routes: Routes = [
     path: '', pathMatch: 'full', redirectTo: 'private/home'
   },
   { path: 'login', component: LoginPage, ...canActivate(redirectLoggedInToHome) },
-  { 
+  {
     path: 'user-profile',
       loadComponent: () => import('./pages/auth/profile/profile.page').then(m => m.ProfilePage),
       ...canActivate(redirectUnauthorizedToLogin) },
-  { 
+  {
     path: 'change-email',
       loadComponent: () => import('./pages/auth/change-email/change-email.page').then(m => m.ChangeEmailPage),
       ...canActivate(redirectUnauthorizedToLogin)
@@ -43,7 +43,10 @@ export const routes: Routes = [
       {
         path: 'home', loadChildren: () => import('./pages/tabs/tabs.routes').then(m => m.routes)
       },
-      { path: '**', pathMatch: 'full', 
+      {
+        path: 'stop/:id', loadComponent: () => import('./pages/stopid/stopid.page').then(m => m.StopidPage)
+      },
+      { path: '**', pathMatch: 'full',
           loadComponent: () => import('./pages/pagenotfound/pagenotfound.page').then( m => m.PagenotfoundPage)
       },
     ]

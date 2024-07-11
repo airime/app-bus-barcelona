@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonItem, IonSelect, IonLabel, IonSelectOption, SelectCustomEvent, IonText, IonRow, IonGrid, IonCol } from '@ionic/angular/standalone';
 import { NgFor } from '@angular/common';
@@ -25,7 +26,8 @@ export class Tab3Page implements OnInit {
   anada: any; // llista de parades d'anada per la línia seleccionada
   tornada: any; // llista de parades de tornada per a la línia seleccionada
 
-  constructor(private tmbService: TmbService) {
+  constructor(private router: Router,
+              private tmbService: TmbService) {
   }
 
   ngOnInit() {
@@ -37,8 +39,17 @@ export class Tab3Page implements OnInit {
       console.log("Line key:", this.selectedLineKey);
       // només carreguem la línia que ens demanen
       this.ompleUnaLinia(this.selectedLineKey);
+      // Remove query params
+      this.router.navigate([], {
+        queryParams: {
+          'yourParamName': null,
+          'youCanRemoveMultiple': null,
+        },
+        queryParamsHandling: 'merge'
+      });
     }
   }
+
 
   get isSelectLine() {
     return !!this.selectedLineKey;
@@ -80,6 +91,11 @@ export class Tab3Page implements OnInit {
     });
   }
 
+  selectClick() {
+    if (this.linies.length <= 1) {
+      this.ompleLinies();
+    }
+  }
   // Converts a GeoJSON FeatureCollection structure into a "flat" array of object properties.
   // Geometries are discarded.
   private properties(featureCollection: any) {

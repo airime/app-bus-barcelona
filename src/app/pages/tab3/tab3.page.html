@@ -5,7 +5,8 @@
     <app-content-header [title]="title"></app-content-header>
     <ion-item>
 		  <ion-text [hidden]="isSelectLine" >Seleccione una linea:</ion-text>
-      <ion-select id="lines" [value]="selectedLineKey" [selectedText]="selectedLineText" (ionChange)="onSelectChange($event)">
+      <ion-select id="lines" (ionChange)="onSelectChange($event)"
+        [value]="selectedLineKey" [selectedText]="selectedLineText" (click)="selectClick()">
         <!-- placeholder -->      
         <ion-select-option *ngFor="let linia of linies; let i = index" [value]="linia[1]">
             {{linia[0]}}

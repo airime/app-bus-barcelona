@@ -48,6 +48,12 @@ export class TmbService {
     return this.http.get(url, options); 
   } 
   
+  public getLineDescription(codiLinia: string, options?: any): Observable<any> { 
+    const request = "transit/linies/bus/" + codiLinia
+    const url = urlTmbApi + request + this.encodeParams(this.paramsLinies)
+    return this.http.get(url, options); 
+  } 
+  
   public getLineStops(codiLinia: string, options?: any): Observable<any> { 
     const request = "transit/linies/bus/" + codiLinia + "/parades/";
     const url = urlTmbApi + request + this.encodeParams(this.paramsParadesLinia)

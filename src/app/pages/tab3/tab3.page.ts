@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonContent, IonItem, IonSelect, IonLabel, IonSelectOption, SelectCustomEvent, IonText, IonRow, IonGrid, IonCol } from '@ionic/angular/standalone';
 import { NgFor } from '@angular/common';
@@ -6,22 +6,22 @@ import { NgFor } from '@angular/common';
 import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from 'src/app/shared/components/header/header.component';
 import { ContentHeaderComponent } from 'src/app/shared/components/content-header/content-header.component';
-import { userProfile } from 'src/app/shared/model/userProfile';
 import { TmbService } from 'src/app/shared/services/tmb.service';
-import { isNullOrEmpty } from 'src/app/shared/util/util';
 
 @Component({
   selector: 'app-tab3',
   standalone: true,
   templateUrl: './tab3.page.html',
   styleUrls: ['./tab3.page.scss'],
-  imports: [IonCol, IonGrid, IonRow, IonText, MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent, ReactiveFormsModule, IonItem, IonSelect, IonLabel, IonSelectOption, NgFor]
+  imports: [IonCol, IonGrid, IonRow, IonText, MenuComponent, HeaderComponent, ContentHeaderComponent,
+            IonContent, ReactiveFormsModule, IonItem, IonSelect, IonLabel, IonSelectOption, NgFor]
 })
 export class Tab3Page implements OnInit {
+  @Input() selectedLineKey?: string; //la selecció del select
 
   readonly title = "Línies";
+  selectedLineText?: string;
   linies: any = []; //les línies disponibles que omplen el select
-  selectedLineKey: any; //la selecció del select
   anada: any; // llista de parades d'anada per la línia seleccionada
   tornada: any; // llista de parades de tornada per a la línia seleccionada
 
@@ -29,8 +29,15 @@ export class Tab3Page implements OnInit {
   }
 
   ngOnInit() {
-    // omplir el select per seleccionar línia
-    this.ompleLinies();
+    if (!this.selectedLineKey) {
+      console.log("No line key:", this.selectedLineKey);
+      // omplir el select per seleccionar línia
+      this.ompleLinies();
+    } else {
+      console.log("Line key:", this.selectedLineKey);
+      // només carreguem la línia que ens demanen
+      this.ompleUnaLinia(this.selectedLineKey);
+    }
   }
 
   get isSelectLine() {
@@ -38,9 +45,14 @@ export class Tab3Page implements OnInit {
   }
 
   onSelectChange(e$: SelectCustomEvent<any>) {
-    this.selectedLineKey = e$.detail.value;
+    this.selectLine(e$.detail.value as string);
+  }
+
+  // acció de selecció del formulari
+  private async selectLine(codiLinia: string) {
+    this.selectedLineKey = codiLinia;
     var selected_line = this.linies.filter(function (line: any) {
-      return line[1] /* CODI_LINIA */ == e$.detail.value;
+      return line[1] /* CODI_LINIA */ == codiLinia;
     })[0];
     [].forEach.call(document.getElementsByClassName("origen"), function (el: HTMLElement) {
       el.innerHTML = selected_line[2] /* ORIGEN_LINIA */;
@@ -78,7 +90,7 @@ export class Tab3Page implements OnInit {
     return properties;
   }  
 
-  private ompleLinies() {
+  private async ompleLinies() {
     this.tmbService.getLines().subscribe((result: any) => {
       var lines = this.properties(result);
       lines.sort(function (line1: any, line2: any) {
@@ -108,6 +120,19 @@ export class Tab3Page implements OnInit {
                      line.DESTI_LINIA]);
       });
       this.linies = result;
+    });
+  }
+
+  private async ompleUnaLinia(codiLinia: string) {
+    this.tmbService.getLineDescription(codiLinia).subscribe((result: any) => {
+      var linia = this.properties(result)[0];
+      this.linies = [];
+      this.linies.push([ linia.NOM_LINIA + ' - ' + linia.DESC_LINIA,
+                         linia.CODI_LINIA,
+                         linia.ORIGEN_LINIA,
+                         linia.DESTI_LINIA ]);
+      this.selectLine(codiLinia);
+      this.selectedLineText = this.linies[0][0];
     });
   }
 

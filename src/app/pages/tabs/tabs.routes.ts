@@ -26,6 +26,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('../tab3/tab3.page').then(m => m.Tab3Page),
       },
+      {
+        path: 'tab3/:selectedLineKey',
+        loadComponent: () =>
+          import('../tab3/tab3.page').then(m => m.Tab3Page),
+      },
       { path: '**', pathMatch: 'full', 
         loadComponent: () => import('../pagenotfound/pagenotfound.page').then( m => m.PagenotfoundPage)
       }

@@ -18,7 +18,7 @@ import { RouterLink } from '@angular/router';
   imports: [IonSpinner, GoogleMap, MapAdvancedMarker, MapInfoWindow, RouterLink]
 })
 export class GmapComponent implements AfterViewInit {
-  location: google.maps.LatLngLiteral = {lat: 0, lng: 0};
+  location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   mapId: string = googleMapId;
   options!: google.maps.MapOptions;
 
@@ -52,9 +52,6 @@ export class GmapComponent implements AfterViewInit {
   async createMap(): Promise<void> {
     try {
       this.location = await this.getCurrentLocation();
-      if (this.location.lat === 0) {
-        this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
-      }
       this.options = {
         zoom: 17
       };

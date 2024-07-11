@@ -1,5 +1,3 @@
-@defer(when this.location.lat !== 0) {
-
   <google-map
   id="map"
   width="100%"
@@ -26,21 +24,3 @@
   }
   </google-map>
 
-} @placeholder {
-
-  <div class="ion-spinner-container">waiting for location...
-    <ion-spinner class="ion-spinner"></ion-spinner>
-  </div>
-
-}
-<!-- @loading(after 100ms; minimum 500ms) {
-
-  <div>loading...</div>
-  <ion-spinner></ion-spinner>
-
-} -->
-
-@error {
-
-  <div>ERROR</div>
-}

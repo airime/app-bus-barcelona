@@ -13,7 +13,7 @@ height="100%"
   </map-advanced-marker>
   <map-info-window
     #infoWindow="mapInfoWindow">
-    <a  [routerLink]="['/stop', m.CODI_PARADA]">
+    <a [routerLink]="['/private/stop', m.CODI_PARADA]">
       <h5>{{m.NOM_PARADA}}</h5>
       <div>Parada núm {{m.CODI_PARADA}}</div>
       @for (line of m.linies; track line) {

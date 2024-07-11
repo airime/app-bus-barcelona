@@ -10,8 +10,15 @@
 
   <ion-content [fullscreen]="true">
     <app-content-header [title]="title"></app-content-header>
-
-    stopid works!
+    <ion-list>
+      @for (bus of buses; track bus) {
+        <ion-item>
+          <ion-badge slot="start">{{bus.line}}</ion-badge>
+          <ion-label>{{bus.destination}}</ion-label>
+          <ion-note color="danger" slot="end">{{bus['text-ca']}}</ion-note>
+        </ion-item>
+      }
+    </ion-list>
 
   </ion-content>
 

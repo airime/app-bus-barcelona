@@ -44,7 +44,7 @@ export const routes: Routes = [
         path: 'home', loadChildren: () => import('./pages/tabs/tabs.routes').then(m => m.routes)
       },
       {
-        path: 'stop/:id', loadChildren: () => import('./pages/stopid/stopid.page').then(m => m.StopidPage)
+        path: 'stop/:id', loadComponent: () => import('./pages/stopid/stopid.page').then(m => m.StopidPage)
       },
       { path: '**', pathMatch: 'full',
           loadComponent: () => import('./pages/pagenotfound/pagenotfound.page').then( m => m.PagenotfoundPage)

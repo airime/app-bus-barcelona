@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
+import { IonSpinner } from '@ionic/angular/standalone'
 import { Stop } from '../../model/busStop';
 import { RouterLink } from '@angular/router';
 
@@ -13,10 +14,10 @@ import { RouterLink } from '@angular/router';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'],
-  imports: [GoogleMap, MapAdvancedMarker, MapInfoWindow, RouterLink]
+  imports: [IonSpinner, GoogleMap, MapAdvancedMarker, MapInfoWindow, RouterLink]
 })
 export class GmapComponent implements AfterViewInit {
-  location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+  location: google.maps.LatLngLiteral = {lat: 0, lng: 0};
   mapId: string = googleMapId;
   options!: google.maps.MapOptions;
 
@@ -50,6 +51,9 @@ export class GmapComponent implements AfterViewInit {
   async createMap(): Promise<void> {
     try {
       this.location = await this.getCurrentLocation();
+      if (this.location.lat === 0) {
+        this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+      }
       this.options = {
         zoom: 17
       };

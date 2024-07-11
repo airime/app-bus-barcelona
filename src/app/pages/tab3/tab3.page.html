@@ -21,7 +21,7 @@
           </strong>
           <ul id="anada" class="line">
             <li *ngFor="let stop of anada">
-              <ion-text class="pointer" (click)="clickParada(stop.CODI_PARADA, stop.GEOMETRY)">
+              <ion-text class="pointer" (click)="clickParada($event, stop.CODI_PARADA, stop.GEOMETRY)">
                 {{  stop.NOM_PARADA }}
               </ion-text>
               @if (stop.CODI_INTERC) {

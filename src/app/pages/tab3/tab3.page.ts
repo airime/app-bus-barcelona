@@ -1,12 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IonContent, IonItem, IonSelect, IonLabel, IonSelectOption, SelectCustomEvent, IonText, IonRow, IonGrid, IonCol } from '@ionic/angular/standalone';
+import { IonContent, IonItem, IonSelect, IonLabel, IonSelectOption, SelectCustomEvent, IonText, IonRow, IonGrid, IonCol, PopoverController } from '@ionic/angular/standalone';
 import { NgFor } from '@angular/common';
 
 import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from 'src/app/shared/components/header/header.component';
 import { ContentHeaderComponent } from 'src/app/shared/components/content-header/content-header.component';
+import { PopoverBusStopComponent } from 'src/app/shared/components/popover-bus-stop/popover-bus-stop.component'
 import { TmbService } from 'src/app/shared/services/tmb.service';
 import { ArrayCoordinates } from 'src/app/shared/model/arrayCoordinates';
 
@@ -28,7 +29,8 @@ export class Tab3Page implements OnInit {
   tornada: any; // llista de parades de tornada per a la línia seleccionada
 
   constructor(private router: Router,
-              private tmbService: TmbService) {
+              private tmbService: TmbService,
+              public popoverController: PopoverController) {
   }
 
   ngOnInit() {
@@ -98,13 +100,24 @@ export class Tab3Page implements OnInit {
     }
   }
 
-  async clickParada(codiParada: string, coordParada: ArrayCoordinates) {
+  async clickParada(e: Event, codiParada: string, coordParada: ArrayCoordinates) {
     if (!!this.selectedLineKey) {
-      this.tmbService.getLineStopInfo(this.selectedLineKey, codiParada).subscribe((result: any) => {
-        var info = this.tmbService.properties(result);
+      var info: any;
+      this.tmbService.getLineStopInfo(this.selectedLineKey, codiParada).subscribe(async (result: any) => {
+        info = this.tmbService.properties(result);
         console.log(coordParada);
         console.log(info);
+        const popover = await this.popoverController.create({
+          component: PopoverBusStopComponent,
+          componentProps: { lat: coordParada[0], lng: coordParada[1] },
+          event: e,
+        });
+        await popover.present();
+        const { role } = await popover.onDidDismiss();
+        console.log(`Popover dismissed with role: ${role}`);
+    
       });
+
     } else {
       throw new Error("clickParada without a selectedLineKey");
     }

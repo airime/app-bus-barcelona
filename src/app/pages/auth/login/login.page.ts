@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonList, IonItem, IonLabel, IonInput, IonInputPasswordToggle, IonButton, 
          IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
 import { AuthService } from '../../../shared/services/auth.service';
 import { GUIerrorType } from '../../../shared/util/errors';
 import { regExps } from '../../../shared/util/custom.validator';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +24,9 @@ export class LoginPage  implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation,
   ) { 
     this.wait = false;
   }
@@ -45,6 +49,16 @@ export class LoginPage  implements OnInit {
     });
   }
 
+  recovery() {
+    this.navCtrl.navigateForward('/recovery',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
+  register() {
+    this.navCtrl.navigateForward('/register',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
   obrirCondicions() {
     // Converts the route into a string that can be used 
     // with the window.open() function
@@ -60,6 +74,7 @@ export class LoginPage  implements OnInit {
       if (this.credentials.valid) {
         const user = await this.authService.login(this.credentials.value);
         if (user) {
+          
           this.router.navigateByUrl('private/home', { replaceUrl: true });
         } else {
           const err = new Error("A fallado la operación de login. Por favor, pruebe de nuevo!");

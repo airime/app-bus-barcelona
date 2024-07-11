@@ -1,14 +1,18 @@
-<app-menu
-  loggedIn="true"
-  userValidated="false"
-  [displayNameDefined]="displayNameDefined"
-  pageId="resendVerification">
-</app-menu>
+@if (false) {
+  /* removed code */
+  <app-menu
+    id="mainMenu"
+    loggedIn="true"
+    userValidated="false"
+    [displayNameDefined]="displayNameDefined"
+    pageId="resendVerification">
+  </app-menu>
+}
 <main class="ion-page" id="main-content">
   <form (ngSubmit)="submit()" [formGroup]="credentials">
     <ion-card color="secondary">
       <ion-card-header>
-        <ion-card-title>Login</ion-card-title>
+        <ion-card-title>Reenviar verificación</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
@@ -25,7 +29,7 @@
             </ion-input>
           </ion-item>
           <ion-item>
-            <small><a href="recovery" color="primary">¿Contraseña olvidada?</a></small>
+            <small><a ((click))="recovery()" color="primary">¿Contraseña olvidada?</a></small>
             <div slot="end">
                 <small>Para acceder a los servicios es necesario registrarse.
                     Puede consultar los <a href="" (click)="obrirCondicions()" color="secondary">términos</a>

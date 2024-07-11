@@ -79,3 +79,4 @@ Thumbs.db
 *.keys
 *.key.ts
 *.keys.ts
+/src/index.html

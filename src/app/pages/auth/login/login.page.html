@@ -19,17 +19,20 @@
             </ion-input>
           </ion-item>
           <ion-item>
-            <small><a href="recovery" color="primary">¿Contraseña olvidada?</a></small>
+            <small><a (click)="recovery()" color="primary">¿Contraseña olvidada?</a></small>
             <div slot="end">
                 <small>Para acceder a los servicios es necesario registrarse.
-                    Puede consultar los <a href="" (click)="obrirCondicions()" color="secondary">términos</a>
+                    Puede consultar los <a (click)="obrirCondicions()" color="secondary">términos</a>
                     que accepta por el uso del servicio.</small>
             </div>
         </ion-item>
       </ion-list>
       </ion-card-content>
       <ion-button fill="clear" type="submit" [disabled]="!credentials.valid || wait">Acceder</ion-button>
+      <ion-button fill="clear" (click)="register()">Registrarse</ion-button>
+      <!--
       <ion-button fill="clear" href="register">Registrarse</ion-button>
+      -->
     </ion-card>
   </form>
 </main>

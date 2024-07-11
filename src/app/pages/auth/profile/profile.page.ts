@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NavController, MenuController } from '@ionic/angular';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Md5 } from 'ts-md5';
 import {
@@ -15,6 +16,7 @@ import { userProfile } from 'src/app/shared/model/userProfile';
 import { DisplayNameValidator, regExps } from 'src/app/shared/util/custom.validator';
 import { GUIerrorType } from 'src/app/shared/util/errors';
 import { isNullOrEmpty, plainLowerCaseString, removeSpacesAlsoNonbreakables } from 'src/app/shared/util/util';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-profile',
@@ -36,7 +38,10 @@ export class ProfilePage implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private menuCtrl: MenuController,
+    private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation
   ) {
     this.authService.refreshCurrentUser();
     this._email = "";
@@ -44,13 +49,17 @@ export class ProfilePage implements OnInit {
     // OPCIO PER A PREFERÈNCIES ADDICIONALS DE L'USUARI (pe. Idioma)
     //this.profileOptionsForm = this.createForm2(fb);
   }
+  
+  async refreshPage() {
+    await this.authService.refreshCurrentUser().then(() => this.ngOnInit());   
+  }
 
   ngOnInit() {
     addIcons({
       gravatar: 'assets/gravatar.svg'
     });
     const currentUser = this.authService.currentUser;
-    if (currentUser && currentUser.email) {
+    if (currentUser && !!currentUser.email) {
       this.fillForm(currentUser);
     } else {
       /* PAGE ERROR! */
@@ -136,6 +145,18 @@ export class ProfilePage implements OnInit {
       return value;
     }
     else return false;
+  }
+
+  resendVerification() {
+    this.menuCtrl.close();
+    this.navCtrl.navigateRoot('/resend-verification',
+                               { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
+  changePassword() {
+    this.menuCtrl.close();
+    this.navCtrl.navigateRoot('/change-password',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
 

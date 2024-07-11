@@ -32,12 +32,13 @@ Desenvolupat amb components *stand-alone*.
   - Using --legacy-peer-deps didn't work `npm install @capacitor/google-maps --legacy-peer-deps`. Moreover, when using the option `--legacy-peer-deps`, it will be needed again each time `ionic cap sync` or `ionic cap copy` is done.
 
 > Revisió de Google Maps
+> `npm uninstall @capacitor/google-maps`
 > S'afegeix la versió nativa
 > ([veure documentació](https://developers.google.com/maps/documentation/javascript/examples/map-simple))
 > 
 > 1. `npm i -D @types/google.maps`
 >
-> 2. En `<head>` de `index.html` s'ha d'afegir `<script>...</script>` referent a l'API de GMaps
+> 2. En `<head>` de `index.html` s'ha d'afegir `<script async>...</script>` referent a l'API de GMaps
 > 
 > 3. `/// <reference types="@types/google.maps" />` en el component que fa servir gMaps
 >
@@ -48,6 +49,7 @@ Desenvolupat amb components *stand-alone*.
 > - [TODO!] /* TODO */ Pendent permisos d'Android
 > - **Pendent**: [Veure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
 
+- `npm install @capacitor/preferences`
 - `npm install @capacitor/app`
 - `npm install @capacitor/browser`
 - [TMB API](https://developer.tmb.cat/) incorpora el seu id d'aplicació i una clau.

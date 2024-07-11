@@ -14,7 +14,7 @@ export class PasswordValidator {
     // Inspired on: http://plnkr.co/edit/Zcbg2T3tOxYmhxs7vaAm?p=preview
     static areEqual(formGroup: AbstractControl) {
       const theFormGroup = formGroup as FormGroup;
-      if (theFormGroup) {
+      if (!!theFormGroup) {
         let val;
         let valid = true;
     
@@ -40,6 +40,13 @@ export class PasswordValidator {
   
       return { areEqual: true };
     }
+
+    static isEqual(FormControl: AbstractControl, value: any) {
+      const valid = (FormControl.value == value)
+      if (valid) return null;
+      else return { isEqual: true };
+    }
+
   }
   
 /**

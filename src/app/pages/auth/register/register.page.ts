@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardContent,
           IonList, IonItem, IonLabel, IonInput, IonInputPasswordToggle, IonButton, IonItemGroup, IonItemDivider } from '@ionic/angular/standalone';
 
 import { AuthService } from '../../../shared/services/auth.service';
 import { PasswordValidator, regExps } from '../../../shared/util/custom.validator';
 import { GUIerrorType } from '../../../shared/util/errors';
+import { MyCustomAnimation } from 'src/app/shared/services/myCustom.animation';
 
 @Component({
   selector: 'app-register',
@@ -23,7 +25,9 @@ export class RegisterPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private navCtrl: NavController,
+    private myCustomAnimation: MyCustomAnimation
   ) { 
     this.wait = false;
   }
@@ -70,6 +74,16 @@ export class RegisterPage implements OnInit {
       emailGroup: emailGroup,
       passwordGroup: passwordGroup
     });
+  }
+
+  recovery() {
+    this.navCtrl.navigateBack('/recovery',
+                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
+  goBack() {
+    this.navCtrl.navigateBack('/login',
+                              { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
   obrirCondicions() {

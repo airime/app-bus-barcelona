@@ -1,0 +1,54 @@
+<main class="ion-page" id="main-content">
+  <app-header [title]="title"></app-header>
+
+  <ion-content [fullscreen]="true">
+    <app-content-header [title]="title"></app-content-header>
+    <ion-item>
+		  <ion-text [hidden]="isSelectLine" >Seleccione una linea:</ion-text>
+      <ion-select id="lines" (ionChange)="onSelectChange($event)"
+        [value]="selectedLineKey" [selectedText]="selectedLineText" (click)="selectClick()">
+        <!-- placeholder -->      
+        <ion-select-option *ngFor="let linia of linies; let i = index" [value]="linia[1]">
+            {{linia[0]}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-sm="6">
+          <strong>
+              <span class="origen">From</span> => <span class="desti">To</span>
+          </strong>
+          <ul id="anada" class="line">
+            <li *ngFor="let stop of anada">
+              <ion-text class="pointer" (click)="clickParada(stop.CODI_PARADA, stop.GEOMETRY)">
+                {{  stop.NOM_PARADA }}
+              </ion-text>
+              @if (stop.CODI_INTERC) {
+                <ul><li>
+                  <ion-text class="pointer" (click)="clickIntercanvi(stop.CODI_INTERC)">
+                    Intercanvi: {{ stop.NOM_INTERC }}
+                  </ion-text>
+                </li></ul>
+              }
+            </li>
+          </ul>
+        </ion-col>
+        <ion-col size="12" size-sm="6">
+          <strong>
+              <span class="desti">From</span> => <span class="origen">To</span>
+          </strong>
+          <ul id="tornada" class="line">
+            <li *ngFor="let stop of tornada">
+              {{  stop.NOM_PARADA }}
+              @if (stop.CODI_INTERC) {
+                <ul><li><strong>Intercanvi: </strong>{{ stop.NOM_INTERC }}</li></ul>
+              }
+            </li>
+          </ul>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </ion-content>
+</main>

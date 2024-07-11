@@ -21,9 +21,15 @@
           </strong>
           <ul id="anada" class="line">
             <li *ngFor="let stop of anada">
-              {{  stop.NOM_PARADA }}
+              <ion-text class="pointer" (click)="clickParada(stop.CODI_PARADA)">
+                {{  stop.NOM_PARADA }}
+              </ion-text>
               @if (stop.CODI_INTERC) {
-                <ul><li><strong>Intercanvi: </strong>{{ stop.NOM_INTERC }}</li></ul>
+                <ul><li>
+                  <ion-text class="pointer" (click)="clickIntercanvi(stop.CODI_INTERC)">
+                    Intercanvi: {{ stop.NOM_INTERC }}
+                  </ion-text>
+                </li></ul>
               }
             </li>
           </ul>

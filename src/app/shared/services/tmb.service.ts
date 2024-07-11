@@ -10,19 +10,17 @@ import { tmb_api_id, tmb_api_key } from 'src/app/api.key';
 })
 export class TmbService {
 
-  private readonly paramsLinies: TmbParamsType = {
-    app_key: tmb_api_key,
-    app_id: tmb_api_id,
-    // Undocumented API feature, use "propertyName" to select properties to be returned (& discard geometry)
-    propertyName: "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA"
-  };
+  private readonly propertiesLinies = "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA";
+  private readonly propertiesParadesLinia = "SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
+  private readonly propertiesLineStopInfo = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
 
-  private readonly paramsParadesLinia = {
-    app_key: tmb_api_key,
-    app_id: tmb_api_id,
-    // Undocumented API feature, use "propertyName" to select properties to be returned (& discard geometry)
-    propertyName: "SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC"
-  };
+  private getParams(properties: string): TmbParamsType {
+    return {
+      app_key: tmb_api_key,
+      app_id: tmb_api_id,
+      propertyName: properties
+    }
+  }
 
 
   constructor(private http: HttpClient) { }
@@ -44,21 +42,36 @@ export class TmbService {
   
   public getLines(options?: any): Observable<any> { 
     const request = "transit/linies/bus/"
-    const url = urlTmbApi + request + this.encodeParams(this.paramsLinies)
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLinies));
     return this.http.get(url, options); 
   } 
   
   public getLineDescription(codiLinia: string, options?: any): Observable<any> { 
     const request = "transit/linies/bus/" + codiLinia
-    const url = urlTmbApi + request + this.encodeParams(this.paramsLinies)
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLinies))
     return this.http.get(url, options); 
   } 
   
   public getLineStops(codiLinia: string, options?: any): Observable<any> { 
     const request = "transit/linies/bus/" + codiLinia + "/parades/";
-    const url = urlTmbApi + request + this.encodeParams(this.paramsParadesLinia)
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesParadesLinia));
+    console.log("GET: ", url);
     return this.http.get(url, options); 
   } 
+
+  public getLineStopInfo(codiLinia: string, codiParada: string, options?: any): Observable<any> {
+    const request = "transit/linies/bus/" + codiLinia + "/parades/" + codiParada + "/corresp/";
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLineStopInfo));
+    console.log("GET: ", url);
+    return this.http.get(url, options); 
+  }
+
+  public getIntercanviInfo(codiIntercanvi: string, options?: any): Observable<any> {
+    const request = "transit/interc/" + codiIntercanvi + "/corresp/";
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(""));
+    console.log("GET: ", url);
+    return this.http.get(url, options); 
+  }
 
   private encodeParams(params: TmbParamsType) {
     return "?" + (Object.keys(params) as Array<keyof typeof params>).map(function (name) {

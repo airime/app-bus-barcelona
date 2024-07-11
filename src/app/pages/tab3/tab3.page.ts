@@ -72,7 +72,8 @@ export class Tab3Page implements OnInit {
       el.innerHTML = selected_line[3] /* DESTI_LINIA */;
     });
     this.tmbService.getLineStops(this.selectedLineKey).subscribe((result: any) => {
-      var stops = this.properties(result)
+      var stops = this.properties(result);
+      console.log(stops);
 
       // anada
       this.anada = stops.filter(function (stop: any) {    // Filter by direction
@@ -96,6 +97,25 @@ export class Tab3Page implements OnInit {
       this.ompleLinies();
     }
   }
+
+  async clickParada(codiParada: string) {
+    if (!!this.selectedLineKey) {
+      this.tmbService.getLineStopInfo(this.selectedLineKey, codiParada).subscribe((result: any) => {
+        var info = this.properties(result);
+        console.log(info);
+      });
+    } else {
+      throw new Error("clickParada without a selectedLineKey");
+    }
+  }
+
+  async clickIntercanvi(codiIntercanvi: string) {
+    this.tmbService.getIntercanviInfo(codiIntercanvi).subscribe((result: any) => {
+      var info = this.properties(result);
+      console.log(info);
+    });
+  }
+
   // Converts a GeoJSON FeatureCollection structure into a "flat" array of object properties.
   // Geometries are discarded.
   private properties(featureCollection: any) {

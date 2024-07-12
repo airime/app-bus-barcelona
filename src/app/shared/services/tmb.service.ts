@@ -13,6 +13,7 @@ export class TmbService {
   private readonly propertiesLinies = "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA";
   private readonly propertiesParadesLinia = "GEOMETRY,SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
   private readonly propertiesLineStopInfo = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
+  private readonly propertiesIntercanviInfo = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA,GEOMETRY";
 
   private getParams(properties: string): TmbParamsType {
     return {
@@ -54,21 +55,18 @@ export class TmbService {
   public getLineStops(codiLinia: string, options?: any): Observable<any> {
     const request = "transit/linies/bus/" + codiLinia + "/parades/";
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesParadesLinia));
-    console.log("GET: ", url);
     return this.http.get(url, options);
   }
 
   public getLineStopInfo(codiLinia: string, codiParada: string, options?: any): Observable<any> {
     const request = "transit/linies/bus/" + codiLinia + "/parades/" + codiParada + "/corresp/";
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLineStopInfo));
-    console.log("GET: ", url);
     return this.http.get(url, options);
   }
 
   public getIntercanviInfo(codiIntercanvi: string, options?: any): Observable<any> {
     const request = "transit/interc/" + codiIntercanvi + "/corresp/";
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(""));
-    console.log("GET: ", url);
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesIntercanviInfo));
     return this.http.get(url, options);
   }
 

@@ -17,7 +17,7 @@ import { ArrayCoordinates } from 'src/app/shared/model/arrayCoordinates';
   templateUrl: './tab3.page.html',
   styleUrls: ['./tab3.page.scss'],
   imports: [IonCol, IonGrid, IonRow, IonText, MenuComponent, HeaderComponent, ContentHeaderComponent,
-            IonContent, ReactiveFormsModule, IonItem, IonSelect, IonLabel, IonSelectOption, NgFor]
+    IonContent, ReactiveFormsModule, IonItem, IonSelect, IonLabel, IonSelectOption, NgFor]
 })
 export class Tab3Page implements OnInit {
   @Input() selectedLineKey?: string; //la selecció del select
@@ -29,8 +29,8 @@ export class Tab3Page implements OnInit {
   tornada: any; // llista de parades de tornada per a la línia seleccionada
 
   constructor(private router: Router,
-              private tmbService: TmbService,
-              public popoverController: PopoverController) {
+    private tmbService: TmbService,
+    public popoverController: PopoverController) {
   }
 
   ngOnInit() {
@@ -90,7 +90,7 @@ export class Tab3Page implements OnInit {
       }).sort(function (stop1: any, stop2: any) { // Order
         return stop1.ORDRE - stop2.ORDRE;
       })
-    
+
     });
   }
 
@@ -100,33 +100,51 @@ export class Tab3Page implements OnInit {
     }
   }
 
-  async clickParada(e: Event, codiParada: string, coordParada: ArrayCoordinates) {
+  async clickParada(e: Event, codiParada: string, nomParada: string, coordParada: ArrayCoordinates) {
     if (!!this.selectedLineKey) {
       var info: any;
       this.tmbService.getLineStopInfo(this.selectedLineKey, codiParada).subscribe(async (result: any) => {
         info = this.tmbService.properties(result);
-        console.log(coordParada);
-        console.log(info);
         const popover = await this.popoverController.create({
           component: PopoverBusStopComponent,
-          componentProps: { lat: coordParada[0], lng: coordParada[1] },
+          componentProps: {
+            lat: coordParada[0],
+            lng: coordParada[1],
+            intercanvi: false,
+            codiParada: codiParada,
+            nomParada: nomParada,
+            linies: JSON.stringify(info)
+          },
           event: e,
         });
         await popover.present();
-        const { role } = await popover.onDidDismiss();
-        console.log(`Popover dismissed with role: ${role}`);
-    
+        //const { role } = await popover.onDidDismiss();
+        //console.log(`Popover dismissed with role: ${role}`);
       });
-
     } else {
       throw new Error("clickParada without a selectedLineKey");
     }
   }
 
-  async clickIntercanvi(codiIntercanvi: string) {
-    this.tmbService.getIntercanviInfo(codiIntercanvi).subscribe((result: any) => {
-      var info = this.tmbService.properties(result);
-      console.log(info);
+  async clickIntercanvi(e: Event, codiIntercanvi: string, nomParada: string, coordParada: ArrayCoordinates) {
+    var info: any;
+    this.tmbService.getIntercanviInfo(codiIntercanvi).subscribe(async (result: any) => {
+      info = this.tmbService.properties(result);
+      const popover = await this.popoverController.create({
+        component: PopoverBusStopComponent,
+        componentProps: {
+          lat: coordParada[0],
+          lng: coordParada[1],
+          intercanvi: true,
+          codiParada: codiIntercanvi,
+          nomParada: nomParada,
+          linies: JSON.stringify(info)
+        },
+        event: e,
+      });
+      await popover.present();
+      //const { role } = await popover.onDidDismiss();
+      //console.log(`Popover dismissed with role: ${role}`);
     });
   }
 
@@ -134,30 +152,30 @@ export class Tab3Page implements OnInit {
     this.tmbService.getLines().subscribe((result: any) => {
       var lines = this.tmbService.properties(result);
       lines.sort(function (line1: any, line2: any) {
-          if (line1.NOM_LINIA.charAt(0) == 'M') {
-            if (line2.NOM_LINIA.charAt(0) == 'M') {
-              return line1.NOM_LINIA > line2.NOM_LINIA ? 1 : -1
-            } else {
-               return -1;
-            }
-          } else if (line2.NOM_LINIA.charAt(0) == 'M') {
-            return 1;
-          } else if (line1.CODI_LINIA >= 200 && line2.CODI_LINIA >= 200) {
-            if (line1.NOM_LINIA.charAt(0) == line2.NOM_LINIA.charAt(0)) {
-              return Number.parseInt(line1.NOM_LINIA.substring(1)) > Number.parseInt(line2.NOM_LINIA.substring(1)) ? 1 : -1;
-            } else {
-              return (line1.NOM_LINIA as string).charAt(0) > (line2.NOM_LINIA as string).charAt(0) ? 1 : -1;
-            }
+        if (line1.NOM_LINIA.charAt(0) == 'M') {
+          if (line2.NOM_LINIA.charAt(0) == 'M') {
+            return line1.NOM_LINIA > line2.NOM_LINIA ? 1 : -1
           } else {
-            return line1.CODI_LINIA > line2.CODI_LINIA ? 1 : -1;
+            return -1;
           }
-        });
+        } else if (line2.NOM_LINIA.charAt(0) == 'M') {
+          return 1;
+        } else if (line1.CODI_LINIA >= 200 && line2.CODI_LINIA >= 200) {
+          if (line1.NOM_LINIA.charAt(0) == line2.NOM_LINIA.charAt(0)) {
+            return Number.parseInt(line1.NOM_LINIA.substring(1)) > Number.parseInt(line2.NOM_LINIA.substring(1)) ? 1 : -1;
+          } else {
+            return (line1.NOM_LINIA as string).charAt(0) > (line2.NOM_LINIA as string).charAt(0) ? 1 : -1;
+          }
+        } else {
+          return line1.CODI_LINIA > line2.CODI_LINIA ? 1 : -1;
+        }
+      });
       var result: any = [];
       lines.forEach(function (line: any) {
         result.push([line.NOM_LINIA + ' - ' + line.DESC_LINIA,
-                     line.CODI_LINIA,
-                     line.ORIGEN_LINIA,
-                     line.DESTI_LINIA]);
+        line.CODI_LINIA,
+        line.ORIGEN_LINIA,
+        line.DESTI_LINIA]);
       });
       this.linies = result;
     });
@@ -167,10 +185,10 @@ export class Tab3Page implements OnInit {
     this.tmbService.getLineDescription(codiLinia).subscribe((result: any) => {
       var linia = this.tmbService.properties(result)[0];
       this.linies = [];
-      this.linies.push([ linia.NOM_LINIA + ' - ' + linia.DESC_LINIA,
-                         linia.CODI_LINIA,
-                         linia.ORIGEN_LINIA,
-                         linia.DESTI_LINIA ]);
+      this.linies.push([linia.NOM_LINIA + ' - ' + linia.DESC_LINIA,
+      linia.CODI_LINIA,
+      linia.ORIGEN_LINIA,
+      linia.DESTI_LINIA]);
       this.selectLine(codiLinia);
       this.selectedLineText = this.linies[0][0];
     });

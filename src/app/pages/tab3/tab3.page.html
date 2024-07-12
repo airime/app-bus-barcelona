@@ -21,12 +21,12 @@
           </strong>
           <ul id="anada" class="line">
             <li *ngFor="let stop of anada">
-              <ion-text class="pointer" (click)="clickParada($event, stop.CODI_PARADA, stop.GEOMETRY)">
+              <ion-text class="pointer" (click)="clickParada($event, stop.CODI_PARADA, stop.NOM_PARADA, stop.GEOMETRY)">
                 {{  stop.NOM_PARADA }}
               </ion-text>
               @if (stop.CODI_INTERC) {
                 <ul><li>
-                  <ion-text class="pointer" (click)="clickIntercanvi(stop.CODI_INTERC)">
+                  <ion-text class="pointer" (click)="clickIntercanvi($event, stop.CODI_INTERC, stop.NOM_INTERC, stop.GEOMETRY)">
                     Intercanvi: {{ stop.NOM_INTERC }}
                   </ion-text>
                 </li></ul>
@@ -40,9 +40,15 @@
           </strong>
           <ul id="tornada" class="line">
             <li *ngFor="let stop of tornada">
-              {{  stop.NOM_PARADA }}
+              <ion-text class="pointer" (click)="clickParada($event, stop.CODI_PARADA, stop.NOM_PARADA, stop.GEOMETRY)">
+                {{  stop.NOM_PARADA }}
+              </ion-text>
               @if (stop.CODI_INTERC) {
-                <ul><li><strong>Intercanvi: </strong>{{ stop.NOM_INTERC }}</li></ul>
+                <ul><li>
+                  <ion-text class="pointer" (click)="clickIntercanvi($event, stop.CODI_INTERC, stop.NOM_INTERC, stop.GEOMETRY)">
+                    Intercanvi: {{ stop.NOM_INTERC }}
+                  </ion-text>
+                </li></ul>
               }
             </li>
           </ul>

@@ -7,7 +7,7 @@ import { StoredCoordinates, createStoredCoordinates, storedCoordHasTimeout } fro
   providedIn: 'root'
 })
 export class LocalStorageService {
-  private _timeout = 300;
+  private _timeout = 210; // 3:30 minuts
 
   constructor() {
   }

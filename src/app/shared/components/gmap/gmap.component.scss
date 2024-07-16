@@ -28,7 +28,34 @@
     height: 40px;
     width: auto;
   }
+
+  ion-badge {
+    margin: 2px;
+    color: #FFFFFF;
+  }  
+
+
   
+  /* NOT USED */
+/*  
+
+  #map .gm-style-iw {
+    background-color: #252525;
+    padding: 2% 11%;
+  }
+  #map .iw-content {
+    color: #a5a5a5;
+  }
+
+  div.details {
+    color: black;
+  }
+
+  .infoWindow>div.details>div.content {
+    color:black
+  }
+*/
+
   /*
  * Property styles in unhighlighted state.
  */

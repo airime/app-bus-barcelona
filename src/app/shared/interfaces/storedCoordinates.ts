@@ -1,5 +1,5 @@
 
-//use date in seconds
+// use date in seconds
 // Math.floor(Date.now() / 1000)
 export type StoredCoordinates = [number, google.maps.LatLngLiteral];
 

@@ -109,7 +109,7 @@ export class GmapComponent implements OnInit, AfterViewInit {
             }
           } catch (err) {
             reject(`Geolocation error: ${err}`);
-            throw ('Error accessing geolocation on mobile');
+            throw ('Error accessing geolocation');
           };
         //}
       } else {
@@ -122,8 +122,19 @@ export class GmapComponent implements OnInit, AfterViewInit {
 
   // wait async variable value change
   async waitForLocation() {
-    if (this.location.lat == this.predefinedLat) {
-      setTimeout(this.waitForLocation, 100);
+    function timeout(ms: number): Promise<void> {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    if (this.location.lat == this.predefinedLat || !this.map) {
+      console.log("waiting for location...");
+      await timeout(300).then(() => { this.waitForLocation(); return; });
+      if (this.location.lat == this.predefinedLat) {
+        console.log("after 300ms it will retry async every 300ms, and then set map.center");
+      }
+    } else {
+      console.log("geoposition has set location");
+      this.map.setCenter(this.location);
+      console.log("map center set");
       return;
     }
   }
@@ -142,7 +153,7 @@ export class GmapComponent implements OnInit, AfterViewInit {
         zoom: 17,
         center: this.location,
         mapId: googleMapId,
-        clickableIcons: false
+        clickableIcons: false,
       });
       console.log("CREATE-MAP CALLED: ", this.location);
       const infoWindow = new google.maps.InfoWindow({
@@ -177,29 +188,37 @@ export class GmapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  toggleHighlight(markerView: any, stop: Stop) {
-    console.log("CLICK!")
-    if (markerView.content.classList.contains("highlight")) {
-      markerView.content.classList.remove("highlight");
-      markerView.zIndex = null;
-    } else {
-      markerView.content.classList.add("highlight");
-      markerView.zIndex = 1;
-    }
-  }
+  // toggleHighlight(markerView: any, stop: Stop) {
+  //   console.log("CLICK!")
+  //   if (markerView.content.classList.contains("highlight")) {
+  //     markerView.content.classList.remove("highlight");
+  //     markerView.zIndex = null;
+  //   } else {
+  //     markerView.content.classList.add("highlight");
+  //     markerView.zIndex = 1;
+  //   }
+  // }
 
 
   openInfoWindow(marker: any, infoWindow: google.maps.InfoWindow, codiParada: number, nomParada: string, linies?: string[]) {
     let linesParada: string = "";
     if (!!linies) {
       for (let line of linies) {
-        linesParada += `<a onclick='callAngularClickParadaLinia(${codiParada},"${line}")'><ion-badge>${line}</ion-badge></a>`;
+        linesParada += `<a onclick='callAngularClickParadaLinia(${codiParada},"${line}")'><ion-badge>${line}</ion-badge></a>&nbsp;`;
       }
     }
     //console.log(infoWindow.getContent());
-    const content = `<a onclick='callAngularClickParada(${codiParada})'> \
-          <h5 class="title">${nomParada}</h5></a> \
-          <div>${linesParada}</div>`
+    //<a [routerLink]="['/private/stop', m.CODI_PARADA]>
+    const content = `\
+<ion-icon size="large" src="/assets/Bus_Stop.svg"></ion-icon>
+<div style="height:12ex; margin:0; padding:0">
+  <a onclick='callAngularClickParada(${codiParada})'>\
+  <h5>${nomParada}</h5></a>\
+  <div>\
+    <div>${linesParada}</div>\
+    <div style="color:black">prova anchor</div>\
+  </div> \
+</div>`
     infoWindow.setContent(content);
     infoWindow.open(this.map, marker);
   }
@@ -208,10 +227,11 @@ export class GmapComponent implements OnInit, AfterViewInit {
   private get busStopIcon() {
     const content = document.createElement("div");
     content.classList.add("stop");
-    content.innerHTML = `<ion-icon size="large" src="/assets/Bus_Stop.svg"></ion-icon>`
+    content.innerHTML = `<ion-icon size="large" style="top:0;left:0" src="/assets/Bus_Stop.svg"></ion-icon>`
     return content;
   }
 
+  // NOT USED
   buildContent(stop: Stop) {
     const content = document.createElement("div");
     content.classList.add("stop");

@@ -10,6 +10,10 @@ import { StopResponse } from '../model/busStop';
 })
 export class TmbService {
 
+
+  private readonly propertiesParades = "GEOMETRY,CODI_PARADA,NOM_PARADA";
+  private readonly propertiesCorrespondenciesParada = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
+
   private readonly propertiesLinies = "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA";
   private readonly propertiesParadesLinia = "GEOMETRY,SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
   private readonly propertiesLineStopInfo = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
@@ -39,6 +43,12 @@ export class TmbService {
     return this.http.delete(url, options);
     }
   */
+
+  public getStops(options?: any): Observable<any> {
+    const request = "transit/parades"
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesParades));
+    return this.http.get(url, options);
+  }
 
   public getLines(options?: any): Observable<any> {
     const request = "transit/linies/bus/"

@@ -28,7 +28,7 @@ Desenvolupat amb components *stand-alone*.
 - `npm install @ionic/pwa-elements` (also added `defineCustomElements(window);` in main.ts)
 - `npm install @capacitor/push-notifications`
 - `npm install @capacitor/camera @capacitor/preferences @capacitor/filesystem` (els plugins de base de dades s'instal·len després)
-- `npm install @capacitor/google-maps@next` (note de @next version, needed because version for capacitor 6 isn't ready yet)
+- NO! `npm install @capacitor/google-maps@next` (note de @next version, needed because version for capacitor 6 isn't ready yet)
   - Using --legacy-peer-deps didn't work `npm install @capacitor/google-maps --legacy-peer-deps`. Moreover, when using the option `--legacy-peer-deps`, it will be needed again each time `ionic cap sync` or `ionic cap copy` is done.
 
 > Revisió de Google Maps
@@ -44,10 +44,23 @@ Desenvolupat amb components *stand-alone*.
 >
 > 4. Afegir l'import que es requereixi
 
+- `npm install @googlemaps/markerclusterer`
+- `npm install supercluster`
+- `npm install @types/supercluster`
+- `npm i --save-dev @types/supercluster @types/google.maps`
+> Requereix canviar les opcions del compilador (tsconfig.json):
+  ```
+   "angularCompilerOptions": {
+    ...
+    "allowSyntheticDefaultImports": true
+    ...
+    }
+  ```
 - `npm install @capacitor/geolocation`
 
 > - [TODO!] /* TODO */ Pendent permisos d'Android
 > - **Pendent**: [Veure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
+
 
 - `npm install @capacitor/preferences`
 - `npm install @capacitor/app`

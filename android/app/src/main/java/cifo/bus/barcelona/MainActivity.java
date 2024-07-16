@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package cifo.bus.barcelona;
 
 import com.getcapacitor.BridgeActivity;
 

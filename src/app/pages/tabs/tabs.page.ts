@@ -6,6 +6,7 @@ import { MenuComponent } from "../../shared/components/menu/menu.component";
 import { userProfile } from 'src/app/shared/model/userProfile';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
+import { PushService } from 'src/app/shared/services/push.service';
 
 @Component({
   selector: 'app-tabs',
@@ -19,7 +20,12 @@ export class TabsPage {
 
   private currentUser!: userProfile | null;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private pushService: PushService
+  ) {
+    this.pushService.registerNotifications();
+    this.pushService.addListeners();
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
     addIcons({mapOutline, starOutline });
     addIcons({

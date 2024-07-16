@@ -17,12 +17,12 @@ export class PopoverBusStopComponent implements OnInit {
   @Input({ required: true }) nomParada!: string;
   @Input({ required: true }) linies!: string;
 
-  public Tram = 'assets/Tramvia_metropolita.svg';
-  public BusBarcelona = 'assets/Bus_Barcelona.svg';
-  public MetroBarcelona = 'assets/Metro_Barcelona.svg';
-  public FGC = 'assets/FGC.svg';
-  public RodaliesBarcelona = 'assets/Rodalies_Catalunya.svg';
-  public BusStop = 'assets/Bus_Stop.svg';
+  public readonly Tram = 'assets/Tramvia_metropolita.svg';
+  public readonly BusBarcelona = 'assets/Bus_Barcelona.svg';
+  public readonly MetroBarcelona = 'assets/Metro_Barcelona.svg';
+  public readonly FGC = 'assets/FGC.svg';
+  public readonly RodaliesBarcelona = 'assets/Rodalies_Catalunya.svg';
+  public readonly BusStop = 'assets/Bus_Stop.svg';
 
   private _lstLiniesTram: any;
   private _lstLiniesBus: any;

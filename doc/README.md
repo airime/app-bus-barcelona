@@ -1,12 +1,15 @@
 # Documentació del projecte
 
+- *wireframe-0*: accions de registre i de login
+- *wireframe-1*: capçalera de les pàgines
+- *ScreenMap: visió general de l'aplicació
+
+## Altres informacions adjuntes
+- S'inclou el fitxer [ATM.links](./ATM.links.md) amb referències de transport que no gestiona TMB, tot i ser serveis integrats:
+  Rodalies i FGC (incloent les línies L6, L7 i L8, fortament integrades en el metro, fins i tot en el nom)
 
 
-
-## Revissar warnings (app-bus-barcelona)
-
-npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-npm WARN deprecated @humanwhocodes/config-array@0.11.14: Use @eslint/config-array instead
-npm WARN deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
-npm WARN deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-npm WARN deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+## Exemple com TMB mostra la informació
+### [Exemple línia 3 metro](https://www.tmb.cat/ca/barcelona/metro/-/lineametro/L3)
+### [Exemple línia 6 bus](https://www.tmb.cat/ca/barcelona/autobusos/-/lineabus/6)
+### [Exemple línies Tram](https://www.tram.cat/ca/linies-i-horaris)

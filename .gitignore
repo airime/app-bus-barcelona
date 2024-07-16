@@ -12,6 +12,8 @@ $RECYCLE.BIN/
 *.log
 log.txt
 
+*.prova.ts
+*.ts.prova
 
 /.sourcemaps
 /.versions

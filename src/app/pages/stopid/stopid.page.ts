@@ -9,7 +9,7 @@ import { userProfile } from 'src/app/shared/model/userProfile';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
 import { TmbService } from 'src/app/shared/services/tmb.service';
 import { ActivatedRoute } from '@angular/router';
-import { Bus } from 'src/app/shared/model/busStop';
+import { IBus } from 'src/app/shared/model/ibusStop';
 
 
 @Component({
@@ -24,7 +24,7 @@ export class StopidPage implements OnInit {
   readonly title = "Informació de parada";
 
   public currentStop: number = -1;
-  public buses: Bus[] = [];
+  public buses: IBus[] = [];
 
   private currentUser!: userProfile | null;
 
@@ -43,7 +43,7 @@ export class StopidPage implements OnInit {
 
   getStop(): void {
     this.currentStop = Number(this.route.snapshot.params['id']);
-    this.tmbApiService.getStop(this.currentStop)
+    this.tmbApiService.getiBusStop(this.currentStop)
     .subscribe(response => {
       if (response.status === 'success') this.buses = response.data.ibus;
       else throw('L\'obtenció de dades ha fallat, torna-ho a intentar');

@@ -9,7 +9,8 @@ import { HeaderComponent } from 'src/app/shared/components/header/header.compone
 import { ContentHeaderComponent } from 'src/app/shared/components/content-header/content-header.component';
 import { PopoverBusStopComponent } from 'src/app/shared/components/popover-bus-stop/popover-bus-stop.component'
 import { TmbService } from 'src/app/shared/services/tmb.service';
-import { ArrayCoordinates } from 'src/app/shared/model/arrayCoordinates';
+import { TupleCoordinates, TupleLinia } from 'src/app/shared/model/internalTuples';
+
 
 @Component({
   selector: 'app-tab3',
@@ -24,7 +25,7 @@ export class Tab3Page implements OnInit {
 
   readonly title = "Línies";
   selectedLineText?: string;
-  linies: any = []; //les línies disponibles que omplen el select
+  linies: TupleLinia[] = []; //les línies disponibles que omplen el select
   anada: any; // llista de parades d'anada per la línia seleccionada
   tornada: any; // llista de parades de tornada per a la línia seleccionada
 
@@ -100,7 +101,7 @@ export class Tab3Page implements OnInit {
     }
   }
 
-  async clickParada(e: Event, codiParada: string, nomParada: string, coordParada: ArrayCoordinates) {
+  async clickParada(e: Event, codiParada: string, nomParada: string, coordParada: TupleCoordinates) {
     if (!!this.selectedLineKey) {
       var info: any;
       this.tmbService.getLineStopInfo(this.selectedLineKey, codiParada).subscribe(async (result: any) => {
@@ -126,7 +127,7 @@ export class Tab3Page implements OnInit {
     }
   }
 
-  async clickIntercanvi(e: Event, codiIntercanvi: string, nomParada: string, coordParada: ArrayCoordinates) {
+  async clickIntercanvi(e: Event, codiIntercanvi: string, nomParada: string, coordParada: TupleCoordinates) {
     var info: any;
     this.tmbService.getIntercanviInfo(codiIntercanvi).subscribe(async (result: any) => {
       info = this.tmbService.properties(result);
@@ -149,8 +150,8 @@ export class Tab3Page implements OnInit {
   }
 
   private async ompleLinies() {
-    this.tmbService.getLines().subscribe((result: any) => {
-      var lines = this.tmbService.properties(result);
+    this.tmbService.getLines().subscribe((value: any) => {
+      let lines = this.tmbService.properties(value);
       lines.sort(function (line1: any, line2: any) {
         if (line1.NOM_LINIA.charAt(0) == 'M') {
           if (line2.NOM_LINIA.charAt(0) == 'M') {
@@ -170,7 +171,7 @@ export class Tab3Page implements OnInit {
           return line1.CODI_LINIA > line2.CODI_LINIA ? 1 : -1;
         }
       });
-      var result: any = [];
+      const result: TupleLinia[] = [];
       lines.forEach(function (line: any) {
         result.push([line.NOM_LINIA + ' - ' + line.DESC_LINIA,
         line.CODI_LINIA,

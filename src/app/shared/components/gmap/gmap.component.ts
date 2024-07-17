@@ -4,7 +4,7 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 import { LocalStorageService } from '../../services/local-storage.service';
-import { Stop } from '../../model/busStop';
+import { IStop } from '../../model/ibusStop';
 
 @Component({
   selector: 'app-gmap',
@@ -13,17 +13,17 @@ import { Stop } from '../../model/busStop';
   templateUrl: './gmap.component.html',
   styleUrls: ['./gmap.component.scss'],
 })
-export class GmapComponent implements OnInit, AfterViewInit {
+export class GmapComponent implements OnInit {
   @Input({transform: numberAttribute}) lat?: number
   @Input({transform: numberAttribute}) lng?: number
 
   public readonly BusStop = 'assets/Bus_Stop.svg';
   readonly predefinedLat = PredefinedGeoPositions[geoPlaces.BarcelonaCenter].lat;
-  private readonly parser;
 
   public location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+  private map!: google.maps.Map;
 
-  stops: Stop[] = [
+  private readonly stops: IStop[] = [
     {
       NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
       CODI_PARADA: 1210,
@@ -47,50 +47,35 @@ export class GmapComponent implements OnInit, AfterViewInit {
   constructor(private ngZone: NgZone,
               private elementRef:ElementRef,
               private localStorage: LocalStorageService) { 
-    this.parser = new DOMParser();
   }
 
   ngOnInit() {
+
+    let s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "assets/callAngularClickParada.js";
+    this.elementRef.nativeElement.appendChild(s);
+
+    // @ts-ignore
+    window['angularComponentReference'] = {
+      component: this, 
+      zone: this.ngZone, 
+      loadAngularFunctionClickParada: (codiParada: number) => this.clickParada(codiParada), 
+      loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: string) => this.clickParadaLinia(codiParada, codiLinia), 
+    }; 
     setTimeout(() => { this.initMap(); }, 200);
     if (!!this.lat && !!this.lng) {
       this.location = { lat: this.lat, lng: this.lng };
     } else {
-      this.getCurrentLocation(); //async result, but sets this.location
+      this.getCurrentLocation(); //async result, but it internally sets this.location
     }
   }
 
-  ngAfterViewInit(): void {
-   // No method (using 200ms timeout for this.initMap)
-  }
 
   async getCurrentLocation(): Promise<google.maps.LatLngLiteral> {
     return new Promise(async (resolve, reject) => {
       const geoLocation = await this.localStorage.getGeoPosition();
       if (!geoLocation) {
-        /*
-        if (Capacitor.getPlatform() === 'web') {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                if (!!position) {
-                  this.location = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                  };
-                  this.localStorage.setGeoPosition(this.location);
-                  resolve(this.location);
-                }
-              },
-              (error) => {
-                console.log('not granted', error);
-                throw (error);
-              }
-            );
-          } else {
-            reject('Geolocation is not supported by this browser.');
-          }
-        } else {
-        */
           try {
             let geoPosPermision = await Geolocation.checkPermissions();
             console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
@@ -111,7 +96,6 @@ export class GmapComponent implements OnInit, AfterViewInit {
             reject(`Geolocation error: ${err}`);
             throw ('Error accessing geolocation');
           };
-        //}
       } else {
         this.location = geoLocation;
         console.log("DB resolved geolocation:", geoLocation);
@@ -125,21 +109,24 @@ export class GmapComponent implements OnInit, AfterViewInit {
     function timeout(ms: number): Promise<void> {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-    if (this.location.lat == this.predefinedLat || !this.map) {
+    if (this.location.lat == this.predefinedLat) {
       console.log("waiting for location...");
       await timeout(300).then(() => { this.waitForLocation(); return; });
       if (this.location.lat == this.predefinedLat) {
-        console.log("after 300ms it will retry async every 300ms, and then set map.center");
+        console.log("still no location available; it will retry async every 300ms, and then set map.center");
       }
     } else {
       console.log("geoposition has set location");
-      this.map.setCenter(this.location);
-      console.log("map center set");
+      if (!this.map) {
+        console.log("waiting for map to be drawn...");
+        await timeout(150).then(() => { this.waitForLocation(); return; });
+      } else {
+        this.map.setCenter(this.location);
+        console.log("map center set", this.location);
+      }
       return;
     }
   }
-
-  private map!: google.maps.Map;
 
   async initMap() {
     try {
@@ -155,14 +142,14 @@ export class GmapComponent implements OnInit, AfterViewInit {
         mapId: googleMapId,
         clickableIcons: false,
       });
-      console.log("CREATE-MAP CALLED: ", this.location);
+      console.log("MAP CREATED");
       const infoWindow = new google.maps.InfoWindow({
         content: "",
         disableAutoPan: true,
       });
     
       const markers: google.maps.marker.AdvancedMarkerElement[] =
-        this.stops.map( (stop: Stop, i: number) => {
+        this.stops.map( (stop: IStop, i: number) => {
           const pinGlyph = new google.maps.marker.PinElement({
             glyph: this.busStopIcon,
             glyphColor: "white",
@@ -188,18 +175,6 @@ export class GmapComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // toggleHighlight(markerView: any, stop: Stop) {
-  //   console.log("CLICK!")
-  //   if (markerView.content.classList.contains("highlight")) {
-  //     markerView.content.classList.remove("highlight");
-  //     markerView.zIndex = null;
-  //   } else {
-  //     markerView.content.classList.add("highlight");
-  //     markerView.zIndex = 1;
-  //   }
-  // }
-
-
   openInfoWindow(marker: any, infoWindow: google.maps.InfoWindow, codiParada: number, nomParada: string, linies?: string[]) {
     let linesParada: string = "";
     if (!!linies) {
@@ -207,8 +182,6 @@ export class GmapComponent implements OnInit, AfterViewInit {
         linesParada += `<a onclick='callAngularClickParadaLinia(${codiParada},"${line}")'><ion-badge>${line}</ion-badge></a>&nbsp;`;
       }
     }
-    //console.log(infoWindow.getContent());
-    //<a [routerLink]="['/private/stop', m.CODI_PARADA]>
     const content = `\
 <ion-icon size="large" src="/assets/Bus_Stop.svg"></ion-icon>
 <div style="height:12ex; margin:0; padding:0">
@@ -216,41 +189,81 @@ export class GmapComponent implements OnInit, AfterViewInit {
   <h5>${nomParada}</h5></a>\
   <div>\
     <div>${linesParada}</div>\
-    <div style="color:black">prova anchor</div>\
+    <div style="color:black">prova styles</div>\
   </div> \
 </div>`
     infoWindow.setContent(content);
     infoWindow.open(this.map, marker);
   }
 
+  clickParada(codiParada: number) {
+    console.log(`CLICK ${codiParada}`)
+  }
+
+  clickParadaLinia(codiParada: number, codiLinia: string)  {
+    console.log(`CLICK ${codiParada} en línia ${codiLinia}`);
+  }
   
   private get busStopIcon() {
     const content = document.createElement("div");
-    content.classList.add("stop");
-    content.innerHTML = `<ion-icon size="large" style="top:0;left:0" src="/assets/Bus_Stop.svg"></ion-icon>`
-    return content;
-  }
-
-  // NOT USED
-  buildContent(stop: Stop) {
-    const content = document.createElement("div");
-    content.classList.add("stop");
     content.innerHTML = `<ion-icon size="large" src="/assets/Bus_Stop.svg"></ion-icon>`
-
-    // const content = document.createElement("div");
-    // content.classList.add("property");
-    // content.innerHTML = `
-    //   <div class="icon">
-    //       <ion-icon src="/assets/Bus_Stop.svg"></ion-icon>
-    //   </div>
-    //   <div class="details">
-    //     <h5>${stop.NOM_PARADA}</h5>
-    //     <div class="features">
-    //       <b>FEATURES</b>
-    //     </div>
-    //   </div>
-    //   `;
     return content;
+
+    /* SIMILAR CODE FROM GOOGLE FOR SVG marker glyph, but using a <img> element */
+    /* We instead use <div> with a <ion-icon> inside */
+    /*
+      const glyphImg = document.createElement("img");
+
+      glyphImg.src =
+        "https://developers.google.com/maps/documentation/javascript/examples/full/images/google_logo_g.svg";
+
+      const glyphSvgPinElement = new PinElement({
+        glyph: glyphImg,
+      });
+      const glyphSvgMarkerView = new AdvancedMarkerElement({
+        map,
+        position: { lat: 37.425, lng: -122.07 },
+        content: glyphSvgPinElement.element,
+        title: "A marker using a custom SVG for the glyph.",
+      });
+    */
+
   }
+
+
+  /*****************************************************/
+  /* busStopIcon: OTHER WAYS TO USE images FOR MARKERS */
+
+  /* 1) A marker with a custom inline SVG. */
+  /*
+    const parser = new DOMParser();
+    const pinSvgString =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">...</svg>';
+    const pinSvg = parser.parseFromString(
+      pinSvgString,
+      "image/svg+xml",
+    ).documentElement;
+    const pinSvgMarkerView = new AdvancedMarkerElement({
+      map,
+      position: { lat: 37.42475, lng: -122.094 },
+      content: pinSvg,
+      title: "A marker using a custom SVG image.",
+    });
+  */
+
+    /* 2) A marker with a with a URL pointing to a PNG. */
+  /*
+  const beachFlagImg = document.createElement("img");
+
+  beachFlagImg.src =
+    "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png";
+
+  const beachFlagMarkerView = new AdvancedMarkerElement({
+    map,
+    position: { lat: 37.434, lng: -122.082 },
+    content: beachFlagImg,
+    title: "A marker using a custom PNG Image",
+  });
+  */
 
 }

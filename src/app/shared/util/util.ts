@@ -13,6 +13,10 @@ export function removeSpacesAlsoNonbreakables(s: string): string {
 	return s.replace(/[\x08-\x14\x20]+/g,'');
 }
 
+export function isDefined<T>(argument: T | undefined): argument is T {
+    return argument !== undefined
+}
+
 //==== COMPTE! =====================================================
 //- Aquesta funció no es pot modificar
 //  es fa servir per a la verificació del DisplayName dels usuaris

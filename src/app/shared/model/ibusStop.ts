@@ -1,16 +1,16 @@
-export interface Stop {
+export interface IStop {
   CODI_PARADA: number;
   NOM_PARADA: string;
   posicio: google.maps.LatLngLiteral;
   linies?: string[];
 }
 
-export interface StopResponse {
+export interface IStopResponse {
   status: string,
-  data: {ibus: Bus[]}
+  data: {ibus: IBus[]}
 }
 
-export interface Bus {
+export interface IBus {
   destination: string,
   line: string,
   'text-ca': string

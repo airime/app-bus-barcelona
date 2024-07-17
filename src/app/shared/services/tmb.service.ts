@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { urlTmbApi, TmbParamsType } from '../model/tmbParams';
+import { IStopResponse } from '../model/ibusStop';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tmb_api_id, tmb_api_key } from 'src/app/api.key';
-import { StopResponse } from '../model/busStop';
+import { isDefined } from '../util/util';
 
 @Injectable({
   providedIn: 'root'
@@ -11,13 +12,21 @@ import { StopResponse } from '../model/busStop';
 export class TmbService {
 
 
-  private readonly propertiesParades = "GEOMETRY,CODI_PARADA,NOM_PARADA";
-  private readonly propertiesCorrespondenciesParada = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
+  /* used for construction of personalized fixed data */
+  private readonly propertiesBusStops = "GEOMETRY,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
+  private readonly propertiesBusStopCorresp = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
+  private readonly propertiesIntercanviBusStops = "GEOMETRY,CODI_PARADA,NOM_PARADA";
 
+  /* interactive calls */
   private readonly propertiesLinies = "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA";
   private readonly propertiesParadesLinia = "GEOMETRY,SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
-  private readonly propertiesLineStopInfo = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
-  private readonly propertiesIntercanviInfo = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA,GEOMETRY";
+  private readonly propertiesLineStopCorresp = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
+  private readonly propertiesIntercanviCorresp = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA,GEOMETRY";
+
+  private readonly tmbParams: TmbParamsType = {
+    app_key: tmb_api_key,
+    app_id: tmb_api_id,
+  }
 
   private getParams(properties: string): TmbParamsType {
     return {
@@ -44,14 +53,27 @@ export class TmbService {
     }
   */
 
-  public getStops(options?: any): Observable<any> {
-    const request = "transit/parades"
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesParades));
+  /****************************************************/
+  /* used for construction of personalized fixed data */
+
+  public getBusStops(options?: any): Observable<any> {
+    const request = "transit/parades";
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesBusStops));
     return this.http.get(url, options);
   }
 
+  /*********************/
+  /* interactive calls */
+
+  public getiBusStop(codiParada: number): Observable<IStopResponse> {
+    const request = `ibus/stops/${codiParada}`;
+    const url = urlTmbApi + request + this.encodeParams(this.tmbParams);
+    //used this.encodeParams(this.tmbParams) instead of `?app_key=${tmb_api_key}&app_id=${tmb_api_id}`;
+    return this.http.get<IStopResponse>(url);
+  }
+
   public getLines(options?: any): Observable<any> {
-    const request = "transit/linies/bus/"
+    const request = "transit/linies/bus/";
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLinies));
     return this.http.get(url, options);
   }
@@ -63,29 +85,29 @@ export class TmbService {
   }
 
   public getLineStops(codiLinia: string, options?: any): Observable<any> {
-    const request = "transit/linies/bus/" + codiLinia + "/parades/";
+    const request = `transit/linies/bus/${codiLinia}/parades/`;
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesParadesLinia));
     return this.http.get(url, options);
   }
 
   public getLineStopInfo(codiLinia: string, codiParada: string, options?: any): Observable<any> {
     const request = "transit/linies/bus/" + codiLinia + "/parades/" + codiParada + "/corresp/";
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLineStopInfo));
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLineStopCorresp));
     return this.http.get(url, options);
   }
 
   public getIntercanviInfo(codiIntercanvi: string, options?: any): Observable<any> {
     const request = "transit/interc/" + codiIntercanvi + "/corresp/";
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesIntercanviInfo));
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesIntercanviCorresp));
     return this.http.get(url, options);
   }
 
   // Converts a GeoJSON FeatureCollection structure into a "flat" array of object properties.
   // Geometries are discarded.
   public properties(featureCollection: any) {
-    var properties: any = [];
+    const properties: any = [];
     featureCollection.features.forEach(function (feature: any) {
-      var itemProperties = feature.properties;
+      const itemProperties = feature.properties;
       if (!!feature.geometry?.coordinates) {
         Object.defineProperty(itemProperties, 'GEOMETRY', { value: feature.geometry.coordinates });
       }
@@ -96,13 +118,9 @@ export class TmbService {
 
   private encodeParams(params: TmbParamsType) {
     return "?" + (Object.keys(params) as Array<keyof typeof params>).map(function (name) {
-      return name + "=" + encodeURIComponent(params[name]);
-    }).join("&");
-  }
-
-  public getStop(codiParada: number): Observable<StopResponse> {
-    const url = `${urlTmbApi}/ibus/stops/${codiParada}?app_key=${tmb_api_key}&app_id=${tmb_api_id}`;
-    return this.http.get<StopResponse>(url);
+      if (params.hasOwnProperty(name)) { return name + "=" + encodeURIComponent(params[name]!); }
+      else return undefined;
+    }).filter(isDefined).join("&");
   }
 
 }

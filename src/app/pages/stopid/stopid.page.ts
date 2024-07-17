@@ -21,7 +21,7 @@ import { Bus } from 'src/app/shared/model/busStop';
   imports: [ MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent ]
 })
 export class StopidPage implements OnInit {
-  readonly title = "Mapa busos Barcelona";
+  readonly title = "Informació de parada";
 
   public currentStop: number = -1;
   public buses: Bus[] = [];

@@ -6,10 +6,8 @@
 </app-menu>
 
 <main class="ion-page" id="main-content">
-  <app-header [title]="title"></app-header>
 
   <ion-content [fullscreen]="true">
-    <app-content-header [title]="title"></app-content-header>
     <ion-list>
       <ion-item [button]="true" (click)="getStop()">
         <ion-label>Parada número {{currentStop}}</ion-label>
@@ -24,6 +22,10 @@
           <ion-note color="primary" slot="end">{{bus['text-ca']}}</ion-note>
         </ion-item>
       }
+      <ion-item [button]="true" (click)="goBack()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        <ion-label>Tornar al mapa</ion-label>
+      </ion-item>
     </ion-list>
 
   </ion-content>

@@ -7,6 +7,7 @@ import { userProfile } from 'src/app/shared/model/userProfile';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
 import { PushService } from 'src/app/shared/services/push.service';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-tabs',
@@ -24,8 +25,10 @@ export class TabsPage {
     private authService: AuthService,
     private pushService: PushService
   ) {
-    this.pushService.registerNotifications();
-    this.pushService.addListeners();
+    if (Capacitor.isPluginAvailable('PushNotifications')) {
+      this.pushService.registerNotifications();
+      this.pushService.addListeners();
+    }
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
     addIcons({mapOutline, starOutline });
     addIcons({

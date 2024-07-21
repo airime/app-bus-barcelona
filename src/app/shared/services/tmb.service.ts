@@ -11,17 +11,24 @@ import { isDefined } from '../util/util';
 })
 export class TmbService {
 
+  /* (corregir en TAB3) En comptes de fer servir un rang de CODI_LINIA es diferència la família
+    Provar de fer servir Enum ja definit
+  */
 
-  /* used for construction of personalized fixed data */
+  /***************************************************************************/
+  /* used only for construction of personalized fixed data (not needed here) */
   private readonly propertiesBusStops = "GEOMETRY,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
-  private readonly propertiesBusStopCorresp = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
-  private readonly propertiesIntercanviBusStops = "GEOMETRY,CODI_PARADA,NOM_PARADA";
+  /* also propertiesBusStopConn is used in the construction of personalized fixed data, and available there */
+  // parades d'autobús d'un intercanvi
+  private readonly propertiesInterconnBusStops = "GEOMETRY,CODI_PARADA,NOM_PARADA";
 
+  /*********************/
   /* interactive calls */
-  private readonly propertiesLinies = "NOM_LINIA,DESC_LINIA,CODI_LINIA,ORIGEN_LINIA,DESTI_LINIA";
-  private readonly propertiesParadesLinia = "GEOMETRY,SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
-  private readonly propertiesLineStopCorresp = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
-  private readonly propertiesIntercanviCorresp = "ID_OPERADOR,NOM_OPERADOR,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA,GEOMETRY";
+  private readonly propertiesRouteNumbers = "ID_OPERADOR,NOM_OPERADOR,CODI_FAMILIA,NOM_FAMILIA,CODI_LINIA,NOM_LINIA,DESC_LINIA,ORIGEN_LINIA,DESTI_LINIA,COLOR_LINIA";
+  private readonly propertiesBusRouteStops = "GEOMETRY,SENTIT,ORDRE,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";
+  private readonly propertiesBusStopConn = "ID_OPERADOR,NOM_OPERADOR,CODI_FAMILIA,NOM_FAMILIA,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA";
+  //Linies disponibles en un intercanvi (inclou tots els operadors)
+  private readonly propertiesInterconnConn = "ID_OPERADOR,NOM_OPERADOR,CODI_FAMILIA,NOM_FAMILIA,CODI_LINIA,NOM_LINIA,DESC_LINIA,DESTI_LINIA,COLOR_LINIA,GEOMETRY";
 
   private readonly tmbParams: TmbParamsType = {
     app_key: tmb_api_key,
@@ -54,16 +61,28 @@ export class TmbService {
   */
 
   /****************************************************/
-  /* used for construction of personalized fixed data */
+  /* used for construction of personalized static data */
 
-  public getBusStops(options?: any): Observable<any> {
+  public getBusStops(): Observable<any> {
     const request = "transit/parades";
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesBusStops));
-    return this.http.get(url, options);
+    return this.http.get(url);
   }
 
-  /*********************/
-  /* interactive calls */
+  public getBusStopConn(codiParada: number): Observable<any> {
+    const request = `transit/parades/${codiParada}/corresp`;
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesBusStopConn));
+    return this.http.get(url);
+  }
+
+  public getInterconnBusStops(codiIntercanvi: number): Observable<any> {
+    const request = `transit/interc/${codiIntercanvi}/parades`;
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesInterconnBusStops));
+    return this.http.get(url);
+  }
+
+  /**************************/
+  /* interactive calls iBus */
 
   public getiBusStop(codiParada: number): Observable<IStopResponse> {
     const request = `ibus/stops/${codiParada}`;
@@ -72,49 +91,36 @@ export class TmbService {
     return this.http.get<IStopResponse>(url);
   }
 
-  public getLines(options?: any): Observable<any> {
-    const request = "transit/linies/bus/";
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLinies));
-    return this.http.get(url, options);
+  /*****************************/
+  /* interactive calls transit */
+
+  public getRouteNumbers(codiLinia?: number): Observable<any> {    
+    const request = `transit/linies/bus/${codiLinia?? ""}`;
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesRouteNumbers));
+    return this.http.get(url);
   }
 
-  public getLineDescription(codiLinia: string, options?: any): Observable<any> {
-    const request = "transit/linies/bus/" + codiLinia
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLinies))
-    return this.http.get(url, options);
-  }
-
-  public getLineStops(codiLinia: string, options?: any): Observable<any> {
+  public getBusRouteStops(codiLinia: number): Observable<any> {
     const request = `transit/linies/bus/${codiLinia}/parades/`;
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesParadesLinia));
-    return this.http.get(url, options);
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesBusRouteStops));
+    return this.http.get(url);
   }
 
-  public getLineStopInfo(codiLinia: string, codiParada: string, options?: any): Observable<any> {
-    const request = "transit/linies/bus/" + codiLinia + "/parades/" + codiParada + "/corresp/";
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesLineStopCorresp));
-    return this.http.get(url, options);
+  /* very similar to getBusStopConn, but the origin route is fixed */
+  public getBusRouteStopConn(codiLinia: number, codiParada: number): Observable<any> {    
+    const request = `transit/linies/bus/${codiLinia}/parades/${codiParada}/corresp/`;
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesBusStopConn));
+    return this.http.get(url);
   }
 
-  public getIntercanviInfo(codiIntercanvi: string, options?: any): Observable<any> {
-    const request = "transit/interc/" + codiIntercanvi + "/corresp/";
-    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesIntercanviCorresp));
-    return this.http.get(url, options);
+  public getBusInterconnConn(codiIntercanvi: number): Observable<any> {
+    const request = `transit/interc/${codiIntercanvi}/corresp/`;
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesInterconnConn));
+    return this.http.get(url);
   }
 
-  // Converts a GeoJSON FeatureCollection structure into a "flat" array of object properties.
-  // Geometries are discarded.
-  public properties(featureCollection: any) {
-    const properties: any = [];
-    featureCollection.features.forEach(function (feature: any) {
-      const itemProperties = feature.properties;
-      if (!!feature.geometry?.coordinates) {
-        Object.defineProperty(itemProperties, 'GEOMETRY', { value: feature.geometry.coordinates });
-      }
-      properties.push(itemProperties);
-    });
-    return properties;
-  }
+  /*****************************/
+  /*****   P R I V A T E   *****/
 
   private encodeParams(params: TmbParamsType) {
     return "?" + (Object.keys(params) as Array<keyof typeof params>).map(function (name) {

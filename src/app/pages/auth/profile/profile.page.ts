@@ -159,7 +159,6 @@ export class ProfilePage implements OnInit {
                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
-
   nomInputEvent($event: any) {
     const newValue = isNullOrEmpty($event.target.value as string | null | undefined) ?
       null : $event.target.value as string;

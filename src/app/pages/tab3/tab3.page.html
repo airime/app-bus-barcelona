@@ -4,14 +4,31 @@
   <ion-content [fullscreen]="true">
     <app-content-header [title]="title"></app-content-header>
     <ion-item>
-		  <ion-text [hidden]="isSelectLine" >Seleccione una linea:</ion-text>
-      <ion-select id="lines" (ionChange)="onSelectChange($event)"
-        [value]="selectedLineKey" [selectedText]="selectedLineText" (click)="selectClick()">
-        <!-- placeholder -->      
-        <ion-select-option *ngFor="let linia of linies; let i = index" [value]="linia[1]">
-            {{linia[0]}}
-        </ion-select-option>
-      </ion-select>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-sm="6">
+            <ion-text [hidden]="thereIsSelectedLine">Seleccione una linea:</ion-text>
+            <ion-select id="selectLines" aria-label="Línies"
+              (click)="selectClick()" (ionChange)="onSelectChange($event)"
+              [value]="selectedLineKey" [selectedText]="selectedLineText">
+              <!-- placeholder -->      
+              <ion-select-option *ngFor="let linia of filteredLines; let i = index" [value]="linia[1]">
+                  {{linia[0]}}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+          <ion-col size="12" size-sm="6">
+            <ion-text >Seleccioneu els serveis que apliquen:</ion-text>
+            <ion-select id="selectFamilies" aria-label="Serveis" [multiple]="true"
+              (click)="selectClick()" (ionChange)="onSelectFamiliesChange($event)"
+              placeholder="TOTS" [value]="selectedServices" [selectedText]="selectedFamiliesText">
+              <ion-select-option *ngFor="let familia of NomFamiliaBusValues; let i = index" [value]="familia">
+                {{familia}}
+              </ion-select-option>
+            </ion-select>
+            </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-item>
     <ion-grid>
       <ion-row>
@@ -24,9 +41,9 @@
               <ion-text class="pointer" (click)="clickParada($event, stop.CODI_PARADA, stop.NOM_PARADA, stop.GEOMETRY)">
                 {{  stop.NOM_PARADA }}
               </ion-text>
-              @if (stop.CODI_INTERC) {
+              @if (!!stop.CODI_INTERC && stop.CODI_INTERC > 0) {
                 <ul><li>
-                  <ion-text class="pointer" (click)="clickIntercanvi($event, stop.CODI_INTERC, stop.NOM_INTERC, stop.GEOMETRY)">
+                  <ion-text class="pointer" (click)="clickIntercanvi($event, stop.CODI_INTERC, stop.NOM_INTERC??'', stop.GEOMETRY)">
                     Intercanvi: {{ stop.NOM_INTERC }}
                   </ion-text>
                 </li></ul>
@@ -43,9 +60,9 @@
               <ion-text class="pointer" (click)="clickParada($event, stop.CODI_PARADA, stop.NOM_PARADA, stop.GEOMETRY)">
                 {{  stop.NOM_PARADA }}
               </ion-text>
-              @if (stop.CODI_INTERC) {
+              @if (!!stop.CODI_INTERC && stop.CODI_INTERC > 0) {
                 <ul><li>
-                  <ion-text class="pointer" (click)="clickIntercanvi($event, stop.CODI_INTERC, stop.NOM_INTERC, stop.GEOMETRY)">
+                  <ion-text class="pointer" (click)="clickIntercanvi($event, stop.CODI_INTERC, stop.NOM_INTERC??'', stop.GEOMETRY)">
                     Intercanvi: {{ stop.NOM_INTERC }}
                   </ion-text>
                 </li></ul>

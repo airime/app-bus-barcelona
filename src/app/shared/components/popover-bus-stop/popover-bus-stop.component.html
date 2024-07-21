@@ -1,47 +1,47 @@
 <div class="popup">
   <div hidden>{{ '[' + lat + ', ' + lng + ']' }}</div>
-  <div class="icon"><ion-icon [src]="BusStop"></ion-icon></div>
-  {{ intercanvi? 'intercanviador' : 'parada' }}
-  <h5 class="title">{{ nomParada }}</h5>
+  <div class="icon"><a (click)="showConfirm()"><ion-icon [src]="BusStop"></ion-icon></a></div>
+  <a (click)="showConfirm()">{{ intercanvi? 'intercanviador' : 'parada' }}</a>
+  <h5 class="title"><a (click)="showConfirm()">{{ nomParada }}</a></h5>
   <div hidden>Parada núm {{ codiParada }}</div>
-  @if (lstLiniesTram.length > 0) {
+  @if (liniesTram.length > 0) {
   <div>
     <div class="icon"><ion-icon [src]="Tram"></ion-icon></div>
-    @for (line of lstLiniesTram; track line.CODI_LINIA) {
+    @for (line of liniesTram; track line.CODI_LINIA) {
     <ion-badge [style.--background]="'#' + line.COLOR_LINIA">{{ line.NOM_LINIA }}</ion-badge>
     }
   </div>
   }
-  @if (lstLiniesBus.length > 0) {
+  @if (liniesBus.length > 0) {
   <div>
     <div class="icon"><ion-icon [src]="BusBarcelona"></ion-icon></div>
-    @for (line of lstLiniesBus; track line.CODI_LINIA) {
+    @for (line of liniesBus; track line.CODI_LINIA) {
     <ion-badge [style.--background]="'#' + line.COLOR_LINIA">{{ line.NOM_LINIA }}</ion-badge>
     }
   </div>
   }
-  @if (lstLiniesMetro.length > 0) {
+  @if (liniesMetro.length > 0) {
   <div>
     <div class="icon"><ion-icon [src]="MetroBarcelona"></ion-icon></div>
-    @for (line of lstLiniesMetro; track line.CODI_LINIA) {
+    @for (line of liniesMetro; track line.CODI_LINIA) {
     <ion-badge [style.--background]="'#' + line.COLOR_LINIA">{{ line.NOM_LINIA }}</ion-badge>
 
     }
   </div>
   }
-  @if (lstLiniesFGC.length > 0) {
+  @if (liniesFGC.length > 0) {
   <div>
     <div class="icon"><ion-icon [src]="FGC"></ion-icon></div>
-    @for (line of lstLiniesFGC; track line.CODI_LINIA) {
+    @for (line of liniesFGC; track line.CODI_LINIA) {
     <ion-badge [style.--background]="'#' + line.COLOR_LINIA">{{ line.NOM_LINIA }}</ion-badge>
 
     }
   </div>
   }
-  @if (lstLiniesRodalies.length > 0) {
+  @if (liniesRodalies.length > 0) {
   <div>
     <div class="icon"><ion-icon [src]="RodaliesBarcelona"></ion-icon></div>
-    @for (line of lstLiniesRodalies; track line.CODI_LINIA) {
+    @for (line of liniesRodalies; track line.CODI_LINIA) {
     <ion-badge [style.--background]="'#' + line.COLOR_LINIA">{{ line.NOM_LINIA }}</ion-badge>
 
     }

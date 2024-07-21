@@ -21,8 +21,8 @@ export class StaticDataService {
   private _data!: Promise<IStopInfo[]>;
 
   constructor() {
-    const data_dades = '2024-07-19';
-    this._data = fetch(`assets/data.${data_dades}.json`).then((res: Response) => {
+    const data_dades = '2024-07-21';
+    this._data = fetch(`assets/data.${data_dades}.simple.json`).then((res: Response) => {
         if (res.status == 200) return res.json(); else throw new Error("StaticDataService.fetch error");
       })
       .catch(err => { 

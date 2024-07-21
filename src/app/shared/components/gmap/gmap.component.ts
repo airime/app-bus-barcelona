@@ -5,6 +5,7 @@ import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { IStop } from '../../model/ibusStop';
+import { StaticDataService } from '../../services/static-data.service'
 
 @Component({
   selector: 'app-gmap',
@@ -23,7 +24,8 @@ export class GmapComponent implements OnInit {
   public location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   private map!: google.maps.Map;
 
-  private readonly stops: IStop[] = [
+  private readonly stops: IStop[] = 
+   [
     {
       NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
       CODI_PARADA: 1210,
@@ -46,7 +48,8 @@ export class GmapComponent implements OnInit {
 
   constructor(private ngZone: NgZone,
               private elementRef:ElementRef,
-              private localStorage: LocalStorageService) { 
+              private localStorage: LocalStorageService,
+              private staticData: StaticDataService) { 
   }
 
   ngOnInit() {

@@ -103,6 +103,23 @@ export class TmbGenpropertiesService {
     });
   }
 
+  public async getBusStopConnPlain(codiParada: number): Promise<IBusStopConn[]> {
+    return new Promise<IBusStopConn[]>( resolve => {
+      this.tmbService.getBusStopConn(codiParada).subscribe((linies: any) => {
+        resolve(<IBusStopConn[]>this.properties(linies));
+      });
+    });
+  }
+
+  /* get OperatorLines */
+  public async getBusStopConn(codiParada: number): Promise<OperatorLines> {
+    return new Promise<OperatorLines>( resolve => {
+      this.tmbService.getBusStopConn(codiParada).subscribe(async (linies: any) => {
+        resolve(this.breakUpConnectionsByOperator(<IBusStopConn[]>this.properties(linies)));
+      });
+    });
+  }
+
   public async getBusRouteStopConnPlain(codiLinia: number, codiParada: number): Promise<IBusStopConn[]> {
     return new Promise<IBusStopConn[]>( resolve => {
       this.tmbService.getBusRouteStopConn(codiLinia, codiParada).subscribe(async (result: any) => {
@@ -111,6 +128,7 @@ export class TmbGenpropertiesService {
     });
   }
 
+  /* get OperatorLines */
   public async getBusRouteStopConn(codiLinia: number, codiParada: number): Promise<OperatorLines> {
       return new Promise<OperatorLines>(resolve => {
         this.tmbService.getBusRouteStopConn(codiLinia, codiParada).subscribe(async (result: any) => {
@@ -127,6 +145,7 @@ export class TmbGenpropertiesService {
     });
   }
 
+  /* get OperatorLines */
   public async getBusInterconnConn(codiIntercanvi: number): Promise<OperatorLines> {
     return new Promise<OperatorLines>( resolve => {
       this.tmbService.getBusInterconnConn(codiIntercanvi).subscribe(async (result: any) => {

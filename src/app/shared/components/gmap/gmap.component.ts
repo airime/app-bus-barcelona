@@ -4,8 +4,11 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 import { LocalStorageService } from '../../services/local-storage.service';
+import { IStopInfo } from '../../model/internalInterfaces';
 import { IStop } from '../../model/ibusStop';
 import { StaticDataService } from '../../services/static-data.service'
+import { TupleCoordinates, LatLngFromTupla } from '../../model/internalTuples';
+import { TmbGenpropertiesService } from '../../services/tmb-genproperties.service';
 
 @Component({
   selector: 'app-gmap',
@@ -24,36 +27,43 @@ export class GmapComponent implements OnInit {
   public location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   private map!: google.maps.Map;
 
-  private readonly stops: IStop[] = 
-   [
-    {
-      NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
-      CODI_PARADA: 1210,
-      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1210],
-      linies: ['55', 'D50', 'H16', 'N11']
-    },
-    {
-      NOM_PARADA: 'Pl. de Catalunya - Ronda Sant Pere',
-      CODI_PARADA: 1257,
-      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1257],
-      linies: ['D50', 'N5', 'N6', 'N7']
-    },
-    {
-      NOM_PARADA: 'Pl. Catalunya - Bergara',
-      CODI_PARADA: 1271,
-      posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1271],
-      linies: ['V13', 'N17']
-    },
-  ];
+
+  private stops!: IStopInfo[];
+
+  // private readonly stops: IStop[] = 
+  //  [
+  //   {
+  //     NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
+  //     CODI_PARADA: 1210,
+  //     posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1210],
+  //     linies: ['55', 'D50', 'H16', 'N11']
+  //   },
+  //   {
+  //     NOM_PARADA: 'Pl. de Catalunya - Ronda Sant Pere',
+  //     CODI_PARADA: 1257,
+  //     posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1257],
+  //     linies: ['D50', 'N5', 'N6', 'N7']
+  //   },
+  //   {
+  //     NOM_PARADA: 'Pl. Catalunya - Bergara',
+  //     CODI_PARADA: 1271,
+  //     posicio: PredefinedGeoPositions[geoPlaces.BarcelonaBus1271],
+  //     linies: ['V13', 'N17']
+  //   },
+  // ];
 
   constructor(private ngZone: NgZone,
               private elementRef:ElementRef,
               private localStorage: LocalStorageService,
-              private staticData: StaticDataService) { 
+              private staticData: StaticDataService,
+              private tmbService: TmbGenpropertiesService) { 
+    async function getData(that: GmapComponent): Promise<void> {
+      that.stops = await that.staticData.data;
+    }
+    getData(this);
   }
 
   ngOnInit() {
-
     let s = document.createElement("script");
     s.type = "text/javascript";
     s.src = "assets/callAngularClickParada.js";
@@ -64,7 +74,8 @@ export class GmapComponent implements OnInit {
       component: this, 
       zone: this.ngZone, 
       loadAngularFunctionClickParada: (codiParada: number) => this.clickParada(codiParada), 
-      loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: string) => this.clickParadaLinia(codiParada, codiLinia), 
+      loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: number, nomLinia: string) =>
+        this.clickParadaLinia(codiParada, codiLinia, nomLinia), 
     }; 
     setTimeout(() => { this.initMap(); }, 200);
     if (!!this.lat && !!this.lng) {
@@ -82,7 +93,6 @@ export class GmapComponent implements OnInit {
     let location = await this.getCurrentLocation();
     this.map.setCenter(location);
   }
-
 
   private async getCurrentLocation(): Promise<google.maps.LatLngLiteral> {
     return new Promise(async (resolve, reject) => {
@@ -161,22 +171,29 @@ export class GmapComponent implements OnInit {
       });
     
       const markers: google.maps.marker.AdvancedMarkerElement[] =
-        this.stops.map( (stop: IStop, i: number) => {
+        this.stops.map( (stop: IStopInfo, i: number) => {
           const pinGlyph = new google.maps.marker.PinElement({
             glyph: this.busStopIcon,
             glyphColor: "white",
           })
           const marker = new google.maps.marker.AdvancedMarkerElement({
             map: this.map,
-            position: stop.posicio,
+            position: LatLngFromTupla(stop.GEOMETRY),
             content: pinGlyph.element,
           });
       
           // markers can only be keyboard focusable when they have click listeners
           // open info window when marker is clicked
-          marker.addListener("click", () => {
-            this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA, stop.linies)
-        });
+          if (!!stop.CODI_INTERC && stop.CODI_INTERC > 0) {
+            marker.addListener("click", async () => {
+              await this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA, stop.CODI_INTERC, stop.NOM_INTERC!)
+            });
+          }
+          else {
+            marker.addListener("click", () => {
+              this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA)
+            });
+          }
         return marker;
       });
       new MarkerClusterer({ markers, map: this.map });
@@ -187,23 +204,54 @@ export class GmapComponent implements OnInit {
     }
   }
 
-  openInfoWindow(marker: any, infoWindow: google.maps.InfoWindow, codiParada: number, nomParada: string, linies?: string[]) {
-    let linesParada: string = "";
-    if (!!linies) {
-      for (let line of linies) {
-        linesParada += `<a onclick='callAngularClickParadaLinia(${codiParada},"${line}")'><ion-badge>${line}</ion-badge></a>&nbsp;`;
-      }
-    }
-    const content = `\
+  async openInfoWindow(marker: any, infoWindow: google.maps.InfoWindow, codiParada: number, nomParada: string, codiInterc?: number, nomInterc?: string) {
+    let { liniesTram, liniesBus, liniesMetro, liniesFGC, liniesRodalies } = await this.tmbService.getBusStopConn(codiParada);
+    const contentStart = `\
 <ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>
 <div style="height:12ex; margin:0; padding:0">
   <a onclick='callAngularClickParada(${codiParada})'>\
   <h5>${nomParada}</h5></a>\
-  <div>\
-    <div>${linesParada}</div>\
-    <div style="color:black">prova styles</div>\
+  <div>`
+  const contentEnd = `\
   </div> \
 </div>`
+    let content: string = contentStart;
+    if (!!liniesBus && Array.isArray(liniesBus) && liniesBus.length > 0) {
+      let strLiniesBus = '<ion-icon size="large" src="/assets/icon/Bus_Barcelona.svg"></ion-icon> ';
+      for (let line of liniesBus) {
+        strLiniesBus += `<a onclick='callAngularClickParadaLinia(${codiParada},${line.CODI_LINIA},"${line.NOM_LINIA}")'><ion-badge>${line.NOM_LINIA}</ion-badge></a>&nbsp;`;
+      }
+      content += `<div>${strLiniesBus}</div>`;
+    }
+    if (!!liniesTram && Array.isArray(liniesTram) && liniesTram.length > 0) {
+      let strLiniesTram = '<ion-icon size="large" src="/assets/icon/Tramvia_metropolita.svg"></ion-icon>&nbsp; ';
+      for (let line of liniesTram) {
+        strLiniesTram += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+      }
+      content += `<div>${strLiniesTram}</div>`;
+    }
+    if (!!liniesMetro && Array.isArray(liniesMetro) && liniesMetro.length > 0) {
+      let strLiniesMetro = '<ion-icon size="large" src="/assets/icon/Metro_Barcelona.svg"></ion-icon>&nbsp; ';
+      for (let line of liniesMetro) {
+        strLiniesMetro += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+      }
+      content += `<div>${strLiniesMetro}</div>`;
+    }
+    if (!!liniesFGC && Array.isArray(liniesFGC) && liniesFGC.length > 0) {
+      let strLiniesFGC = '<ion-icon size="large" src="/assets/icon/FGC.svg"></ion-icon>&nbsp; ';
+      for (let line of liniesFGC) {
+        strLiniesFGC += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+      }
+      content += `<div>${strLiniesFGC}</div>`;
+    }
+    if (!!liniesRodalies && Array.isArray(liniesRodalies) && liniesRodalies.length > 0) {
+      let strLiniesRodalies = '<ion-icon size="large" src="/assets/icon/Rodalies_Catalunya.svg"></ion-icon>&nbsp; ';
+      for (let line of liniesRodalies) {
+        strLiniesRodalies += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+      }
+      content += `<div>${strLiniesRodalies}</div>`;
+    }
+    content += contentEnd;
     infoWindow.setContent(content);
     infoWindow.open(this.map, marker);
   }
@@ -212,8 +260,9 @@ export class GmapComponent implements OnInit {
     console.log(`CLICK ${codiParada}`)
   }
 
-  clickParadaLinia(codiParada: number, codiLinia: string)  {
-    console.log(`CLICK ${codiParada} en línia ${codiLinia}`);
+  /* TODO: Original codiLinia: string => codiLinia: number, nomLinia: string */
+  clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string )  {
+    console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
   }
   
   private get busStopIcon() {
@@ -283,6 +332,7 @@ export class GmapComponent implements OnInit {
 /* ADD MY LOCATION BUTTON */
 /*
 
+// https://stackoverflow.com/questions/24952593/how-to-add-my-location-button-in-google-maps
 
 function addYourLocationButton(map, marker) 
 {

@@ -9,7 +9,13 @@ export type TupleLinia = [string, number, string, string, string];
 
 /* OWN SERVICES FUNCTIONS RETURN TYPES */
 export type TwoWayStops = { outwardBusStops: IStopInfo[], returnBusStops: IStopInfo[] };
-export type OperatorLines = { liniesTram: IBusStopConn[], liniesBus: IBusStopConn[], liniesMetro: IBusStopConn[], liniesFGC: IBusStopConn[], liniesRodalies: IBusStopConn[] }
+export type OperatorLines = {
+    liniesTram: IBusStopConn[],
+    liniesBus: IBusStopConn[],
+    liniesMetro: IBusStopConn[],
+    liniesFGC: IBusStopConn[],
+    liniesRodalies: IBusStopConn[] 
+}
 
 export function LatLngFromTupla(tupla: TupleCoordinates): google.maps.LatLngLiteral {
     return { lat: tupla[1], lng: tupla[0] }

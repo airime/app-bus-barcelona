@@ -24,7 +24,7 @@
             <ion-item id="profile" [routerLinkActive]="'highlight'" [routerLinkActiveOptions]="{exact:true}" class="pointer"
               (click)="userProfile()" [routerLink]="['/user-profile']" >
               <!--  [class.highlight]="selected('profile')" [class.pointer]="!selected('profile')" routerDirection="root" -->
-              <ion-avatar slot="start"><img src="{{ profileImgUrl ?? '/assets/person-outline.svg' }}" /></ion-avatar>
+              <ion-avatar slot="start"><img src="{{ profileImgUrl ?? '/assets/icon/person-outline.svg' }}" /></ion-avatar>
               <ion-label>Perfil</ion-label>
             </ion-item>
           }

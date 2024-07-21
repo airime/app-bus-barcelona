@@ -41,7 +41,7 @@ export class ContentHeaderComponent  implements OnDestroy {
     });
   }
   
-  public get userUrlImage() { return this.authService.currentUser?.photoURL ?? "./assets/person-outline.svg" }
+  public get userUrlImage() { return this.authService.currentUser?.photoURL ?? "./assets/icon/person-outline.svg" }
 
   userProfile() {
     this.router.navigate(['/','user-profile']);

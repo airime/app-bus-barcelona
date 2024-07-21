@@ -11,10 +11,6 @@ import { isDefined } from '../util/util';
 })
 export class TmbService {
 
-  /* (corregir en TAB3) En comptes de fer servir un rang de CODI_LINIA es diferència la família
-    Provar de fer servir Enum ja definit
-  */
-
   /***************************************************************************/
   /* used only for construction of personalized fixed data (not needed here) */
   private readonly propertiesBusStops = "GEOMETRY,CODI_PARADA,NOM_PARADA,CODI_INTERC,NOM_INTERC";

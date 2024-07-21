@@ -17,7 +17,7 @@ export class GmapComponent implements OnInit {
   @Input({transform: numberAttribute}) lat?: number
   @Input({transform: numberAttribute}) lng?: number
 
-  public readonly BusStop = 'assets/Bus_Stop.svg';
+  public readonly BusStop = 'assets/icon/Bus_Stop.svg';
   readonly predefinedLat = PredefinedGeoPositions[geoPlaces.BarcelonaCenter].lat;
 
   public location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
@@ -192,7 +192,7 @@ export class GmapComponent implements OnInit {
       }
     }
     const content = `\
-<ion-icon size="large" src="/assets/Bus_Stop.svg"></ion-icon>
+<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>
 <div style="height:12ex; margin:0; padding:0">
   <a onclick='callAngularClickParada(${codiParada})'>\
   <h5>${nomParada}</h5></a>\
@@ -215,7 +215,7 @@ export class GmapComponent implements OnInit {
   
   private get busStopIcon() {
     const content = document.createElement("div");
-    content.innerHTML = `<ion-icon size="large" src="/assets/Bus_Stop.svg"></ion-icon>`
+    content.innerHTML = `<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>`
     return content;
 
     /* SIMILAR CODE FROM GOOGLE FOR SVG marker glyph, but using a <img> element */

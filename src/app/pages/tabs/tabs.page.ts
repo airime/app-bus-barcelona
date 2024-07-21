@@ -33,7 +33,7 @@ export class TabsPage {
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
     addIcons({mapOutline, starOutline });
     addIcons({
-      lines: 'assets/lines.svg'
+      lines: 'assets/icon/lines.svg'
     });
   }
 

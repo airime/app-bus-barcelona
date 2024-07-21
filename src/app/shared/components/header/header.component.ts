@@ -51,7 +51,7 @@ export class HeaderComponent implements OnDestroy {
   }
 
   public get userUrlImage() { 
-    return (this.authService.currentUser?.photoURL ?? null)?? "./assets/person-outline.svg";
+    return (this.authService.currentUser?.photoURL ?? null)?? "./assets/icon/person-outline.svg";
   }
 
   async userProfile() {

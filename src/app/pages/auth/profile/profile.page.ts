@@ -56,7 +56,7 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() {
     addIcons({
-      gravatar: 'assets/gravatar.svg'
+      gravatar: 'assets/icon/gravatar.svg'
     });
     const currentUser = this.authService.currentUser;
     if (currentUser && !!currentUser.email) {

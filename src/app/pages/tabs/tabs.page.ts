@@ -1,4 +1,4 @@
-import { Component, EnvironmentInjector, inject } from '@angular/core';
+import { AfterViewInit, Component, EnvironmentInjector, ViewChild, inject } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { mapOutline, starOutline } from 'ionicons/icons';
@@ -17,6 +17,7 @@ import { Capacitor } from '@capacitor/core';
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, MenuComponent],
 })
 export class TabsPage {
+  @ViewChild("mainTabs") mainTabs!: IonTabs;
   public environmentInjector = inject(EnvironmentInjector);
 
   private currentUser!: userProfile | null;

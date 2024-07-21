@@ -13,3 +13,6 @@ export interface IErrorMessage extends IMessage<string> {
 export interface IErrorDismissedMessage extends IMessage<undefined> {
     tag: "dismissError"
 }
+export interface IPositionMessage extends IMessage<google.maps.LatLngLiteral> {
+    tag: "position"
+}

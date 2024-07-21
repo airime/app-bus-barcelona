@@ -1,5 +1,9 @@
-import { Component, Input, OnInit, booleanAttribute, numberAttribute } from '@angular/core';
-import { IonBadge, IonIcon } from '@ionic/angular/standalone';
+import { Component, Input, booleanAttribute, numberAttribute } from '@angular/core';
+import { NavParams } from '@ionic/angular';
+import { IonBadge, IonIcon, IonText } from '@ionic/angular/standalone';
+import { IBusStopConn } from '../../model/internalInterfaces';
+import { toIBusStopConnArray } from '../../model/transforms';
+import { Tab3Page } from 'src/app/pages/tab3/tab3.page';
 //import { addIcons } from 'ionicons';
 
 @Component({
@@ -7,16 +11,20 @@ import { IonBadge, IonIcon } from '@ionic/angular/standalone';
   standalone: true,
   templateUrl: './popover-bus-stop.component.html',
   styleUrls: ['./popover-bus-stop.component.scss'],
-  imports: [IonIcon, IonBadge]
+  imports: [IonText, IonIcon, IonBadge]
 })
-export class PopoverBusStopComponent implements OnInit {
+export class PopoverBusStopComponent {
   @Input({ required: true, transform: numberAttribute }) lat!: number;
   @Input({ required: true, transform: numberAttribute }) lng!: number;
   @Input({ required: true, transform: booleanAttribute }) intercanvi!: boolean;
   @Input({ required: true }) codiParada!: string;
   @Input({ required: true }) nomParada!: string;
-  @Input({ required: true }) linies!: string;
-
+  @Input({ required: true, transform: toIBusStopConnArray }) set liniesTram(value: IBusStopConn[]) { this._liniesTram = value; };
+  @Input({ required: true, transform: toIBusStopConnArray }) set liniesBus(value: IBusStopConn[]) { this._liniesBus = value; };
+  @Input({ required: true, transform: toIBusStopConnArray }) set liniesMetro(value: IBusStopConn[]) { this._liniesMetro = value; };
+  @Input({ required: true, transform: toIBusStopConnArray }) set liniesFGC(value: IBusStopConn[]) { this._liniesFGC = value; };
+  @Input({ required: true, transform: toIBusStopConnArray }) set liniesRodalies(value: IBusStopConn[]) { this._liniesRodalies = value; };
+  
   public readonly Tram = 'assets/Tramvia_metropolita.svg';
   public readonly BusBarcelona = 'assets/Bus_Barcelona.svg';
   public readonly MetroBarcelona = 'assets/Metro_Barcelona.svg';
@@ -24,33 +32,30 @@ export class PopoverBusStopComponent implements OnInit {
   public readonly RodaliesBarcelona = 'assets/Rodalies_Catalunya.svg';
   public readonly BusStop = 'assets/Bus_Stop.svg';
 
-  private _lstLiniesTram: any;
-  private _lstLiniesBus: any;
-  private _lstLiniesMetro: any;
-  private _lstLiniesFGC: any;
-  private _lstLiniesRodalies: any;
-
-  public get lstLiniesTram() {
-    return this._lstLiniesTram;
+  public get liniesTram() { 
+    return this._liniesTram;
+  }
+  public get liniesBus() {
+    return this._liniesBus;
+  }
+  public get liniesMetro() { 
+    return this._liniesMetro;
+  }
+  public get liniesFGC() {
+    return this._liniesFGC;
+  }
+  public get liniesRodalies() {
+    return this._liniesRodalies;
   }
 
-  public get lstLiniesBus() {
-    return this._lstLiniesBus;
-  }
+  private _liniesTram!: IBusStopConn[];
+  private _liniesBus!: IBusStopConn[];
+  private _liniesMetro!: IBusStopConn[];
+  private _liniesFGC!: IBusStopConn[];
+  private _liniesRodalies!: IBusStopConn[];
+  private parentPage!: Tab3Page;
 
-  public get lstLiniesMetro() {
-    return this._lstLiniesMetro;
-  }
-
-  public get lstLiniesFGC() {
-    return this._lstLiniesFGC;
-  }
-
-  public get lstLiniesRodalies() {
-    return this._lstLiniesRodalies;
-  }
-
-  constructor() {
+  constructor(private params: NavParams) {
     //addIcons({
     //TMB: 'assets/TMB.svg', 
     //Tram: 'assets/Tramvia_metropolita.svg', 
@@ -60,30 +65,11 @@ export class PopoverBusStopComponent implements OnInit {
     //RodaliesBarcelona: 'assets/Rodalies_Catalunya.svg',
     //BusStop: 'assets/Bus_Stop.svg'
     //});
+    this.parentPage = this.params.get('ref');
   }
 
-  ngOnInit() {
-    var lstLinies: any[] = JSON.parse(this.linies);
-    this._lstLiniesTram = lstLinies.filter(function (linia: any) { return linia.NOM_OPERADOR == "TRAM" });
-    this._lstLiniesTram = this.removeDups(this._lstLiniesTram);
-    this._lstLiniesBus = lstLinies.filter(function (linia: any) { return linia.NOM_OPERADOR == "TB" });
-    this._lstLiniesBus = this.removeDups(this._lstLiniesBus);
-    this._lstLiniesMetro = lstLinies.filter(function (linia: any) { return linia.NOM_OPERADOR == "Metro" });
-    this._lstLiniesMetro = this.removeDups(this._lstLiniesMetro);
-    this._lstLiniesFGC = lstLinies.filter(function (linia: any) { return linia.NOM_OPERADOR == "FGC" });
-    this._lstLiniesFGC = this.removeDups(this._lstLiniesFGC);
-    this._lstLiniesRodalies = lstLinies.filter(function (linia: any) { return linia.NOM_OPERADOR == "Rodalies" });
-    this._lstLiniesRodalies = this.removeDups(this._lstLiniesRodalies);
-  }
-
-  private removeDups = (arr: any[]): any[] => {
-    let unique: any[] = [];
-    for (let i = 0; i < arr.length; i++) {
-      if (unique.findIndex((x) => x.CODI_LINIA == arr[i].CODI_LINIA) === -1) {
-        unique.push(arr[i]);
-      }
-    }
-    return unique;
+  showConfirm() {
+    this.parentPage.showPosition(this.lat, this.lng);
   }
 
 }

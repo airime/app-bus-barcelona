@@ -25,12 +25,12 @@ export class PopoverBusStopComponent {
   @Input({ required: true, transform: toIBusStopConnArray }) set liniesFGC(value: IBusStopConn[]) { this._liniesFGC = value; };
   @Input({ required: true, transform: toIBusStopConnArray }) set liniesRodalies(value: IBusStopConn[]) { this._liniesRodalies = value; };
   
-  public readonly Tram = 'assets/Tramvia_metropolita.svg';
-  public readonly BusBarcelona = 'assets/Bus_Barcelona.svg';
-  public readonly MetroBarcelona = 'assets/Metro_Barcelona.svg';
-  public readonly FGC = 'assets/FGC.svg';
-  public readonly RodaliesBarcelona = 'assets/Rodalies_Catalunya.svg';
-  public readonly BusStop = 'assets/Bus_Stop.svg';
+  public readonly Tram = 'assets/icon/Tramvia_metropolita.svg';
+  public readonly BusBarcelona = 'assets/icon/Bus_Barcelona.svg';
+  public readonly MetroBarcelona = 'assets/icon/Metro_Barcelona.svg';
+  public readonly FGC = 'assets/icon/FGC.svg';
+  public readonly RodaliesBarcelona = 'assets/icon/Rodalies_Catalunya.svg';
+  public readonly BusStop = 'assets/icon/Bus_Stop.svg';
 
   public get liniesTram() { 
     return this._liniesTram;
@@ -58,12 +58,12 @@ export class PopoverBusStopComponent {
   constructor(private params: NavParams) {
     //addIcons({
     //TMB: 'assets/TMB.svg', 
-    //Tram: 'assets/Tramvia_metropolita.svg', 
-    //BusBarcelona: 'assets/Bus_Barcelona.svg',
-    //MetroBarcelona: 'assets/Metro_Barcelona.svg',
-    //FGC: 'assets/FGC.svg',
-    //RodaliesBarcelona: 'assets/Rodalies_Catalunya.svg',
-    //BusStop: 'assets/Bus_Stop.svg'
+    //Tram: 'assets/icon/Tramvia_metropolita.svg', 
+    //BusBarcelona: 'assets/icon/Bus_Barcelona.svg',
+    //MetroBarcelona: 'assets/icon/Metro_Barcelona.svg',
+    //FGC: 'assets/icon/FGC.svg',
+    //RodaliesBarcelona: 'assets/icon/Rodalies_Catalunya.svg',
+    //BusStop: 'assets/icon/Bus_Stop.svg'
     //});
     this.parentPage = this.params.get('ref');
   }

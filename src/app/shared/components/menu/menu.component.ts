@@ -35,7 +35,7 @@ export class MenuComponent  implements OnInit {
               private myCustomAnimation: MyCustomAnimation
   ) { 
     addIcons({
-      lines: 'assets/lines.svg'
+      lines: 'assets/icon/lines.svg'
     });
   }
 

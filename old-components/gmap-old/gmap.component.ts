@@ -28,7 +28,7 @@ export class GmapComponent implements OnInit, AfterViewInit {
   location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   readonly predefinedLat = PredefinedGeoPositions[geoPlaces.BarcelonaCenter].lat;
 
-  public readonly BusStop = 'assets/Bus_Stop.svg';
+  public readonly BusStop = 'assets/icon/Bus_Stop.svg';
   private readonly parser;
 
   // A marker with a custom inline SVG.

@@ -11,6 +11,8 @@ import { TupleCoordinates, LatLngFromTupla } from '../../model/internalTuples';
 import { TmbGenpropertiesService } from '../../services/tmb-genproperties.service';
 import { Router } from '@angular/router';
 
+const ShowPathEffecttimeout = 15000;
+
 @Component({
   selector: 'app-gmap',
   standalone: true,
@@ -19,19 +21,22 @@ import { Router } from '@angular/router';
   styleUrls: ['./gmap.component.scss'],
 })
 export class GmapComponent implements OnInit {
-  @Input({transform: numberAttribute}) lat?: number
-  @Input({transform: numberAttribute}) lng?: number
+  @Input({ transform: numberAttribute }) lat?: number
+  @Input({ transform: numberAttribute }) lng?: number
 
   public readonly BusStop = 'assets/icon/Bus_Stop.svg';
   readonly predefinedLat = PredefinedGeoPositions[geoPlaces.BarcelonaCenter].lat;
 
   public location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
+  private yourLocationVisible: boolean = false;
+  private drawStack!: google.maps.Polyline[];
   private map!: google.maps.Map;
+  private infoWindow!: google.maps.InfoWindow;
 
 
   private stops!: IStopInfo[];
 
-  // private readonly stops: IStop[] =
+  // private readonly stops: IStop[] = 
   //  [
   //   {
   //     NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
@@ -55,7 +60,7 @@ export class GmapComponent implements OnInit {
 
   constructor(private router: Router,
               private ngZone: NgZone,
-              private elementRef:ElementRef,
+              private elementRef: ElementRef,
               private localStorage: LocalStorageService,
               private staticData: StaticDataService,
               private tmbService: TmbGenpropertiesService) {
@@ -63,10 +68,11 @@ export class GmapComponent implements OnInit {
       that.stops = await that.staticData.data;
     }
     getData(this);
+    this.drawStack = [];
   }
 
   ngOnInit() {
-    let s = document.createElement("script");
+    const s = document.createElement("script");
     s.type = "text/javascript";
     s.src = "assets/callAngularClickParada.js";
     this.elementRef.nativeElement.appendChild(s);
@@ -78,6 +84,8 @@ export class GmapComponent implements OnInit {
       loadAngularFunctionClickParada: (codiParada: number) => this.clickParada(codiParada),
       loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: number, nomLinia: string) =>
         this.clickParadaLinia(codiParada, codiLinia, nomLinia),
+      loadAngularFunctionClickInterc: (lat: number, lng: number, toLat: number, toLng: number) =>
+        this.clickIntercanv(lat,lng,toLat,toLng),
     };
     setTimeout(() => { this.initMap(); }, 200);
     if (!!this.lat && !!this.lng) {
@@ -92,7 +100,7 @@ export class GmapComponent implements OnInit {
   }
 
   private async centerOnCurrentLocation() {
-    let location = await this.getCurrentLocation();
+    const location = await this.getCurrentLocation();
     this.map.setCenter(location);
   }
 
@@ -100,26 +108,26 @@ export class GmapComponent implements OnInit {
     return new Promise(async (resolve, reject) => {
       const geoLocation = await this.localStorage.getGeoPosition();
       if (!geoLocation) {
-          try {
-            let geoPosPermision = await Geolocation.checkPermissions();
-            console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
-            if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt') {
-              geoPosPermision = await Geolocation.requestPermissions();
-            }
-            if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted') {
-              const pos = await Geolocation.getCurrentPosition({ maximumAge: 75000, timeout: 25000 });
-              this.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-              console.log("NEW location: ", this.location.lat, this.location.lng);
-              this.localStorage.setGeoPosition(this.location);
-              resolve(this.location);
-            }
-            else {
-              reject('Permission: not granted');
-            }
-          } catch (err) {
-            reject(`Geolocation error: ${err}`);
-            throw ('Error accessing geolocation');
-          };
+        try {
+          let geoPosPermision = await Geolocation.checkPermissions();
+          console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
+          if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt') {
+            geoPosPermision = await Geolocation.requestPermissions();
+          }
+          if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted') {
+            const pos = await Geolocation.getCurrentPosition({ maximumAge: 75000, timeout: 25000 });
+            this.location = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            console.log("NEW location: ", this.location.lat, this.location.lng);
+            this.localStorage.setGeoPosition(this.location);
+            resolve(this.location);
+          }
+          else {
+            reject('Permission: not granted');
+          }
+        } catch (err) {
+          reject(`Geolocation error: ${err}`);
+          throw ('Error accessing geolocation');
+        };
       } else {
         this.location = geoLocation;
         console.log("DB resolved geolocation:", geoLocation);
@@ -165,15 +173,20 @@ export class GmapComponent implements OnInit {
         center: this.location,
         mapId: googleMapId,
         clickableIcons: false,
+        streetViewControl: false,
       });
       console.log("MAP CREATED");
+
+      const yourPositionMarker = this.createYourPositionMarker();
+      this.addYourLocationButton(this, this.map, yourPositionMarker);
+
       const infoWindow = new google.maps.InfoWindow({
         content: "",
         disableAutoPan: true,
       });
-
+      this.infoWindow = infoWindow;
       const markers: google.maps.marker.AdvancedMarkerElement[] =
-        this.stops.map( (stop: IStopInfo, i: number) => {
+        this.stops.map((stop: IStopInfo, i: number) => {
           const pinGlyph = new google.maps.marker.PinElement({
             glyph: this.busStopIcon,
             glyphColor: "white",
@@ -196,8 +209,8 @@ export class GmapComponent implements OnInit {
               this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA)
             });
           }
-        return marker;
-      });
+          return marker;
+        });
       new MarkerClusterer({ markers, map: this.map });
 
     } catch (err) {
@@ -206,55 +219,73 @@ export class GmapComponent implements OnInit {
     }
   }
 
-  async openInfoWindow(marker: any, infoWindow: google.maps.InfoWindow, codiParada: number, nomParada: string, codiInterc?: number, nomInterc?: string) {
-    let { liniesTram, liniesBus, liniesMetro, liniesFGC, liniesRodalies } = await this.tmbService.getBusStopConn(codiParada);
-    const contentStart = `\
-<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>
-<div style="height:12ex; margin:0; padding:0">
-  <a onclick='callAngularClickParada(${codiParada})'>\
-  <h5>${nomParada}</h5></a>\
-  <div>`
-  const contentEnd = `\
-  </div> \
-</div>`
-    let content: string = contentStart;
+  async openInfoWindow(marker: google.maps.marker.AdvancedMarkerElement,
+                       infoWindow: google.maps.InfoWindow,
+                       codiParada: number, nomParada: string,
+                       codiInterc?: number, nomInterc?: string) {
+    const { liniesTram, liniesBus, liniesMetro, liniesFGC, liniesRodalies } = await this.tmbService.getBusStopConn(codiParada);
+    let content: string = "";
+    let files = 0;
     if (!!liniesBus && Array.isArray(liniesBus) && liniesBus.length > 0) {
       let strLiniesBus = '<ion-icon size="large" src="/assets/icon/Bus_Barcelona.svg"></ion-icon> ';
       for (let line of liniesBus) {
-        strLiniesBus += `<a onclick='callAngularClickParadaLinia(${codiParada},${line.CODI_LINIA},"${line.NOM_LINIA}")'><ion-badge>${line.NOM_LINIA}</ion-badge></a>&nbsp;`;
+        strLiniesBus += `<a onclick='callAngularClickParadaLinia(${codiParada},${line.CODI_LINIA},"${line.NOM_LINIA}")'>`;
+        strLiniesBus += `<ion-badge style="--color:white;--background:#${line.COLOR_LINIA}">${line.NOM_LINIA}</ion-badge></a>&nbsp;`;
       }
       content += `<div>${strLiniesBus}</div>`;
+      files++;
     }
     if (!!liniesTram && Array.isArray(liniesTram) && liniesTram.length > 0) {
       let strLiniesTram = '<ion-icon size="large" src="/assets/icon/Tramvia_metropolita.svg"></ion-icon>&nbsp; ';
       for (let line of liniesTram) {
-        strLiniesTram += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+        strLiniesTram += `<ion-badge style="--color:white;--background:#${line.COLOR_LINIA}">${line.NOM_LINIA}</ion-badge>&nbsp;`;
       }
       content += `<div>${strLiniesTram}</div>`;
+      files++;
     }
     if (!!liniesMetro && Array.isArray(liniesMetro) && liniesMetro.length > 0) {
       let strLiniesMetro = '<ion-icon size="large" src="/assets/icon/Metro_Barcelona.svg"></ion-icon>&nbsp; ';
       for (let line of liniesMetro) {
-        strLiniesMetro += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+        strLiniesMetro += `<ion-badge style="--color:white;--background:#${line.COLOR_LINIA}">${line.NOM_LINIA}</ion-badge>&nbsp;`;
       }
       content += `<div>${strLiniesMetro}</div>`;
+      files++;
     }
     if (!!liniesFGC && Array.isArray(liniesFGC) && liniesFGC.length > 0) {
       let strLiniesFGC = '<ion-icon size="large" src="/assets/icon/FGC.svg"></ion-icon>&nbsp; ';
       for (let line of liniesFGC) {
-        strLiniesFGC += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+        strLiniesFGC += `<ion-badge style="--color:white;--background:#${line.COLOR_LINIA}">${line.NOM_LINIA}</ion-badge>&nbsp;`;
       }
       content += `<div>${strLiniesFGC}</div>`;
+      files++;
     }
     if (!!liniesRodalies && Array.isArray(liniesRodalies) && liniesRodalies.length > 0) {
       let strLiniesRodalies = '<ion-icon size="large" src="/assets/icon/Rodalies_Catalunya.svg"></ion-icon>&nbsp; ';
       for (let line of liniesRodalies) {
-        strLiniesRodalies += `<ion-badge>${line.NOM_LINIA}</ion-badge>&nbsp;`;
+        strLiniesRodalies += `<ion-badge style="--color:white;--background:#${line.COLOR_LINIA}">${line.NOM_LINIA}</ion-badge>&nbsp;`;
       }
       content += `<div>${strLiniesRodalies}</div>`;
+      files++;
     }
-    content += contentEnd;
-    infoWindow.setContent(content);
+    if (!!codiInterc && codiInterc > 0) {
+      const intercanvis = await this.tmbService.getBusInterconnConnPlain(codiInterc);
+      content += `<h6 style="color:black">Intercanvis</h6>`;
+      for (let intercanvi of intercanvis) {
+        content += `<a onclick='callAngularClickInterc(${marker.position!.lat},${marker.position!.lng},${intercanvi.GEOMETRY[1]},${intercanvi.GEOMETRY[0]})'>`;
+        content += `<ion-badge style="--color:white;--background:#${intercanvi.COLOR_LINIA}">${intercanvi.NOM_LINIA}</ion-badge></a>&nbsp;`;
+      }
+      files += 3;
+    }
+    const contentStart = `\
+<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>\
+<div style="height:${10+3.9*files}ex; margin:0; padding:0">\
+  <a onclick='callAngularClickParada(${codiParada})'>\
+  <h5>${nomParada}</h5></a>\
+  <div>`
+    const contentEnd = `\
+  </div> \
+</div>`
+    infoWindow.setContent(contentStart + content + contentEnd);
     infoWindow.open(this.map, marker);
   }
 
@@ -263,9 +294,16 @@ export class GmapComponent implements OnInit {
     this.router.navigate(['/private/stop/', codiParada]);
   }
 
-  /* TODO: Original codiLinia: string => codiLinia: number, nomLinia: string */
-  clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string )  {
+  clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string) {
     console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
+  }
+
+  clickIntercanv(lat: number, lng: number, toLat: number, toLng: number) {
+    const latLng = { lat, lng };
+    const toLatLng: google.maps.LatLngLiteral = { lat: toLat, lng: toLng };
+    this.showPathToMarker([ latLng, toLatLng ]);
+    this.map.setCenter(toLatLng);
+    this.infoWindow.close();
   }
 
   private get busStopIcon() {
@@ -293,7 +331,6 @@ export class GmapComponent implements OnInit {
     */
 
   }
-
 
   /*****************************************************/
   /* busStopIcon: OTHER WAYS TO USE images FOR MARKERS */
@@ -329,19 +366,84 @@ export class GmapComponent implements OnInit {
     title: "A marker using a custom PNG Image",
   });
   */
+ 
+ /*
+    // Hide the glyph.
+    const pinNoGlyph = new PinElement({
+        glyph: '',
+    });
+    const markerViewNoGlyph = new AdvancedMarkerElement({
+        map,
+        position: { lat: 37.415, lng: -122.01 },
+        content: pinNoGlyph.element,
+    });
+ */
 
+  private get personIcon() {
+    const content = document.createElement("div");
+    content.innerHTML = `<ion-icon size="small" src="/assets/icon/person-outline.svg"></ion-icon>`
+    return content;
+  }
 
-/**************************/
-/* ADD MY LOCATION BUTTON */
-/*
+  private createYourPositionMarker(): google.maps.marker.AdvancedMarkerElement {
+    const personGlyph = new google.maps.marker.PinElement({
+      glyph: this.personIcon,
+      glyphColor: "white",
+      background: "blue"
+    });
+    const yourPositionMarker = new google.maps.marker.AdvancedMarkerElement({
+      map: this.map,
+      content: personGlyph.element,
+      position: this.faisalabad
+    });
+    const content = yourPositionMarker.content as HTMLElement;
+    content.classList.add("drop");
+    return yourPositionMarker;
+  }
+   
+  private showPathToMarker(movePlanCoordinates: [ google.maps.LatLngLiteral, google.maps.LatLngLiteral ]) {
+    const lineSymbol = {
+      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+      strokeOpacity: 1.0,
+    };
+    const lineDotSymbol = {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillOpacity: 1.0,
+      strokeOpacity: 0.0,
+    };
+    console.log("path made: ", movePlanCoordinates);
+    const movePlan = new google.maps.Polyline({
+      path: movePlanCoordinates,
+      geodesic: true,
+      strokeColor: "#0000FF",
+      strokeOpacity: 0,
+      strokeWeight: 1.5,
+      icons: [{
+        icon: lineSymbol,
+        offset: '100%'
+      }, {
+        icon: lineDotSymbol,
+        offset: '0',
+        repeat: '10px'
+      }],
+      map: this.map
+    });
+    this.drawStack.push(movePlan);
+    setTimeout(() => { this.hidePathToMarker(); }, ShowPathEffecttimeout);
+  }
+  
+  private hidePathToMarker() {
+    console.log("path hidden");
+    let polyline = this.drawStack.shift();
+    polyline?.setMap(null);
+    polyline = undefined;
+}
 
-// https://stackoverflow.com/questions/24952593/how-to-add-my-location-button-in-google-maps
+  // https://stackoverflow.com/questions/24952593/how-to-add-my-location-button-in-google-maps
+  addYourLocationButton(that: GmapComponent, map: google.maps.Map, marker: google.maps.marker.AdvancedMarkerElement) {
+    const controlDiv = document.createElement('div');
 
-function addYourLocationButton(map, marker)
-{
-    var controlDiv = document.createElement('div');
-
-    var firstChild = document.createElement('button');
+    const firstChild = document.createElement('button');
     firstChild.style.backgroundColor = '#fff';
     firstChild.style.border = 'none';
     firstChild.style.outline = 'none';
@@ -355,7 +457,7 @@ function addYourLocationButton(map, marker)
     firstChild.title = 'Your Location';
     controlDiv.appendChild(firstChild);
 
-    var secondChild = document.createElement('div');
+    const secondChild = document.createElement('div');
     secondChild.style.margin = '5px';
     secondChild.style.width = '18px';
     secondChild.style.height = '18px';
@@ -366,53 +468,37 @@ function addYourLocationButton(map, marker)
     secondChild.id = 'you_location_img';
     firstChild.appendChild(secondChild);
 
-    google.maps.event.addListener(map, 'dragend', function() {
-        $('#you_location_img').css('background-position', '0px 0px');
+    google.maps.event.addListener(map, 'dragend', function () {
+      document.getElementById('you_location_img')?.style.setProperty('background-position', '0px 0px');
     });
 
-    firstChild.addEventListener('click', function() {
-        var imgX = '0';
-        var animationInterval = setInterval(function(){
-            if(imgX == '-18') imgX = '0';
-            else imgX = '-18';
-            $('#you_location_img').css('background-position', imgX+'px 0px');
+    firstChild.addEventListener('click', async function () {
+      if (that.yourLocationVisible) {
+        marker.position = that.faisalabad;
+        (marker.content as HTMLElement).style.opacity = "0";
+        that.yourLocationVisible = false;
+      } else {
+        let imgX = '0';
+        const animationInterval = setInterval(function () {
+          if (imgX == '-18') imgX = '0';
+          else imgX = '-18';
+          document!.getElementById('you_location_img')!.style.setProperty('background-position', imgX + 'px 0px');
         }, 500);
-        if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                marker.setPosition(latlng);
-                map.setCenter(latlng);
-                clearInterval(animationInterval);
-                $('#you_location_img').css('background-position', '-144px 0px');
-            });
+        try {
+          await that.getCurrentLocation();
+          marker.position = that.location;
+          (marker.content as HTMLElement).style.opacity = "1";
+          await that.centerOnCurrentLocation();
+          clearInterval(animationInterval);
+          document.getElementById('you_location_img')!.style.setProperty('background-position', '-144px 0px');
+          that.yourLocationVisible = true;
+        } catch {
+          clearInterval(animationInterval);
+          document.getElementById('you_location_img')!.style.setProperty('background-position', '0px 0px');
         }
-        else{
-            clearInterval(animationInterval);
-            $('#you_location_img').css('background-position', '0px 0px');
-        }
+      }
     });
-
-    controlDiv.index = 1;
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);
-}
-
-function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 15,
-        center: faisalabad
-    });
-    var myMarker = new google.maps.Marker({
-        map: map,
-        animation: google.maps.Animation.DROP,
-        position: faisalabad
-    });
-    addYourLocationButton(map, myMarker);
-}
-
-$(document).ready(function(e) {
-    initMap();
-});
-
-*/
+  }
 
 }

@@ -145,6 +145,7 @@ export class TmbGenpropertiesService {
     });
   }
 
+  /* TODO Sembla que no cal, només retorna bus */
   /* get OperatorLines */
   public async getBusInterconnConn(codiIntercanvi: number): Promise<OperatorLines> {
     return new Promise<OperatorLines>( resolve => {

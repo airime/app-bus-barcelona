@@ -9,6 +9,7 @@ import { IStop } from '../../model/ibusStop';
 import { StaticDataService } from '../../services/static-data.service'
 import { TupleCoordinates, LatLngFromTupla } from '../../model/internalTuples';
 import { TmbGenpropertiesService } from '../../services/tmb-genproperties.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-gmap',
@@ -30,7 +31,7 @@ export class GmapComponent implements OnInit {
 
   private stops!: IStopInfo[];
 
-  // private readonly stops: IStop[] = 
+  // private readonly stops: IStop[] =
   //  [
   //   {
   //     NOM_PARADA: 'Pl. Catalunya - Pg. de Gràcia',
@@ -52,11 +53,12 @@ export class GmapComponent implements OnInit {
   //   },
   // ];
 
-  constructor(private ngZone: NgZone,
+  constructor(private router: Router,
+              private ngZone: NgZone,
               private elementRef:ElementRef,
               private localStorage: LocalStorageService,
               private staticData: StaticDataService,
-              private tmbService: TmbGenpropertiesService) { 
+              private tmbService: TmbGenpropertiesService) {
     async function getData(that: GmapComponent): Promise<void> {
       that.stops = await that.staticData.data;
     }
@@ -71,12 +73,12 @@ export class GmapComponent implements OnInit {
 
     // @ts-ignore
     window['angularComponentReference'] = {
-      component: this, 
-      zone: this.ngZone, 
-      loadAngularFunctionClickParada: (codiParada: number) => this.clickParada(codiParada), 
+      component: this,
+      zone: this.ngZone,
+      loadAngularFunctionClickParada: (codiParada: number) => this.clickParada(codiParada),
       loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: number, nomLinia: string) =>
-        this.clickParadaLinia(codiParada, codiLinia, nomLinia), 
-    }; 
+        this.clickParadaLinia(codiParada, codiLinia, nomLinia),
+    };
     setTimeout(() => { this.initMap(); }, 200);
     if (!!this.lat && !!this.lng) {
       this.location = { lat: this.lat, lng: this.lng };
@@ -154,7 +156,7 @@ export class GmapComponent implements OnInit {
     try {
       // Request needed libraries.
       const { Map, InfoWindow } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
-      const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;   
+      const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
 
       await this.waitForLocation();
       console.log("current location: ", this.location);
@@ -169,7 +171,7 @@ export class GmapComponent implements OnInit {
         content: "",
         disableAutoPan: true,
       });
-    
+
       const markers: google.maps.marker.AdvancedMarkerElement[] =
         this.stops.map( (stop: IStopInfo, i: number) => {
           const pinGlyph = new google.maps.marker.PinElement({
@@ -181,7 +183,7 @@ export class GmapComponent implements OnInit {
             position: LatLngFromTupla(stop.GEOMETRY),
             content: pinGlyph.element,
           });
-      
+
           // markers can only be keyboard focusable when they have click listeners
           // open info window when marker is clicked
           if (!!stop.CODI_INTERC && stop.CODI_INTERC > 0) {
@@ -257,14 +259,15 @@ export class GmapComponent implements OnInit {
   }
 
   clickParada(codiParada: number) {
-    console.log(`CLICK ${codiParada}`)
+    console.log(`CLICK ${codiParada}`);
+    this.router.navigate(['/private/stop/', codiParada]);
   }
 
   /* TODO: Original codiLinia: string => codiLinia: number, nomLinia: string */
   clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string )  {
     console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
   }
-  
+
   private get busStopIcon() {
     const content = document.createElement("div");
     content.innerHTML = `<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>`
@@ -334,10 +337,10 @@ export class GmapComponent implements OnInit {
 
 // https://stackoverflow.com/questions/24952593/how-to-add-my-location-button-in-google-maps
 
-function addYourLocationButton(map, marker) 
+function addYourLocationButton(map, marker)
 {
     var controlDiv = document.createElement('div');
-    
+
     var firstChild = document.createElement('button');
     firstChild.style.backgroundColor = '#fff';
     firstChild.style.border = 'none';
@@ -351,7 +354,7 @@ function addYourLocationButton(map, marker)
     firstChild.style.padding = '0px';
     firstChild.title = 'Your Location';
     controlDiv.appendChild(firstChild);
-    
+
     var secondChild = document.createElement('div');
     secondChild.style.margin = '5px';
     secondChild.style.width = '18px';
@@ -362,7 +365,7 @@ function addYourLocationButton(map, marker)
     secondChild.style.backgroundRepeat = 'no-repeat';
     secondChild.id = 'you_location_img';
     firstChild.appendChild(secondChild);
-    
+
     google.maps.event.addListener(map, 'dragend', function() {
         $('#you_location_img').css('background-position', '0px 0px');
     });
@@ -388,7 +391,7 @@ function addYourLocationButton(map, marker)
             $('#you_location_img').css('background-position', '0px 0px');
         }
     });
-    
+
     controlDiv.index = 1;
     map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);
 }
@@ -408,7 +411,7 @@ function initMap() {
 
 $(document).ready(function(e) {
     initMap();
-}); 
+});
 
 */
 

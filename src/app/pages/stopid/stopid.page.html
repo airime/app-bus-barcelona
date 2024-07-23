@@ -14,14 +14,21 @@
         <ion-label>Tornar al mapa</ion-label>
       </ion-item>
       <ion-item [button]="true" (click)="getStop()">
-        <ion-label>Parada número {{currentStop}}</ion-label>
+        <ion-label>
+          @if (currentLine >= 0) {
+            <ion-badge [style]="cssBadgeLinia">{{nomLinia}}</ion-badge>&nbsp;
+          }
+          Parada número {{currentStop}}
+        </ion-label>
         <ion-note color="secondary" slot="end">Actualitzar</ion-note>
       </ion-item>
       <ion-item>
       </ion-item>
       @for (bus of buses; track bus.line) {
         <ion-item>
-          <ion-badge slot="start">{{bus.line}}</ion-badge>
+          @if (isIiBusStop(bus)) {
+            <ion-badge slot="start">{{bus.line}}</ion-badge>
+          }
           <ion-label>{{bus.destination}}</ion-label>
           <ion-note color="primary" slot="end">{{bus['text-ca']}}</ion-note>
         </ion-item>

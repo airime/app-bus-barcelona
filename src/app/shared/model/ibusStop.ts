@@ -1,17 +1,13 @@
-export interface IStop {
-  CODI_PARADA: number;
-  NOM_PARADA: string;
-  posicio: google.maps.LatLngLiteral;
-  linies?: string[];
-}
-
-export interface IStopResponse {
+export interface IiBusResponse<T> {
   status: string,
-  data: {ibus: IBus[]}
+  data: {ibus: T[]}
 }
 
-export interface IBus {
+export interface IiBusRouteStop {
   destination: string,
-  line: string,
   'text-ca': string
+}
+
+export interface IiBusStop extends IiBusRouteStop {
+  line: string,
 }

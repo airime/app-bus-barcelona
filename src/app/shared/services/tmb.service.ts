@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { urlTmbApi, TmbParamsType } from '../model/tmbParams';
-import { IStopResponse } from '../model/ibusStop';
+import { IiBusStop, IiBusResponse, IiBusRouteStop } from '../model/ibusStop';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tmb_api_id, tmb_api_key } from 'src/app/api.key';
@@ -80,11 +80,18 @@ export class TmbService {
   /**************************/
   /* interactive calls iBus */
 
-  public getiBusStop(codiParada: number): Observable<IStopResponse> {
+  public getiBusStop(codiParada: number): Observable<IiBusResponse<IiBusStop>> {
     const request = `ibus/stops/${codiParada}`;
     const url = urlTmbApi + request + this.encodeParams(this.tmbParams);
     //used this.encodeParams(this.tmbParams) instead of `?app_key=${tmb_api_key}&app_id=${tmb_api_id}`;
-    return this.http.get<IStopResponse>(url);
+    return this.http.get<IiBusResponse<IiBusStop>>(url);
+  }
+
+  public getiBusStopLine(codiParada: number, codiLinia: number): Observable<IiBusResponse<IiBusRouteStop>> {
+    const request = `ibus/lines/${codiLinia}/stops/${codiParada}`;
+    const url = urlTmbApi + request + this.encodeParams(this.tmbParams);
+    //used this.encodeParams(this.tmbParams) instead of `?app_key=${tmb_api_key}&app_id=${tmb_api_id}`;
+    return this.http.get<IiBusResponse<IiBusRouteStop>>(url);
   }
 
   /*****************************/

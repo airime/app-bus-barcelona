@@ -9,7 +9,7 @@ import { userProfile } from 'src/app/shared/model/userProfile';
 import { isNullOrEmpty } from 'src/app/shared/util/util';
 import { TmbService } from 'src/app/shared/services/tmb.service';
 import { ActivatedRoute } from '@angular/router';
-import { IBus } from 'src/app/shared/model/ibusStop';
+import { IiBusRouteStop, IiBusStop } from 'src/app/shared/model/ibusStop';
 
 
 @Component({
@@ -24,7 +24,10 @@ export class StopidPage implements OnInit {
   readonly title = "Informació de parada";
 
   public currentStop: number = -1;
-  public buses: IBus[] = [];
+  public currentLine: number = -1;
+  public colorLinia?: string;
+  public nomLinia?: string;
+  public buses: (IiBusStop[] | IiBusRouteStop[]) = [];
 
   private currentUser!: userProfile | null;
 
@@ -41,13 +44,31 @@ export class StopidPage implements OnInit {
     this.getStop();
   }
 
+  public get cssBadgeLinia(): string {        
+    return !!this.colorLinia? `--color:white;--background:#${this.colorLinia}` : "";
+  }
+
+  public isIiBusStop(linia: IiBusStop | IiBusRouteStop): linia is IiBusStop {
+    return 'line' in linia;
+}
+
   getStop(): void {
     this.currentStop = Number(this.route.snapshot.params['id']);
-    this.tmbApiService.getiBusStop(this.currentStop)
-    .subscribe(response => {
-      if (response.status === 'success') this.buses = response.data.ibus;
-      else throw('L\'obtenció de dades ha fallat, torna-ho a intentar');
-    });
+    const linia = this.route.snapshot.params['line'];
+    this.currentLine = linia ? Number(linia) : -1;
+    if (this.currentLine > 0) {
+      this.tmbApiService.getiBusStopLine(this.currentStop, this.currentLine)
+      .subscribe(response => {
+        if (response.status === 'success') this.buses = response.data.ibus;
+        else throw('L\'obtenció de dades ha fallat, torna-ho a intentar');
+      });
+    } else {
+      this.tmbApiService.getiBusStop(this.currentStop)
+      .subscribe(response => {
+        if (response.status === 'success') this.buses = response.data.ibus;
+        else throw('L\'obtenció de dades ha fallat, torna-ho a intentar');
+      });
+    }
   }
 
   goBack(): void {

@@ -3,12 +3,11 @@ import { Geolocation } from '@capacitor/geolocation';
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
-import { LocalStorageService } from '../../services/local-storage.service';
-import { IStopInfo } from '../../model/internalInterfaces';
-import { IStop } from '../../model/ibusStop';
-import { StaticDataService } from '../../services/static-data.service'
-import { TupleCoordinates, LatLngFromTupla } from '../../model/internalTuples';
 import { TmbGenpropertiesService } from '../../services/tmb-genproperties.service';
+import { IStopInfo } from '../../model/internalInterfaces';
+import { LocalStorageService } from '../../services/local-storage.service';
+import { StaticDataService } from '../../services/static-data.service'
+import { LatLngFromTupla } from '../../model/internalTuples';
 import { Router } from '@angular/router';
 
 const ShowPathEffecttimeout = 15000;

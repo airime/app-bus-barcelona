@@ -8,6 +8,10 @@
     width: 100%;
   }
 
+  a {
+    cursor: pointer;
+  }
+
   .drop {
     animation: drop 0.3s linear forwards var(--delay-time);
   }

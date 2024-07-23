@@ -163,7 +163,7 @@ export class TmbGenpropertiesService {
   public async getBusInterconnConnPlain(codiIntercanvi: number): Promise<IInterconnConn[]> {
     return new Promise<IInterconnConn[]>( resolve => {
       this.tmbService.getBusInterconnConn(codiIntercanvi).subscribe(async (result: any) => {
-        resolve(<IInterconnConn[]>this.properties(result));
+        resolve(<IInterconnConn[]>this.properties(result).sort(sortRouteFamilies));
       });
     });
   }

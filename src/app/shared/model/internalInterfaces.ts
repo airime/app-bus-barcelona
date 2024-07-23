@@ -32,6 +32,8 @@ export type NomFamiliaMetro = "Metro" | "Metro-Funicular";
 export type CodiFamilia = CodiFamiliaBus | CodiFamiliaMetro;
 export type NomFamilia = NomFamiliaBus | NomFamiliaMetro;
 
+export type Sentit = 'A' | 'T';
+
 export interface IRouteNumber {
   ID_OPERADOR: IdOperador;
   NOM_OPERADOR: Operador;
@@ -53,6 +55,11 @@ export interface IStopInfo {
   NOM_INTERC?: string | null;
   LINIES?: IBusStopConn[];
   CONNEXIONS?: IStopInfo[];
+}
+
+export interface IDirectionalStopInfo extends IStopInfo {
+  SENTIT: Sentit;
+  ORDRE: number;
 }
 
 export interface IBusStopConn {

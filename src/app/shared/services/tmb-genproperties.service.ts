@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TmbService } from './tmb.service';
-import { IRouteNumber, IStopInfo, IBusStopConn, IInterconnConn, sortRouteFamilies } from '../model/internalInterfaces';
-import { TupleLinia, TwoWayStops, OperatorLines } from '../model/internalTuples';
+import { IRouteNumber, IStopInfo, IBusStopConn, IInterconnConn, sortRouteFamilies, IDirectionalStopInfo } from '../model/internalInterfaces';
+import { TupleLinia, TwoWayStops, OperatorLines, TwoWayTimeTable } from '../model/internalTuples';
+import { IDirectionalTimeTable } from '../model/ibusStop';
 
 @Injectable({
   providedIn: 'root'
@@ -41,9 +42,32 @@ export class TmbGenpropertiesService {
     });
   }
 
+  /**********************************************/
+  /***   INTERACTIVE FUNCTIONALITY: HORARIS   ***/
+  
+  public async getRouteTimetable(codiLinia: number): Promise<TwoWayTimeTable>
+  {
+    return new Promise<TwoWayTimeTable>(resolve => {
+      this.tmbService.getBusRouteStops(codiLinia).subscribe((result: any) => {
+        let stops = <IDirectionalTimeTable[]>this.properties(result);
+
+        // anada
+        let outwardTimeTable = stops.filter(function (stop: IDirectionalTimeTable) {    // Filter by direction
+          return stop.SENTIT == "A";
+        });
+
+        // tornada: Same for the opposite direction
+        let returnTimeTable = stops.filter(function (stop: IDirectionalTimeTable) {    // Filter by direction
+          return stop.SENTIT == "T";
+        });
+        resolve({ outwardTimeTable, returnTimeTable });
+      });
+    });
+  }
+
   /*************************************/
   /***   INTERACTIVE FUNCTIONALITY   ***/
-  
+
   // Línies d'autobús en una tupla
   public async getRouteNumbers(): Promise<TupleLinia[]> {
     return new Promise<TupleLinia[]>(resolve => {
@@ -77,25 +101,24 @@ export class TmbGenpropertiesService {
       });
     });
   }
-
   
   public async getBusRouteStops(codiLinia: number): Promise<TwoWayStops>
   {
     return new Promise<TwoWayStops>(resolve => {
       this.tmbService.getBusRouteStops(codiLinia).subscribe((result: any) => {
-        let stops = <IStopInfo[]>this.properties(result);
+        let stops = <IDirectionalStopInfo[]>this.properties(result);
 
         // anada
-        let outwardBusStops = stops.filter(function (stop: any) {    // Filter by direction
+        let outwardBusStops = stops.filter(function (stop: IDirectionalStopInfo) {    // Filter by direction
           return stop.SENTIT == "A";
-        }).sort(function (stop1: any, stop2: any) { // Order
+        }).sort(function (stop1: IDirectionalStopInfo, stop2: IDirectionalStopInfo) { // Order
           return stop1.ORDRE - stop2.ORDRE;
         });
 
         // tornada: Same for the opposite direction
-        let returnBusStops = stops.filter(function (stop: any) {    // Filter by direction
+        let returnBusStops = stops.filter(function (stop: IDirectionalStopInfo) {    // Filter by direction
           return stop.SENTIT == "T";
-        }).sort(function (stop1: any, stop2: any) { // Order
+        }).sort(function (stop1: IDirectionalStopInfo, stop2: IDirectionalStopInfo) { // Order
           return stop1.ORDRE - stop2.ORDRE;
         });
         resolve({ outwardBusStops, returnBusStops });

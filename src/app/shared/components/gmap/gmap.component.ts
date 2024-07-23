@@ -8,6 +8,7 @@ import { IStopInfo } from '../../model/internalInterfaces';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { StaticDataService } from '../../services/static-data.service'
 import { LatLngFromTupla } from '../../model/internalTuples';
+import { NavigationExtras, Router } from '@angular/router';
 
 const ShowPathEffecttimeout = 15000;
 
@@ -36,7 +37,8 @@ export class GmapComponent implements OnInit {
 
   private readonly faisalabad = { lat: 31.417777452015976, lng: 73.07985091103124 } //a tomar por saco
 
-  constructor(private ngZone: NgZone,
+  constructor(private router: Router,
+              private ngZone: NgZone,
               private elementRef: ElementRef,
               private localStorage: LocalStorageService,
               private staticData: StaticDataService,
@@ -59,8 +61,8 @@ export class GmapComponent implements OnInit {
       component: this,
       zone: this.ngZone,
       loadAngularFunctionClickParada: (codiParada: number) => this.clickParada(codiParada),
-      loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: number, nomLinia: string) =>
-        this.clickParadaLinia(codiParada, codiLinia, nomLinia),
+      loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: number, nomLinia: string, colorLinia: string) =>
+        this.clickParadaLinia(codiParada, codiLinia, nomLinia, colorLinia),
       loadAngularFunctionClickInterc: (lat: number, lng: number, toLat: number, toLng: number) =>
         this.clickIntercanv(lat,lng,toLat,toLng),
     };
@@ -182,7 +184,7 @@ export class GmapComponent implements OnInit {
             });
           }
           else {
-            marker.addListener("click", () => {
+            marker.addListener("click", async () => {
               this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA)
             });
           }
@@ -206,7 +208,7 @@ export class GmapComponent implements OnInit {
     if (!!liniesBus && Array.isArray(liniesBus) && liniesBus.length > 0) {
       let strLiniesBus = '<ion-icon size="large" src="/assets/icon/Bus_Barcelona.svg"></ion-icon> ';
       for (let line of liniesBus) {
-        strLiniesBus += `<a onclick='callAngularClickParadaLinia(${codiParada},${line.CODI_LINIA},"${line.NOM_LINIA}")'>`;
+        strLiniesBus += `<a onclick='callAngularClickParadaLinia(${codiParada},${line.CODI_LINIA},"${line.NOM_LINIA}","${line.COLOR_LINIA}")'>`;
         strLiniesBus += `<ion-badge style="--color:white;--background:#${line.COLOR_LINIA}">${line.NOM_LINIA}</ion-badge></a>&nbsp;`;
       }
       content += `<div>${strLiniesBus}</div>`;
@@ -267,10 +269,13 @@ export class GmapComponent implements OnInit {
   }
 
   clickParada(codiParada: number) {
+    this.router.navigate(['/private/stop/', codiParada]);
     console.log(`CLICK ${codiParada}`)
   }
 
-  clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string) {
+  clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string, colorLinia: string) {
+    this.router.navigate(['/private/stop/', codiParada, codiLinia], 
+                         { queryParams: { nomLinia: nomLinia, colorLinia: colorLinia } } );
     console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
   }
 

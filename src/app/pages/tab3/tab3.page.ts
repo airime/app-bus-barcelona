@@ -70,8 +70,7 @@ export class Tab3Page implements OnInit {
       // Remove query params
       this.router.navigate([], {
         queryParams: {
-          'yourParamName': null,
-          'youCanRemoveMultiple': null,
+          'selectedLineKey': null,
         },
         queryParamsHandling: 'merge'
       });

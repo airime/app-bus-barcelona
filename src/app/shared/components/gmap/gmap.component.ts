@@ -208,7 +208,7 @@ export class GmapComponent implements OnInit {
     if (!!liniesBus && Array.isArray(liniesBus) && liniesBus.length > 0) {
       let strLiniesBus = '<ion-icon size="large" src="/assets/icon/Bus_Barcelona.svg"></ion-icon> ';
       for (let line of liniesBus) {
-        strLiniesBus += `<a onclick='callAngularClickParadaLinia(${codiParada},${line.CODI_LINIA},"${line.NOM_LINIA}","${line.COLOR_LINIA}")'>`;
+        strLiniesBus += `<a style="cursor:pointer" onclick='callAngularClickParadaLinia(${codiParada},${line.CODI_LINIA},"${line.NOM_LINIA}","${line.COLOR_LINIA}")'>`;
         strLiniesBus += `<ion-badge style="--color:white;--background:#${line.COLOR_LINIA}">${line.NOM_LINIA}</ion-badge></a>&nbsp;`;
       }
       content += `<div>${strLiniesBus}</div>`;
@@ -250,7 +250,7 @@ export class GmapComponent implements OnInit {
       const intercanvis = await this.tmbService.getBusInterconnConnPlain(codiInterc);
       content += `<h6 style="color:black">Intercanvis</h6>`;
       for (let intercanvi of intercanvis) {
-        content += `<a onclick='callAngularClickInterc(${marker.position!.lat},${marker.position!.lng},${intercanvi.GEOMETRY[1]},${intercanvi.GEOMETRY[0]})'>`;
+        content += `<a style="cursor:pointer" onclick='callAngularClickInterc(${marker.position!.lat},${marker.position!.lng},${intercanvi.GEOMETRY[1]},${intercanvi.GEOMETRY[0]})'>`;
         content += `<ion-badge style="--color:white;--background:#${intercanvi.COLOR_LINIA}">${intercanvi.NOM_LINIA}</ion-badge></a>&nbsp;`;
       }
       files += 3;
@@ -258,7 +258,7 @@ export class GmapComponent implements OnInit {
     const contentStart = `\
 <ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>\
 <div style="height:${10+3.9*files}ex; margin:0; padding:0">\
-  <a onclick='callAngularClickParada(${codiParada})'>\
+  <a style="cursor:pointer" onclick='callAngularClickParada(${codiParada})'>\
   <h5>${nomParada}</h5></a>\
   <div>`
     const contentEnd = `\
@@ -270,13 +270,15 @@ export class GmapComponent implements OnInit {
 
   clickParada(codiParada: number) {
     console.log(`CLICK ${codiParada}`);
+    this.infoWindow.close();
     this.router.navigate(['/private/stop/', codiParada]);
   }
 
   clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string, colorLinia: string) {
+    console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
+    this.infoWindow.close();
     this.router.navigate(['/private/stop/', codiParada, codiLinia], 
                          { queryParams: { nomLinia: nomLinia, colorLinia: colorLinia } } );
-    console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
   }
 
   clickIntercanv(lat: number, lng: number, toLat: number, toLng: number) {
@@ -382,6 +384,8 @@ export class GmapComponent implements OnInit {
     return yourPositionMarker;
   }
    
+  private idTimeout?: any;
+
   private showPathToMarker(movePlanCoordinates: [ google.maps.LatLngLiteral, google.maps.LatLngLiteral ]) {
     const lineSymbol = {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
@@ -410,14 +414,17 @@ export class GmapComponent implements OnInit {
       map: this.map
     });
     this.drawStack.push(movePlan);
-    setTimeout(() => { this.hidePathToMarker(); }, ShowPathEffecttimeout);
+    if (!!this.idTimeout) clearTimeout(this.idTimeout);
+    this.idTimeout = setTimeout(() => { this.hidePathToMarker(); }, ShowPathEffecttimeout);
   }
   
   private hidePathToMarker() {
-    console.log("path hidden");
-    let polyline = this.drawStack.shift();
-    polyline?.setMap(null);
-    polyline = undefined;
+    console.log("all paths hidden");
+    while (this.drawStack.length > 0) {
+      let polyline = this.drawStack.shift();
+      polyline?.setMap(null);
+      polyline = undefined;
+    }
 }
 
   // https://stackoverflow.com/questions/24952593/how-to-add-my-location-button-in-google-maps

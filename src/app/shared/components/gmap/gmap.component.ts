@@ -5,8 +5,6 @@ import { googleMapId } from '../../../api.key';
 import { PredefinedGeoPositions, geoPlaces } from '../../util/predefinedGeoPlaces';
 import { TmbGenpropertiesService } from '../../services/tmb-genproperties.service';
 import { IStopInfo } from '../../model/internalInterfaces';
-import { TmbGenpropertiesService } from '../../services/tmb-genproperties.service';
-import { IStopInfo } from '../../model/internalInterfaces';
 import { LocalStorageService } from '../../services/local-storage.service';
 import { StaticDataService } from '../../services/static-data.service'
 import { LatLngFromTupla } from '../../model/internalTuples';

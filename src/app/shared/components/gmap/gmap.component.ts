@@ -101,11 +101,15 @@ export class GmapComponent implements OnInit {
             resolve(this.location);
           }
           else {
+            console.log("Geolocation: permission not granted.");
+            this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCiutatVella];
             reject('Permission: not granted');
           }
         } catch (err) {
+          console.log(err);
+          this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCiutatVella];
           reject(`Geolocation error: ${err}`);
-          throw ('Error accessing geolocation');
+          throw (err);
         };
       } else {
         this.location = geoLocation;
@@ -162,7 +166,7 @@ export class GmapComponent implements OnInit {
       const infoWindow = new google.maps.InfoWindow({
         content: "",
         disableAutoPan: true,
-      });
+      });      
       this.infoWindow = infoWindow;
       const markers: google.maps.marker.AdvancedMarkerElement[] =
         this.stops.map((stop: IStopInfo, i: number) => {
@@ -180,12 +184,20 @@ export class GmapComponent implements OnInit {
           // open info window when marker is clicked
           if (!!stop.CODI_INTERC && stop.CODI_INTERC > 0) {
             marker.addListener("click", async () => {
-              await this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA, stop.CODI_INTERC, stop.NOM_INTERC!)
+              if (this.infoWindow.isOpen) {
+                this.infoWindow.close();
+              } else {
+                await this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA, stop.CODI_INTERC, stop.NOM_INTERC!)
+              }
             });
           }
           else {
             marker.addListener("click", async () => {
-              this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA)
+              if (this.infoWindow.isOpen) {
+                this.infoWindow.close();
+              } else {
+                this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA)
+              }
             });
           }
           return marker;
@@ -278,7 +290,7 @@ export class GmapComponent implements OnInit {
     console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
     this.infoWindow.close();
     this.router.navigate(['/private/stop/', codiParada, codiLinia], 
-                         { queryParams: { nomLinia: nomLinia, colorLinia: colorLinia } } );
+                         { queryParams: { nomLinia: nomLinia, colorLinia: colorLinia } } as NavigationExtras);
   }
 
   clickIntercanv(lat: number, lng: number, toLat: number, toLng: number) {

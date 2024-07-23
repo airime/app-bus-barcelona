@@ -7,7 +7,7 @@
  */
 
 import { ErrorHandler, Injectable, NgZone } from '@angular/core';
-import { toErrorWithMessage } from '../util/errors';
+import { isErrorWithMessage, toErrorWithMessage } from '../util/errors';
 import { MessageHubService } from './messageHub.service';
 import { IErrorDismissedMessage, IErrorMessage } from '../interfaces/IMessage';
 import { ToastController } from '@ionic/angular';
@@ -62,6 +62,7 @@ export class ErrorService implements ErrorHandler {
             this.zone.run(() => {
                     try {
                         console.log(`ErrorService.handleError, ${err['name']?? "err"}` + " -> ", err);
+                        if (!isErrorWithMessage(err)) err = toErrorWithMessage(err);
                         const errText = err["message"];
                         const message = {
                             tag: "error",

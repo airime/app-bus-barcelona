@@ -18,6 +18,10 @@ export class TmbService {
   // parades d'autobús d'un intercanvi
   private readonly propertiesInterconnBusStops = "GEOMETRY,CODI_PARADA,NOM_PARADA";
 
+  /******************************/
+  /* interactive timetable call */
+  private readonly propertiesRouteTimeTable = "ID_TIPUS_DIA,SENTIT,DESC_LINIA,DESC_TIPUS_DIA,DESC_SENTIT,PRIMERA_SORTIDA,ULTIMA_SORTIDA"
+
   /*********************/
   /* interactive calls */
   private readonly propertiesRouteNumbers = "ID_OPERADOR,NOM_OPERADOR,CODI_FAMILIA,NOM_FAMILIA,CODI_LINIA,NOM_LINIA,DESC_LINIA,ORIGEN_LINIA,DESTI_LINIA,COLOR_LINIA";
@@ -92,6 +96,15 @@ export class TmbService {
     const url = urlTmbApi + request + this.encodeParams(this.tmbParams);
     //used this.encodeParams(this.tmbParams) instead of `?app_key=${tmb_api_key}&app_id=${tmb_api_id}`;
     return this.http.get<IiBusResponse<IiBusRouteStop>>(url);
+  }
+
+  /**************************************/
+  /* interactive calls transit: Horaris */
+
+  public getRouteTimetable(codiLinia: number) {
+    const request = `transit/linies/bus/${codiLinia}/horaris`;
+    const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesRouteTimeTable));
+    return this.http.get(url);
   }
 
   /*****************************/

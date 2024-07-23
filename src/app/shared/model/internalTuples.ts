@@ -1,4 +1,5 @@
 import { IStopInfo, IBusStopConn } from "./internalInterfaces";
+import { ITimeTable } from "./ibusStop";
 
 /* COMPTE! Primer lng, seguit de lat */
 /* TupleCoordinates [lng, lat] */
@@ -9,6 +10,9 @@ export type TupleLinia = [string, number, string, string, string];
 
 /* OWN SERVICES FUNCTIONS RETURN TYPES */
 export type TwoWayStops = { outwardBusStops: IStopInfo[], returnBusStops: IStopInfo[] };
+
+export type TwoWayTimeTable = { outwardTimeTable: ITimeTable[], returnTimeTable: ITimeTable[] };
+
 export type OperatorLines = {
     liniesTram: IBusStopConn[],
     liniesBus: IBusStopConn[],

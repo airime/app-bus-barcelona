@@ -24,7 +24,7 @@
       </ion-item>
       <ion-item>
       </ion-item>
-      @for (bus of buses; track bus.line) {
+      @for (bus of buses; track bus.destination) {
         <ion-item>
           @if (isIiBusStop(bus)) {
             <ion-badge slot="start">{{bus.line}}</ion-badge>

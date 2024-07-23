@@ -27,7 +27,7 @@ export class TabsPage {
     private pushService: PushService
   ) {
     if (Capacitor.isPluginAvailable('PushNotifications')) {
-      //this.pushService.registerNotifications();
+      this.pushService.registerNotifications();
       this.pushService.addListeners();
     }
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);

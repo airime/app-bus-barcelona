@@ -12,12 +12,15 @@ $RECYCLE.BIN/
 *.log
 log.txt
 
-*.prova.ts
-*.ts.prova
-
 /.sourcemaps
 /.versions
 /coverage
+
+# proves i codi temporal de model
+*.prova.ts
+*.ts.prova
+*.ts.model
+*.html.model
 
 # Ionic
 /.ionic

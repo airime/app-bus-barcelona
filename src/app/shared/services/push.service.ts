@@ -34,9 +34,17 @@ export class PushService {
     }
 
     if (permStatus.receive !== 'granted') {
+      // Sure? throw error cause of user answer?
       throw new Error('User denied permissions!');
     }
 
+    // TODO !
+    // AIXO PRODUEIX LA CAIGUDA DE L'APP
+    // Probablement queda per configurar en Firebase...
+    // S'ha d'editar AndroidManifest per afegir
+    // FirebaseMessagingService
+    // Però els exemples són per a Java / Kotlin
+    // https://firebase.google.com/docs/cloud-messaging/android/client?hl=es-419
     await PushNotifications.register();
   }
 

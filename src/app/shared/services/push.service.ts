@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PushNotifications } from '@capacitor/push-notifications';
+import { PushNotificationSchema, PushNotifications, ActionPerformed, Token } from '@capacitor/push-notifications';
 
 @Injectable({
   providedIn: 'root'
@@ -9,19 +9,19 @@ export class PushService {
   constructor() { }
 
   async addListeners() {
-    await PushNotifications.addListener('registration', token => {
+    await PushNotifications.addListener('registration', (token: Token) => {
       console.info('Registration token: ', token.value);
     });
 
-    await PushNotifications.addListener('registrationError', err => {
+    await PushNotifications.addListener('registrationError', (err: any) => {
       console.error('Registration error: ', err.error);
     });
 
-    await PushNotifications.addListener('pushNotificationReceived', notification => {
+    await PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
       console.log('Push notification received: ', notification);
     });
 
-    await PushNotifications.addListener('pushNotificationActionPerformed', notification => {
+    await PushNotifications.addListener('pushNotificationActionPerformed', (notification: ActionPerformed) => {
       console.log('Push notification action performed', notification.actionId, notification.inputValue);
     });
   }
@@ -34,17 +34,22 @@ export class PushService {
     }
 
     if (permStatus.receive !== 'granted') {
-      // Sure? throw error cause of user answer?
+      /**
+       * ? Sure? throw error because of user answer?
+       */
       throw new Error('User denied permissions!');
     }
 
-    // TODO !
-    // AIXO PRODUEIX LA CAIGUDA DE L'APP
-    // Probablement queda per configurar en Firebase...
-    // S'ha d'editar AndroidManifest per afegir
-    // FirebaseMessagingService
-    // Però els exemples són per a Java / Kotlin
-    // https://firebase.google.com/docs/cloud-messaging/android/client?hl=es-419
+    // FIXME
+    /**
+     * ! TODO
+     * AIXO PRODUEIX LA CAIGUDA DE L'APP
+     * Probablement queda per configurar en Firebase...
+     * S'ha d'editar AndroidManifest per afegir
+     * FirebaseMessagingService
+     * Però els exemples són per a Java / Kotlin
+     * https://firebase.google.com/docs/cloud-messaging/android/client?hl=es-419
+     */
     await PushNotifications.register();
   }
 

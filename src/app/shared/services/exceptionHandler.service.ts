@@ -10,7 +10,8 @@ import { ErrorHandler, Injectable, NgZone } from '@angular/core';
 import { isErrorWithMessage, toErrorWithMessage } from '../util/errors';
 import { MessageHubService } from './messageHub.service';
 import { IErrorDismissedMessage, IErrorMessage } from '../interfaces/IMessage';
-import { ToastController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
+//import { ToastController } from '@ionic/angular';
 
 
 @Injectable({
@@ -19,35 +20,57 @@ import { ToastController } from '@ionic/angular';
 export class ErrorService implements ErrorHandler {
 
     constructor(
-        private toastController: ToastController,
+        //private toastController: ToastController,
+        private alertController: AlertController,
         private messageService: MessageHubService,
         private zone: NgZone) { }
 
-
-    private async presentToast(position: 'top' | 'middle' | 'bottom',
-                                message: IErrorMessage) {
-        const toast = await this.toastController.create({
-            message: (message.name?? 'Error') + ': ' + message.content,
+    async presentAlert(message: IErrorMessage) {
+        const alert = await this.alertController.create({
+            header: message.name ?? 'Error',
+            message: message.content,
             buttons: [
                 {
-                  text: 'Entendido',
-                  role: 'cancel',
-                  handler: () => {
-                    console.log('Toast error Cancel clicked');
-                  }
+                    text: 'Entendido',
+                    role: 'cancel',
+                    handler: () => {
+                        console.log('Alert error Cancel clicked');
+                    }
                 }
-              ],
-            position: position,
+            ],
         });
-        toast.onDidDismiss().then((val) => {  
-            console.log('Toast error Dismissed');
+        alert.onDidDismiss().then((val) => {
+            console.log('Alert error Dismissed');
             const dismissedMessage: IErrorDismissedMessage = { tag: "dismissError", content: undefined }
             this.messageService.sendMessage(dismissedMessage);
-          });  
-        await toast.present();
+        });
+        await alert.present();
     }
 
-          
+    // private async presentToast(position: 'top' | 'middle' | 'bottom',
+    //                         message: IErrorMessage) {
+    //   const toast = await this.toastController.create({
+    //     message: (message.name?? 'Error') + ': ' + message.content,
+    //     buttons: [
+    //         {
+    //           text: 'Entendido',
+    //           role: 'cancel',
+    //           handler: () => {
+    //             console.log('Toast error Cancel clicked');
+    //           }
+    //         }
+    //       ],
+    //     position: position,
+    // });
+    // toast.onDidDismiss().then((val) => {  
+    //     console.log('Toast error Dismissed');
+    //     const dismissedMessage: IErrorDismissedMessage = { tag: "dismissError", content: undefined }
+    //     this.messageService.sendMessage(dismissedMessage);
+    //   });  
+    // await toast.present();
+    //}
+
+
     /**
      * This function is a global javascript error handler. It will catch all javascript errors
      * produced within the application. The docs at https://angular.dev/api/core/ErrorHandler
@@ -60,22 +83,22 @@ export class ErrorService implements ErrorHandler {
         // }
         try {
             this.zone.run(() => {
-                    try {
-                        console.log(`ErrorService.handleError, ${err['name']?? "err"}` + " -> ", err);
-                        if (!isErrorWithMessage(err)) err = toErrorWithMessage(err);
-                        const errText = err["message"];
-                        const message = {
-                            tag: "error",
-                            name: err["name"]?? "Error",
-                            content: errText
-                        } as IErrorMessage
-                        this.messageService.sendMessage(message);
-                        this.presentToast("bottom", message);
-                    }
-                    catch (err) {
-                        console.log("Error handler run error: ", toErrorWithMessage(err));
-                    }
+                try {
+                    console.log(`ErrorService.handleError, ${err['name'] ?? "err"}` + " -> ", err);
+                    if (!isErrorWithMessage(err)) err = toErrorWithMessage(err);
+                    const errText = err["message"];
+                    const message = {
+                        tag: "error",
+                        name: err["name"] ?? "Error",
+                        content: errText
+                    } as IErrorMessage
+                    this.messageService.sendMessage(message);
+                    this.presentAlert(message);
                 }
+                catch (err) {
+                    console.log("Error handler run error: ", toErrorWithMessage(err));
+                }
+            }
             );
         }
         catch (err) {

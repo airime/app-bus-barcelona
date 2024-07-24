@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EnvironmentInjector, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, EnvironmentInjector, OnInit, ViewChild, inject } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { mapOutline, starOutline } from 'ionicons/icons';
@@ -16,7 +16,7 @@ import { Capacitor } from '@capacitor/core';
   standalone: true,
   imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, MenuComponent],
 })
-export class TabsPage {
+export class TabsPage implements OnInit {
   @ViewChild("mainTabs") mainTabs!: IonTabs;
   public environmentInjector = inject(EnvironmentInjector);
 
@@ -26,15 +26,24 @@ export class TabsPage {
     private authService: AuthService,
     private pushService: PushService
   ) {
-    if (Capacitor.isPluginAvailable('PushNotifications')) {
-      //this.pushService.registerNotifications();
-      this.pushService.addListeners();
-    }
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
-    addIcons({mapOutline, starOutline });
+    addIcons({ mapOutline, starOutline });
     addIcons({
       lines: 'assets/icon/lines.svg'
     });
+  }
+
+  ngOnInit(): void {
+    if (Capacitor.isPluginAvailable('PushNotifications')) {
+      try {
+        this.pushService.registerNotifications();
+        this.pushService.addListeners();
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      console.log("PushNotifications plugin not available. Service: ", this.pushService);
+    }
   }
 
   get displayNameDefined() {

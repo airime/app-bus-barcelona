@@ -1,0 +1,13 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Nova vacanca</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+    <h2>{{vacanca.nom}}</h2>
+    <h3>{{vacanca.preu}}</h3>
+    <p>{{vacanca.descripcio}}</p>
+</ion-content>

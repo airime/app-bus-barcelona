@@ -44,11 +44,6 @@ export class MenuComponent  implements OnInit {
     return usr?.photoURL ?? null;
   }
 
-  /* TODO note selected is no longer needed!! [routerLinkActive] do the trick when you also have [routerLink] */
-  selected(id: string): boolean {
-    return this.pageId == id;
-  }
-
   async userProfile() {
     await this.menuCtrl.close();
     this.navCtrl.navigateRoot('/user-profile',
@@ -99,6 +94,11 @@ export class MenuComponent  implements OnInit {
     await this.menuCtrl.close();
     this.navCtrl.navigateBack('/private/home/tab3',
                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
+  }
+
+  async petada() {
+    await this.menuCtrl.close();
+    throw new Error("Aquest error s'ha generat des-del menú!!")
   }
 
   ngOnInit() {

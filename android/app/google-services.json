@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "260236005776",
+    "project_id": "app-bus-barcelona",
+    "storage_bucket": "app-bus-barcelona.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:260236005776:android:041faa5b90f626b402e315",
+        "android_client_info": {
+          "package_name": "cifo.bus.barcelona"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDob2DAbOfqzNIVZN5rbgeaMRBL5TAW6W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

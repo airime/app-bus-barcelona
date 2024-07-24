@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import {
-  Auth, 
-  EmailAuthProvider, 
+  Auth,
+  EmailAuthProvider,
   User,
   authState,
   browserSessionPersistence,
@@ -11,7 +11,7 @@ import {
   signOut,
   updateProfile
 } from '@angular/fire/auth';
-import { Firestore, doc, getDoc, runTransaction } from '@angular/fire/firestore';
+import { Firestore, doc, docData, getDoc, runTransaction, updateDoc } from '@angular/fire/firestore';
 import { isNull, isNullOrEmpty, plainLowerCaseString } from '../util/util';
 import { userProfile } from '../model/userProfile';
 import { Observable, Subscription, from, of } from 'rxjs';
@@ -79,7 +79,7 @@ export class AuthService implements OnDestroy {
       await this.auth.setPersistence(browserSessionPersistence);
       const credential = await signInWithEmailAndPassword(this.auth, email, password);
       if (!!credential?.user) {
-        if (credential.user.emailVerified) throw new Error("The identity of the e-mail user is already verified.");         
+        if (credential.user.emailVerified) throw new Error("The identity of the e-mail user is already verified.");
         else await sendEmailVerification(credential.user);
       }
       else throw new Error("Error in user credentials.");
@@ -180,6 +180,11 @@ export class AuthService implements OnDestroy {
       err.name = "Unauthorized access";
       throw err;
     }
+  }
+
+  setUserPushToken(token: string) {
+    const userDocRef = doc(this.db, `users/${this.auth.currentUser!.uid}`);
+    return updateDoc(userDocRef, { nToken: token });
   }
 
   /* TRANSACTION */

@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { PushNotificationSchema, PushNotifications, ActionPerformed, Token } from '@capacitor/push-notifications';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PushService {
 
-  constructor() { }
+  constructor(private authService: AuthService) { }
 
   async addListeners() {
     await PushNotifications.addListener('registration', (token: Token) => {
       console.info('Registration token: ', token.value);
+      this.authService.setUserPushToken(token.value);
     });
 
     await PushNotifications.addListener('registrationError', (err: any) => {

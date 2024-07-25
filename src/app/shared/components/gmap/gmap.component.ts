@@ -103,7 +103,7 @@ export class GmapComponent implements OnInit {
           else {
             console.log("Geolocation: permission not granted.");
             this.location = PredefinedGeoPositions[geoPlaces.BarcelonaCiutatVella];
-            reject('Permission: not granted');
+            reject('Geolocation: Permission not granted');
           }
         } catch (err) {
           console.log(err);
@@ -166,7 +166,7 @@ export class GmapComponent implements OnInit {
       const infoWindow = new google.maps.InfoWindow({
         content: "",
         disableAutoPan: true,
-      });      
+      });
       this.infoWindow = infoWindow;
       const markers: google.maps.marker.AdvancedMarkerElement[] =
         this.stops.map((stop: IStopInfo, i: number) => {
@@ -289,7 +289,7 @@ export class GmapComponent implements OnInit {
   clickParadaLinia(codiParada: number, codiLinia: number, nomLinia: string, colorLinia: string) {
     console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
     this.infoWindow.close();
-    this.router.navigate(['/private/stop/', codiParada, codiLinia], 
+    this.router.navigate(['/private/stop/', codiParada, codiLinia],
                          { queryParams: { nomLinia: nomLinia, colorLinia: colorLinia } } as NavigationExtras);
   }
 
@@ -300,7 +300,7 @@ export class GmapComponent implements OnInit {
     this.map.setCenter(toLatLng);
     this.infoWindow.close();
   }
-  
+
   private get busStopIcon() {
     const content = document.createElement("div");
     content.innerHTML = `<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>`
@@ -361,7 +361,7 @@ export class GmapComponent implements OnInit {
     title: "A marker using a custom PNG Image",
   });
   */
- 
+
  /*
     // Hide the glyph.
     const pinNoGlyph = new PinElement({
@@ -395,7 +395,7 @@ export class GmapComponent implements OnInit {
     content.classList.add("drop");
     return yourPositionMarker;
   }
-   
+
   private idTimeout?: any;
 
   private showPathToMarker(movePlanCoordinates: [ google.maps.LatLngLiteral, google.maps.LatLngLiteral ]) {
@@ -429,7 +429,7 @@ export class GmapComponent implements OnInit {
     if (!!this.idTimeout) clearTimeout(this.idTimeout);
     this.idTimeout = setTimeout(() => { this.hidePathToMarker(); }, ShowPathEffecttimeout);
   }
-  
+
   private hidePathToMarker() {
     console.log("all paths hidden");
     while (this.drawStack.length > 0) {

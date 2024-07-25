@@ -82,6 +82,7 @@ export class ErrorService implements ErrorHandler {
         //     err = err.rejection; // get the error object
         // }
         try {
+            console.log("Global error handler reached.")
             this.zone.run(() => {
                 try {
                     console.log(`ErrorService.handleError, ${err['name'] ?? "err"}` + " -> ", err);

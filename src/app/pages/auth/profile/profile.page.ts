@@ -153,11 +153,25 @@ export class ProfilePage implements OnInit {
                                { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
-  changePassword() {
-    this.menuCtrl.close();
-    this.navCtrl.navigateRoot('/change-password',
-                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  changeEmail() {
+    if (!this.userValidated) {
+      this.menuCtrl.close();
+      this.navCtrl.navigateRoot('/change-email',
+                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
+    } else {
+      throw new Error("Option available only for non-validated emails.");
+    }
   }
+
+  changePassword() {
+    if (!this.userValidated || this.displayNameDefined) {
+      this.menuCtrl.close();
+      this.navCtrl.navigateRoot('/change-password',
+                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
+      } else {
+        throw new Error("Option available only after setting the user display-name.");
+      }
+    }
 
   nomInputEvent($event: any) {
     const newValue = isNullOrEmpty($event.target.value as string | null | undefined) ?

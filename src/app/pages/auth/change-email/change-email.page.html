@@ -1,3 +1,55 @@
-<p>
-  change-email works!
-</p>
+<main class="ion-page ion-justify-content-start" id="main-content">
+  <form (ngSubmit)="changeEmail()" [formGroup]="credentials">
+    <ion-card color="secondary">
+      <ion-card-header>
+        <ion-card-title>
+          <h2>{{ title }}</h2>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item-group formGroupName="emailGroup">
+            <ion-item>
+              <ion-input type="email" formControlName="oldEmail" label="E-Mail actual" fill="outline"
+                errorText="email no es válido" autocomplete="username" appAutofill>
+              </ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-input type="email" formControlName="newEmail" label="Nuevo e-Mail" fill="outline"
+                    errorText="email no es válido" autocomplete="email" appAutofill [readonly]="wait">
+                </ion-input>
+            </ion-item>
+            @if (!emailGroupOk) {
+              <ion-item color="danger" [hidden]="emailGroupOk">
+                  <span><small>Los emails no pueden ser iguales</small></span>
+              </ion-item>
+            }
+          </ion-item-group>
+          <ion-item>
+            <ion-input type="password" formControlName="password" label="Contraseña" fill="outline"
+              helperText="Introduzca una contraseña con mayúsculas, minúsculas, números y símbolos; puede servir una frase con un dígito."
+              errorText="la contraseña no es válida" autocomplete="current-password" appAutofill [readonly]="wait">
+              <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+            </ion-input>
+          </ion-item>
+          <!--
+          <ion-item>
+            <p><span>Este formulario le enviará un correo electrónico con un enlace que le permitirá establecer de nuevo la contraseña.</span>
+              <span>&nbsp;<small>Recuerde seguir las normes de esta aplicación para las contraseñas:
+                Puede usar una frase que tenga al menos una mayúscula y un dígito.</small></span>
+            </p>
+          </ion-item>
+          -->
+        </ion-list>
+      </ion-card-content>
+      <ion-buttons>
+        <ion-button type="submit" color="primary" [disabled]="!credentials.valid || wait">
+          Cambiar email
+        </ion-button>
+        <ion-button (click)="goBack()" color="danger">
+          Cancelar
+        </ion-button>
+      </ion-buttons>
+    </ion-card>
+  </form>
+</main>

@@ -32,10 +32,12 @@
                         <ion-button (click)="refreshPage()" color="danger">
                             Reinicia
                         </ion-button>
-                        @if (!userValidated || displayNameDefined) {
-                            <ion-button href="/change-email" color="primary">
+                        @if (!userValidated) {
+                            <ion-button (click)="changeEmail()" color="primary">
                                 Cambiar email
                             </ion-button>
+                        }
+                        @if (!userValidated || displayNameDefined) {
                             <ion-button (click)="changePassword()" color="primary">
                                 Cambiar contraseña
                             </ion-button>

@@ -56,16 +56,24 @@ export class MenuComponent  implements OnInit {
                                { animated: true, animation: this.myCustomAnimation.customAnimation });
   }
 
-  async changePassword() {
-    await this.menuCtrl.close();
-    this.navCtrl.navigateRoot('/change-password',
-                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  async changeEmail() {
+    if (!this.userValidated) {
+      await this.menuCtrl.close();
+      this.navCtrl.navigateRoot('/change-email',
+                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
+    } else {
+      throw new Error("Option available only for non-validated emails.");
+    }
   }
 
-  async changeEmail() {
-    await this.menuCtrl.close();
-    this.navCtrl.navigateRoot('/change-email',
-                                 { animated: true, animation: this.myCustomAnimation.customAnimation });
+  async changePassword() {
+    if (!this.userValidated || this.displayNameDefined) {
+      await this.menuCtrl.close();
+      this.navCtrl.navigateRoot('/change-password',
+                                  { animated: true, animation: this.myCustomAnimation.customAnimation });
+      } else {
+        throw new Error("Option available only after setting the user display-name.");
+      }
   }
 
   async serviceTerms($event: any) {

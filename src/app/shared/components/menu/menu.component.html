@@ -32,15 +32,15 @@
               <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
               <ion-label>{{ loggedIn? "Cambiar la contraseña" : "Restablecer la contraseña" }}</ion-label>
             </ion-item>
-            @if (loggedIn) {
-              <ion-item id="changeEmail" [routerLinkActive]="'highlight'" [routerLinkActiveOptions]="{exact:true}" class="pointer"
-                  (click)="changeEmail()" [routerLink]="['/change-email']">
-                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
-                <ion-label>Cambiar email</ion-label>
-              </ion-item>
-            }
           }
-          <ion-item id="terms" class="pointer" (click)="serviceTerms($event)">
+          @if (loggedIn && !userValidated) {
+            <ion-item id="changeEmail" [routerLinkActive]="'highlight'" [routerLinkActiveOptions]="{exact:true}" class="pointer"
+                (click)="changeEmail()" [routerLink]="['/change-email']">
+              <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+              <ion-label>Cambiar email</ion-label>
+            </ion-item>
+          }
+        <ion-item id="terms" class="pointer" (click)="serviceTerms($event)">
             <ion-icon slot="start" name="contract-outline"></ion-icon>
             <ion-label>Términos del servicio</ion-label>
           </ion-item>
@@ -63,7 +63,7 @@
         </ion-item>
         <div slot="content">
           <ion-item id="FaPetar" class="pointer" (click)="petada()">
-            <ion-icon slot="start" name="fire"></ion-icon>
+            <ion-icon slot="start" name="bonfire"></ion-icon>
             <ion-label>Throw error</ion-label>
           </ion-item>
         </div>

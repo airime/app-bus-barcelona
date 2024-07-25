@@ -38,7 +38,37 @@ export class PasswordValidator {
         }
       }
   
-      return { areEqual: true };
+      return { areEqual: true }; //indica areEqual genera error
+    }
+
+
+    static distinctValues(formGroup: AbstractControl) {
+      const theFormGroup = formGroup as FormGroup;
+      if (!!theFormGroup) {
+        let val;
+        let valid = true;
+    
+        for (let key in theFormGroup.controls) {
+          if (theFormGroup.controls.hasOwnProperty(key)) {
+            let control: FormControl = <FormControl>theFormGroup.controls[key];
+    
+            if (val === undefined) {
+              val = control.value
+            } else {
+              if (val == control.value) {
+                valid = false;
+                break;
+              }
+            }
+          }
+        }
+    
+        if (valid) {
+          return null;
+        }
+      }
+  
+      return { distinctValues: true }; //indica distinctValues genera error
     }
 
     static isEqual(FormControl: AbstractControl, value: any) {

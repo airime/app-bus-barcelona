@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+//import { ToastController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../shared/services/auth.service';
 import { Router } from '@angular/router';
@@ -33,7 +34,7 @@ export class RecoveryPage implements OnInit {
     private router: Router,
     private navCtrl: NavController,
     private myCustomAnimation: MyCustomAnimation,
-    private toastController: ToastController
+    private alertController: AlertController
   ) {
     this.currentUser = this.authService.currentUser;
     this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
@@ -88,87 +89,75 @@ export class RecoveryPage implements OnInit {
     }
   }
 
-  goBack() {
+  async goBack() {
     this.navCtrl.back({ animated: true, animation: this.myCustomAnimation.customAnimation, animationDirection: "back" });
-  }
-
-  obrirCondicions() {
-    // Converts the route into a string that can be used 
-    // with the window.open() function
-    const url = this.router.serializeUrl(
-      this.router.createUrlTree([`service-terms`])
-    );
-    window.open(url, '_blank');
-  }
-
-  private async presentToast(position: 'top' | 'middle' | 'bottom', message: string) {
-    const toast = await this.toastController.create({
-      message: message,
-      buttons: [
-        {
-          text: 'Entendido',
-          role: 'cancel',
-          handler: () => {
-            console.log('Toast error Cancel clicked');
-          }
-        }
-      ],
-      position: position,
-    });
-    const logoutError = "Ha fallado la operación. Si todavía se encuentra como usuario activo, por favor, use 'logout' para abandornar la aplicación.";
-    toast.onDidDismiss().then((val) => {
-      console.log('Toast dismissed', val);
-      const { role } = val;
-      this.wait = false;
-      try {
-        if (role == "cancel") {
-          if (!!this.currentUser) {
-            this.authService.logout()
-              .then(() => this.router.navigate(['login']))
-              .catch(() => {
-                const err = new Error(logoutError);
-                err.name = GUIerrorType.AuthenticationError;
-                throw err;
-              });
-          } else {
-            this.router.navigate(['login']);
-          }
-        }
-      } catch (err) {
-        throw toErrorWithMessage(err);
-      }
-    });  
-    await toast.present();
   }
 
   async passwordRecovery() {
     const message = `Se ha enviado un email con un enlace que permite restablecer la contraseña.\n` 
       + `Recuerde que debe incorporar al menos una mayúscula, una minúsculas, un dígito y un símbolo o espacio.`;
     const formErrorMessage = "Error inesperado: Puede que no se cumplan las condiciones del formulario, o ha habido un error en el servicio.";
+    console.log("password recovery", this.credentials.valid);
     this.wait = true;
     if (this.credentials.valid
       && (!this.currentUser || this.currentUser!.email == this.email!.value)) {
       this.authService.sendPasswordResetEmail(this.email!.value)
         .then(
           () => {
-            this.presentToast("middle", message);
+            this.presentAlert(message, true);
           }
         ).catch(
           (err: any) => {
-            this.wait = false;
-            const error = new Error(getErrorMessage(err));
-            error.name = GUIerrorType.AuthenticationError;
-            throw error;
+            this.presentAlert(err.message, false);
           }
         ).finally(
           () => this.wait = false
         );
     } else {
       this.wait = false;
-      const err = new Error(formErrorMessage);
-      err.name = GUIerrorType.FormError;
-      throw err;
+      this.presentAlert(formErrorMessage, false);
     }
+  }
+
+  private async presentAlert(message: string, withLogout: boolean) {
+    const alert = await this.alertController.create({
+      message: message,
+      buttons: [
+        {
+          text: 'Entendido',
+          role: 'cancel',
+          handler: () => {
+            console.log('Alert Cancel clicked');
+          }
+        }
+      ],
+    });
+    const logoutError = "Ha fallado la operación. Si todavía se encuentra como usuario activo, por favor, use 'logout' para abandornar la aplicación.";
+    alert.onDidDismiss().then((val) => {
+      console.log('Alert dismissed', val);
+      const { role } = val;
+      this.wait = false;
+      try {
+        if (role == "cancel") {
+          if (withLogout) {
+            if (!!this.currentUser) {
+              this.authService.logout()
+                .then(() => this.router.navigate(['login']))
+                .catch(() => {
+                  const err = new Error(logoutError);
+                  err.name = GUIerrorType.AuthenticationError;
+                  throw err;
+                });
+            } else {
+              this.router.navigate(['login']);
+            }
+          }
+        }
+      } catch (err) {
+        throw toErrorWithMessage(err);
+      }
+    });  
+    await alert.present();
   }
 
 }

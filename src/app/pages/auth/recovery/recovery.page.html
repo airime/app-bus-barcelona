@@ -1,27 +1,9 @@
-@if (false) {
-  /* removed code */
-  @if (userValidated) {
-    <app-menu
-      id="mainMenu"
-      loggedIn="true"
-      userValidated="true"
-      [displayNameDefined]="displayNameDefined"
-      pageId="changePassword">
-    </app-menu>
-  }
-}
 <main class="ion-page ion-justify-content-start" id="main-content">
-  @if (false) {
-    /* removed code */
-    @if (loggedIn && userValidated) {
-      <app-header [title]="title"></app-header>
-    }
-  }
   <form (ngSubmit)="passwordRecovery()" [formGroup]="credentials">
     <ion-card color="secondary">
       <ion-card-header>
         <ion-card-title>
-          <h2>{{ loggedIn? "Cambiar la contraseña" : "Restablecer la contraseña"}}</h2>
+          <h2>{{ title }}</h2>
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>

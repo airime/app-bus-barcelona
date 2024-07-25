@@ -3,18 +3,58 @@ import {
   Auth,
   EmailAuthProvider,
   User,
+  UserCredential,
   authState,
   browserSessionPersistence,
   createUserWithEmailAndPassword, reauthenticateWithCredential, sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
-  updateProfile
+  updateEmail,
+  updateProfile,
+  verifyBeforeUpdateEmail
 } from '@angular/fire/auth';
 import { Firestore, doc, docData, getDoc, runTransaction, updateDoc } from '@angular/fire/firestore';
 import { isNull, isNullOrEmpty, plainLowerCaseString } from '../util/util';
 import { userProfile } from '../model/userProfile';
 import { Observable, Subscription, from, of } from 'rxjs';
+
+/*
+  IDENTITY PROVIDERS
+  ==================
+
+  Compte! Aquests valors podrien haver canviat
+
+  EmailAuthProviderID: firebase
+  PhoneAuthProviderID: phone
+  GoogleAuthProviderID: google.com
+  FacebookAuthProviderID: facebook.com
+  TwitterAuthProviderID: twitter.com
+  GitHubAuthProviderID: github.com
+  AppleAuthProviderID: apple.com
+  YahooAuthProviderID: yahoo.com
+  MicrosoftAuthProviderID: hotmail.com
+
+  Trusted providers:
+
+    Email / Password with email verification
+    Google (for @gmail.com addresses)
+    Yahoo (for @yahoo.com addresses)
+    Microsoft (for @outlook.com and @hotmail.com addresses)
+    Apple (always verified, because accounts are always verified and multi-factor-authenticated)
+
+  Only trusted providers offer a verified email address; This service avoids using non trusted ones
+  (Facebook, Twitter, GitHub, Email / Password without email verification, and
+   Google, Yahoo, and Microsoft for domains not issued by that Identity Provider)
+    
+  Trusted providers are authomatically linked together when issuing the same email address:
+  That is to say that Email / Password with email verification is linked together with:
+  - google @gmail.com addresses,
+  - Yahoo @yahoo.com addresses,
+  - Microsoft @outlook.com and @hotmail.com addresses,
+  - Apple @icloud.com, @me.com, and @mac.com addresses
+
+*/
 
 @Injectable({
   providedIn: 'root'
@@ -74,21 +114,6 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  async resendEmailVerification({ email, password }: { email: string; password: string }) {
-    try {
-      await this.auth.setPersistence(browserSessionPersistence);
-      const credential = await signInWithEmailAndPassword(this.auth, email, password);
-      if (!!credential?.user) {
-        if (credential.user.emailVerified) throw new Error("The identity of the e-mail user is already verified.");
-        else await sendEmailVerification(credential.user);
-      }
-      else throw new Error("Error in user credentials.");
-      return credential;
-    } catch (error) {
-      throw (error);
-    }
-  }
-
   async login({ email, password }: { email: string; password: string }) {
     try {
       await this.auth.setPersistence(browserSessionPersistence);
@@ -102,13 +127,76 @@ export class AuthService implements OnDestroy {
     }
   }
 
+  logout() {
+    return signOut(this.auth);
+  }
+
+
+  /******************************************************/
+  /* SERVEIS LIMITATS A L'AUTENTICACIO PER CONTRASSENYA */
+
+  async resendEmailVerification({ email, password }: { email: string; password: string }) {
+    await this.auth.setPersistence(browserSessionPersistence);
+    const credential = await signInWithEmailAndPassword(this.auth, email, password);
+    if (!!credential?.user && credential?.user.providerId == 'firebase') {
+      if (credential.user.emailVerified) throw new Error("The identity of the e-mail user is already verified.");
+      else {
+        try {
+          await sendEmailVerification(credential.user);
+        } catch (error) {
+          throw (error);
+        }
+      }
+    }
+    else if (!credential?.user) {
+      throw new Error("Error in user credentials.");
+    } else {
+      throw new Error("Service only available for authentication using password.");
+    }
+    return credential;
+  }
+
   async sendPasswordResetEmail(email: string) {
-    try {
-      sendPasswordResetEmail(this.auth, email);
-    } catch (error) {
-      throw (error);
+    await this.auth.setPersistence(browserSessionPersistence);
+    const usrCurrent = this.auth.currentUser;
+    if (!usrCurrent || usrCurrent.providerId == 'firebase') {
+      try {
+        sendPasswordResetEmail(this.auth, email);
+      } catch (error) {
+        throw (error);
+      }
+    } else {
+      throw new Error("Service only available for authentication using password.");
     }
   }
+
+  async updateEmail(newEmail: string, password: string) {
+    await this.auth.setPersistence(browserSessionPersistence);
+    const currentUser = this.currentUser;
+    if (!!currentUser) {
+      const oldCredential = EmailAuthProvider.credential(currentUser.email, password);
+      if (currentUser.emailVerified) {
+        throw new Error("Service only available for non-validated emails.");
+      } else {
+        await reauthenticateWithCredential(this.auth.currentUser!, oldCredential);
+        await this.auth.authStateReady();
+        const usrCurrent = this.auth.currentUser;
+        if (!!usrCurrent && usrCurrent.providerId == 'firebase') {
+          try {
+            verifyBeforeUpdateEmail(usrCurrent, newEmail); // updateEmail(usrCurrent, newEmail)
+          } catch (error) {
+            throw (error);
+          }
+        } else {
+          throw new Error("Service only available for authentication using password.");
+        }
+      }
+    }
+  }
+
+
+  /******************************************************/
+  /* SERVEIS PER A LA GESTIO DEL DisplayName / photoURL */
 
   /* interactive check user display name in GUI for async validator */
   validUserNewDisplayName(newDisplayName: string): Observable<boolean> {
@@ -117,7 +205,7 @@ export class AuthService implements OnDestroy {
       if (usrCurrent && !isNullOrEmpty(newDisplayName)) {
         newDisplayName = plainLowerCaseString(newDisplayName);
         if (!usrCurrent.displayName || newDisplayName != plainLowerCaseString(usrCurrent.displayName)) {
-            return from(getDoc(doc(this.db, "displayNames", newDisplayName)).then((newDisplayNameDoc) => !newDisplayNameDoc.exists()));
+          return from(getDoc(doc(this.db, "displayNames", newDisplayName)).then((newDisplayNameDoc) => !newDisplayNameDoc.exists()));
         } else { return of(true); }
       } else { return of(false); }
     } catch (error) {
@@ -227,7 +315,56 @@ export class AuthService implements OnDestroy {
   }
 
 
-  logout() {
-    return signOut(this.auth);
-  }
+
+  /****************************************************/
+  /***      R U L E S   D E   F I R E B A S E      ****/
+
+  // rules_version = '2';
+  // service cloud.firestore {
+  //   match /databases/{database}/documents {
+  //     match /displayNames/{alias} {
+  //       allow read: if request.auth != null
+  //         && request.auth.token.email_verified;
+  //       allow create: if (request.auth != null)
+  //         && (request.auth.token.email_verified)
+  //         && (resource == null)
+  //         && request.resource.data.keys().hasAll(["uid"])
+  //         && (request.resource.data.keys().hasOnly(["uid"]))
+  //         && request.auth.uid == request.resource.data.uid;
+  //         /* 
+  //           - only insert by verified owner allowed
+  //           - there is no registration yet for this displayName
+  //           - just only the uid attribute
+  //           - uid must be the owner one
+  //         */
+  //       allow delete: if request.auth != null
+  //         && request.auth.token.email_verified
+  //         && request.auth.uid == resource.data.uid;
+  //         /* only delete by verified owner allowed */
+  //     }
+  //     match /users/{uuid} {
+  //       allow read: if (request.auth != null)
+  //         && (uuid == request.auth.uid)
+  //         && request.auth.token.email_verified;
+  //         /*
+  //           - read is allowed by verified owner only
+  //         */
+  //       allow write: if (request.auth != null)
+  //         && (uuid == request.auth.uid)
+  //         && (request.auth.token.email_verified)
+  //         && request.resource.data.keys().hasAll(["displayName"])
+  //         && request.resource.data.keys().hasOnly(["displayName", "nToken"]);
+  //         /* 
+  //           - write is allowed by verified owner only
+  //           - with mandatory displayName attribute
+  //           - where only displayName and token are valid attributes
+  //         */
+  //     }
+  //     match /{document=**} {
+  //       allow read, write: if false;
+  //     }
+  //   }
+  // }
+
+
 }

@@ -14,7 +14,7 @@ import {
   updateProfile,
   verifyBeforeUpdateEmail
 } from '@angular/fire/auth';
-import { Firestore, doc, getDoc, runTransaction } from '@angular/fire/firestore';
+import { Firestore, doc, docData, getDoc, runTransaction, updateDoc } from '@angular/fire/firestore';
 import { isNull, isNullOrEmpty, plainLowerCaseString } from '../util/util';
 import { userProfile } from '../model/userProfile';
 import { Observable, Subscription, from, of } from 'rxjs';
@@ -268,6 +268,11 @@ export class AuthService implements OnDestroy {
       err.name = "Unauthorized access";
       throw err;
     }
+  }
+
+  setUserPushToken(token: string) {
+    const userDocRef = doc(this.db, `users/${this.auth.currentUser!.uid}`);
+    return updateDoc(userDocRef, { nToken: token });
   }
 
 

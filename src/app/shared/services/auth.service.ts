@@ -270,15 +270,21 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  setUserPushToken(token: string) {
-    const userDocRef = doc(this.db, `users/${this.auth.currentUser!.uid}`);
-    return updateDoc(userDocRef, { nToken: token });
-  }
 
-
-  // TODO
   /*************************************************************************/
   /* SERVEIS PER A LA GESTIO DEL Token: Requereix DisplayName ja establert */
+
+  async setUserPushToken(token: string) {
+    await this.refreshCurrentUser();
+    if (!!this.currentUser && this.currentUser.emailVerified) {
+      const userDocRef = doc(this.db, `users/${this.auth.currentUser!.uid}`);
+      return updateDoc(userDocRef, { nToken: token });
+    } else if (!this.currentUser) {
+      throw new Error("No user logged in.")
+    } else {
+      throw new Error("The user must set the display-name to own a notification token.");
+    }
+  }
 
 
   /*******************************************************************/

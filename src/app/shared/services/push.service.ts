@@ -10,9 +10,9 @@ export class PushService {
   constructor(private authService: AuthService) { }
 
   async addListeners() {
-    await PushNotifications.addListener('registration', (token: Token) => {
+    await PushNotifications.addListener('registration', async (token: Token) => {
       console.info('Registration token: ', token.value);
-      this.authService.setUserPushToken(token.value);
+      await this.authService.setUserPushToken(token.value);
     });
 
     await PushNotifications.addListener('registrationError', (err: any) => {

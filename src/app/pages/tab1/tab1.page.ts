@@ -7,7 +7,7 @@ import { ContentHeaderComponent } from '../../shared/components/content-header/c
 import { GmapComponent } from '../../shared/components/gmap/gmap.component';
 import { MessageHubService } from 'src/app/shared/services/messageHub.service';
 import { Subscription } from 'rxjs';
-import { IPositionMessage } from 'src/app/shared/interfaces/IMessage';
+import { IConfigShowTimeoutMessage, IPositionMessage } from 'src/app/shared/interfaces/IMessage';
 
 
 @Component({
@@ -29,6 +29,9 @@ export class Tab1Page {
     this.subscription = this.messageService.onMessage().subscribe(message => {
       if (message.tag == "position") {
         this.map.center = (<IPositionMessage>message).content;
+      }
+      else if (message.tag == "configShowTimeout") {
+        this.map.showPathEffecttimeout = (<IConfigShowTimeoutMessage>message).content;
       }
     });
   }

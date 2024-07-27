@@ -58,10 +58,6 @@ Desenvolupat amb components *stand-alone*.
   ```
 - `npm install @capacitor/geolocation`
 
-> - [TODO!] /* TODO */ Pendent permisos d'Android
-> - **Pendent**: [Veure documentació de geolocalització](https://ionicframework.com/docs/native/geolocation)
-
-
 - `npm install @capacitor/preferences`
 - `npm install @capacitor/app`
 - `npm install @capacitor/browser`
@@ -106,3 +102,12 @@ Es fa servir per garantir un nom únic d'usuari (*displayName*) per a cada usuar
 Es programen acuradament les regles per no permetre altres usos il·legals de la base de dades Firebase (aplicació front-end).
 
 
+## Fitxers carpeta `/android`
+
+- `/app/google-services.json`: necessari per a les push-notifications
+- `/app/src/main/AndroidManifest.xml`: Aquí s'indiquen tots els permisos. També les icones de notificacions i canal per defecte.
+- `/app/src/main/res/values/strings.xml`: Aquí es registra el nom del canal per defecte de les notificacions (veure AndroidManifest.xml).
+- `/app/src/main/res/drawable/notification_bell.xml`: aquest fitxer és una icona que s'ha afegit per a les notificacions (veure AndroidManifest.xml).
+- SPLASH image (pendent)
+
+Excepte aquests cinc fitxers que els incorporem o modifiquem, la resta són generats per capacitor.

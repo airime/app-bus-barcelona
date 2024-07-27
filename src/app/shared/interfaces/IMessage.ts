@@ -1,3 +1,5 @@
+export const defaultShowPathEffecttimeout = 5000;
+
 export interface IMessage<T> {
     tag: string,
     content: T
@@ -15,4 +17,7 @@ export interface IErrorDismissedMessage extends IMessage<undefined> {
 }
 export interface IPositionMessage extends IMessage<google.maps.LatLngLiteral> {
     tag: "position"
+}
+export interface IConfigShowTimeoutMessage extends IMessage<number> {
+    tag: "configShowTimeout"
 }

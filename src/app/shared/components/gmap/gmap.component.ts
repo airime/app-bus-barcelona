@@ -9,8 +9,8 @@ import { LocalStorageService } from '../../services/local-storage.service';
 import { StaticDataService } from '../../services/static-data.service'
 import { LatLngFromTupla } from '../../model/internalTuples';
 import { NavigationExtras, Router } from '@angular/router';
+import { defaultShowPathEffecttimeout } from '../../interfaces/IMessage';
 
-const ShowPathEffecttimeout = 15000;
 
 @Component({
   selector: 'app-gmap',
@@ -22,6 +22,7 @@ const ShowPathEffecttimeout = 15000;
 export class GmapComponent implements OnInit {
   @Input({ transform: numberAttribute }) lat?: number
   @Input({ transform: numberAttribute }) lng?: number
+  @Input({ transform: numberAttribute }) showPathEffecttimeout: number = defaultShowPathEffecttimeout;
 
   public readonly BusStop = 'assets/icon/Bus_Stop.svg';
   readonly predefinedLat = PredefinedGeoPositions[geoPlaces.BarcelonaCenter].lat;
@@ -29,6 +30,7 @@ export class GmapComponent implements OnInit {
   public location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   private yourLocationVisible: boolean = false;
   private drawStack!: google.maps.Polyline[];
+  private drawStackIdTimeout?: any;
   private map!: google.maps.Map;
   private infoWindow!: google.maps.InfoWindow;
 
@@ -426,8 +428,8 @@ export class GmapComponent implements OnInit {
       map: this.map
     });
     this.drawStack.push(movePlan);
-    if (!!this.idTimeout) clearTimeout(this.idTimeout);
-    this.idTimeout = setTimeout(() => { this.hidePathToMarker(); }, ShowPathEffecttimeout);
+    if (!!this.drawStackIdTimeout) clearTimeout(this.drawStackIdTimeout);
+    this.drawStackIdTimeout = setTimeout(() => { this.hidePathToMarker(); }, this.showPathEffecttimeout);
   }
 
   private hidePathToMarker() {

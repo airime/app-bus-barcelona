@@ -4,4 +4,5 @@
     <string name="title_activity_main">CIFO Bus Barcelona</string>
     <string name="package_name">cifo.bus.barcelona</string>
     <string name="custom_url_scheme">cifo.bus.barcelona</string>
+    <string name="default_notification_channel_id">cifo.bus.barcelona.notifications</string>
 </resources>

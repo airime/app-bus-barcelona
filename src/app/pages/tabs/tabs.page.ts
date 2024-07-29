@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EnvironmentInjector, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, EnvironmentInjector, OnInit, ViewChild, inject } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { mapOutline, starOutline } from 'ionicons/icons';

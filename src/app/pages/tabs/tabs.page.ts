@@ -28,7 +28,11 @@ export class TabsPage implements OnInit {
   ) {
     this.authService.refreshCurrentUser()
       .then(usrProfile => this.currentUser = usrProfile)
-      .then(async () => { if (!!this.currentUser) { this.pushService.setUserToken(); } });
+      .then(async () => {
+        if (!!this.currentUser && Capacitor.isPluginAvailable('PushNotifications')) {
+          this.pushService.setUserToken();
+        }
+      });
     addIcons({ mapOutline, starOutline });
     addIcons({
       lines: 'assets/icon/lines.svg'

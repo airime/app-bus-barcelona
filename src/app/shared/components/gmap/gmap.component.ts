@@ -67,6 +67,8 @@ export class GmapComponent implements OnInit {
         this.clickParadaLinia(codiParada, codiLinia, nomLinia, colorLinia),
       loadAngularFunctionClickInterc: (lat: number, lng: number, toLat: number, toLng: number) =>
         this.clickIntercanv(lat,lng,toLat,toLng),
+      loadAngularFunctionClickAjudaParada: (nomParada: string, codiParada: number, lat: number, lng: number) =>
+        this.clickAjudaParada(nomParada, codiParada, lat, lng),
     };
     setTimeout(() => { this.initMap(); }, 200);
     if (!!this.lat && !!this.lng) {
@@ -189,7 +191,8 @@ export class GmapComponent implements OnInit {
               if (this.infoWindow.isOpen) {
                 this.infoWindow.close();
               } else {
-                await this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA, stop.CODI_INTERC, stop.NOM_INTERC!)
+                await this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA,
+                                          stop.GEOMETRY[1], stop.GEOMETRY[0], stop.CODI_INTERC, stop.NOM_INTERC!)
               }
             });
           }
@@ -198,7 +201,8 @@ export class GmapComponent implements OnInit {
               if (this.infoWindow.isOpen) {
                 this.infoWindow.close();
               } else {
-                this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA)
+                this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA,
+                                    stop.GEOMETRY[1], stop.GEOMETRY[0])
               }
             });
           }
@@ -215,6 +219,7 @@ export class GmapComponent implements OnInit {
   async openInfoWindow(marker: google.maps.marker.AdvancedMarkerElement,
                        infoWindow: google.maps.InfoWindow,
                        codiParada: number, nomParada: string,
+                       lat: number, lng: number,
                        codiInterc?: number, nomInterc?: string) {
     const { liniesTram, liniesBus, liniesMetro, liniesFGC, liniesRodalies } = await this.tmbService.getBusStopConn(codiParada);
     let content: string = "";
@@ -269,8 +274,9 @@ export class GmapComponent implements OnInit {
       }
       files += 3;
     }
+    //
     const contentStart = `\
-<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon>\
+<a style="cursor:pointer" onclick='callAngularClickAjudaParada("${nomParada}",${codiParada},${lat},${lng})'><ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon></a>\
 <div style="height:${10+3.9*files}ex; margin:0; padding:0">\
   <a style="cursor:pointer" onclick='callAngularClickParada(${codiParada})'>\
   <h5>${nomParada}</h5></a>\
@@ -301,6 +307,15 @@ export class GmapComponent implements OnInit {
     this.showPathToMarker([ latLng, toLatLng ]);
     this.map.setCenter(toLatLng);
     this.infoWindow.close();
+  }
+
+  clickAjudaParada(nomParada: string, codiParada: number, lat: number, lng: number) {
+    console.log(`CLICK AJUT ${codiParada}`);
+    this.infoWindow.close();
+    this.router.navigate(['/private/home/tab2'],
+                          { queryParams: { nom: nomParada,
+                                           codi: codiParada,
+                                           lat: lat, lng: lng } } as NavigationExtras);
   }
 
   private get busStopIcon() {

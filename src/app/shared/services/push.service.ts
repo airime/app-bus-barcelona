@@ -66,7 +66,7 @@ export class PushService {
       await this.authService.setUserPushToken(token);
       console.log("user token set");
     } else {
-      throw new Error("No token found to use for push notifications.");
+      console.log("No token found to use for push notifications.");
     }
   }
 
@@ -77,10 +77,6 @@ export class PushService {
 
   private async openModal(notificationData: IPushNotificationData) {
     console.log("Notification to show: ", notificationData);
-    // const latLng: google.maps.LatLngLiteral = {
-    //   lat: parseFloat(notificationData.lat),
-    //   lng: parseFloat(notificationData.lng),
-    // }
     const place: INamedPlace = {
       info: notificationData.info,
       latLng: <google.maps.LatLngLiteral>{

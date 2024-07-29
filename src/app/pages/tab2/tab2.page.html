@@ -1,8 +1,17 @@
 <main class="ion-page" id="main-content">
   <app-header [title]="title"></app-header>
- 
   <ion-content [fullscreen]="true">
     <app-content-header [title]="title"></app-content-header>
+    @if (data.length > 0) {
+      <ion-toolbar>
+      <ion-button slot="start">compartir</ion-button>
+      <ion-title>Parada {{codiParada}}: {{nomParada}}</ion-title>
+      </ion-toolbar>
+    } @else {
+      <ion-item>
+        <ion-text>Si selecciona una parada, aquí se indica el camino y el tiempo para llegar a ella.</ion-text>
+      </ion-item>
+    }
   </ion-content>
 
 </main>

@@ -75,7 +75,7 @@ export class PushService {
     return this.notifications;
   }
 
-  private async openModal(notificationData: IPushNotificationData) {
+  async openModal(notificationData: IPushNotificationData) {
     console.log("Notification to show: ", notificationData);
     const place: INamedPlace = {
       info: notificationData.info,
@@ -90,9 +90,9 @@ export class PushService {
     const modal = await this.modalCtrl.create({
       component: NotificationModalComponent,
       componentProps: { title: notificationData.title,
+                        subtitle: notificationData.subtitle,
                         place: place,
-                        urlImage: notificationData.image,
-                        subtitle: notificationData.subtitle }
+                        urlImage: notificationData.image }
     });
     await modal.present();
   }

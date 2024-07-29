@@ -44,6 +44,9 @@ export const routes: Routes = [
         path: 'home', loadChildren: () => import('./pages/tabs/tabs.routes').then(m => m.routes)
       },
       {
+        path: 'pushlist', loadComponent: () => import('./pages/pushlist/pushlist.page').then(m => m.PushListPage)
+      },
+      {
         path: 'stop/:id/:line', loadComponent: () => import('./pages/stopid/stopid.page').then(m => m.StopidPage)
       },
       {
@@ -61,7 +64,7 @@ export const routes: Routes = [
   /*
   { path: 'aboutus', component: AboutusComponent },
   */
-  { path: '**', pathMatch: 'full', 
+  { path: '**', pathMatch: 'full',
     loadComponent: () => import('./pages/pagenotfound/pagenotfound.page').then( m => m.PagenotfoundPage)
   },
   {

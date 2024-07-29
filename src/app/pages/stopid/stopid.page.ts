@@ -1,5 +1,5 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-import { IonContent } from '@ionic/angular/standalone';
+import { Component, OnInit } from '@angular/core';
+import { IonContent, IonList, IonItem, IonIcon, IonLabel, IonNote, IonBadge } from '@ionic/angular/standalone';
 import { Location } from '@angular/common';
 import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
@@ -15,10 +15,9 @@ import { IiBusRouteStop, IiBusStop } from 'src/app/shared/model/ibusStop';
 @Component({
   selector: 'app-stopid',
   standalone: true,
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: 'stopid.page.html',
   styleUrls: ['stopid.page.scss'],
-  imports: [MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent]
+  imports: [MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent, IonList, IonItem, IonIcon, IonLabel, IonNote, IonBadge]
 })
 export class StopidPage implements OnInit {
   readonly title = "Informació de parada";

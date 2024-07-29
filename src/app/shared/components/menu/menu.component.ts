@@ -1,15 +1,16 @@
-import { Component, Input, OnInit, ViewChild, booleanAttribute } from '@angular/core';
+import { Component, Input, ViewChild, booleanAttribute } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
-import { DeliveredNotifications, PushNotificationSchema } from '@capacitor/push-notifications';
 import { NavController, MenuController } from '@ionic/angular';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { IonHeader, IonToolbar, IonMenuToggle, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons, IonList, IonListHeader, IonLabel, IonItem, IonIcon, IonAvatar, IonButton, IonAccordion, IonAccordionGroup, IonInput, IonText } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonMenuToggle, IonTitle, IonContent,
+  IonMenuButton, IonMenu, IonButtons, IonList, IonListHeader, IonLabel,
+  IonItem, IonIcon, IonAvatar, IonButton, IonAccordion, IonAccordionGroup,
+  IonInput, IonText } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 
 import { AuthService } from '../../services/auth.service';
 import { MessageHubService } from '../../services/messageHub.service';
-import { PushService } from '../../services/push.service';
 import { MyCustomAnimation } from '../../services/myCustom.animation';
 import { defaultShowPathEffecttimeout, IConfigShowTimeoutMessage } from '../../interfaces/IMessage';
 
@@ -44,7 +45,6 @@ export class MenuComponent {
     private router: Router,
     private menuCtrl: MenuController,
     private navCtrl: NavController,
-    private pushService: PushService,
     private messageService: MessageHubService,
     private myCustomAnimation: MyCustomAnimation
   ) {
@@ -142,13 +142,12 @@ export class MenuComponent {
   /* Notificacions rebudes en tant que l'app no hi era activa */
   async showNotifications() {
     if (this.pushNotificationsAvailable) {
-      const notifications = await this.pushService.getDeliveredNotifications();
-      console.log('delivered notifications', notifications);
+      this.router.navigate(['/private/pushlist']);
     }
   }
 
   async serviceTerms($event: any) {
-    // Converts the route into a string that can be used 
+    // Converts the route into a string that can be used
     // with the window.open() function
     //await this.menuCtrl.close();
     $event.stopPropagation();

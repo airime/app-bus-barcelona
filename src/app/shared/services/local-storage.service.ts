@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { NotFoundError } from '../util/errors';
 import { StoredCoordinates, createStoredCoordinates, storedCoordHasTimeout } from '../interfaces/storedCoordinates';
+import { createStoredToken, StoredToken, storedTokenHasTimeout } from '../interfaces/storedToken';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class LocalStorageService {
   }
 
   // Create and expose methods that users of this service can
-  public set<T>(key: string, value: T) {
+  public async set<T>(key: string, value: T) {
     const json = JSON.stringify(value);
     Preferences.set({ key: key, value: json });
   }
@@ -44,6 +45,28 @@ export class LocalStorageService {
       }
       else resolve(undefined);
     });
+  }
+
+  public async setUserToken(value: string) {
+    console.log("token will be stored in cache.");
+    this.set<StoredToken>("token", createStoredToken(value));
+  }
+
+  public async getUserToken(): Promise<string | undefined> {
+    const value = await this.tryGet<StoredToken>("token");
+    if (!!value) {
+      if (storedTokenHasTimeout(value, this._timeout)) {
+        console.log("DBtoken has timeout: removed from cache.");
+        Preferences.remove({ key: "token" });
+        return undefined;
+      } else {
+        console.log("DBtoken retrieved from cache.");
+        return value[1];
+      }
+    } else {
+      console.log("no DBtoken found in cache.");
+      return undefined;
+    }
   }
 
   public async setGeoPosition(value: google.maps.LatLngLiteral) {

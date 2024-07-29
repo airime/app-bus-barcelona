@@ -60,11 +60,16 @@
         <div slot="content">
           <ion-item>
             <form [formGroup]="showTimeoutForm">
-              <ion-input id="time" label="Showing: " type="number" formControlName="showTimeout" style="width:14em"
+              <ion-input id="timeShow" label="Showing: " type="number" formControlName="showTimeout"
                 [value]="showTimeout" (ionInput)="showingOnInput($event)"><ion-text slot="end">s.</ion-text>
               <ion-button clear slot="end" (click)="setShowTimeout()">Set</ion-button></ion-input> 
             </form>
           </ion-item>
+          @if (pushNotificationsAvailable) {
+          <ion-item>
+            <a class="pointer" (click)="showNotifications()">showNotifications</a>
+          </ion-item>
+          }
           <ion-item id="FaPetar" class="pointer" (click)="petada()">
             <ion-icon slot="start" name="bonfire"></ion-icon>
             <ion-label>Throw error</ion-label>
@@ -84,7 +89,7 @@
             </ion-list>
           </ion-item>
           <ion-item>
-            version 1.0.0
+            version 1.0.1
           </ion-item>
           <ion-item id="terms" class="pointer" (click)="serviceTerms($event)">
             <ion-icon slot="start" name="contract-outline"></ion-icon>

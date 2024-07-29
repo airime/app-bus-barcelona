@@ -3,14 +3,22 @@
     <ion-buttons slot="start">
       <ion-button (click)="cancel()">Cancel</ion-button>
     </ion-buttons>
-    <ion-title>Informació</ion-title>
+    <ion-title>
+      @if (!!place.locationType) {
+        {{place.locationType}} {{place.operator}}
+      }
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-    @if (!!place.locationType) {
-      <h2>{{place.locationType}} {{place.operator}}</h2>
-      <h3>{{place.locationName}}</h3>
-    }
-    <p>{{place.textInfo}}</p>
-    <small>Localització en [{{place.latLng.lat}},{{place.latLng.lng}}]</small>
+  @if (!!place.locationName) {
+    <h2>{{place.locationName}}</h2>
+  }
+  <h3>{{title}}</h3>
+  @if (!!subtitle) {
+    <h4>{{subtitle}}</h4>
+  }
+  <ion-img [src]="urlImage" [alt]="altImage"></ion-img>
+  <small>[{{latLng.lat}}, {{latLng.lng}}]</small><br />
+  <p>{{place.info}}</p>
 </ion-content>

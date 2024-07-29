@@ -11,7 +11,6 @@ import { isErrorWithMessage, toErrorWithMessage } from '../util/errors';
 import { MessageHubService } from './messageHub.service';
 import { IErrorDismissedMessage, IErrorMessage } from '../interfaces/IMessage';
 import { AlertController } from '@ionic/angular';
-//import { ToastController } from '@ionic/angular';
 
 
 @Injectable({
@@ -20,7 +19,6 @@ import { AlertController } from '@ionic/angular';
 export class ErrorService implements ErrorHandler {
 
     constructor(
-        //private toastController: ToastController,
         private alertController: AlertController,
         private messageService: MessageHubService,
         private zone: NgZone) { }
@@ -46,29 +44,6 @@ export class ErrorService implements ErrorHandler {
         });
         await alert.present();
     }
-
-    // private async presentToast(position: 'top' | 'middle' | 'bottom',
-    //                         message: IErrorMessage) {
-    //   const toast = await this.toastController.create({
-    //     message: (message.name?? 'Error') + ': ' + message.content,
-    //     buttons: [
-    //         {
-    //           text: 'Entendido',
-    //           role: 'cancel',
-    //           handler: () => {
-    //             console.log('Toast error Cancel clicked');
-    //           }
-    //         }
-    //       ],
-    //     position: position,
-    // });
-    // toast.onDidDismiss().then((val) => {  
-    //     console.log('Toast error Dismissed');
-    //     const dismissedMessage: IErrorDismissedMessage = { tag: "dismissError", content: undefined }
-    //     this.messageService.sendMessage(dismissedMessage);
-    //   });  
-    // await toast.present();
-    //}
 
 
     /**

@@ -1,5 +1,7 @@
 import { Component, Input, OnInit, ViewChild, booleanAttribute } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { DeliveredNotifications, PushNotificationSchema } from '@capacitor/push-notifications';
 import { NavController, MenuController } from '@ionic/angular';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IonHeader, IonToolbar, IonMenuToggle, IonTitle, IonContent, IonMenuButton, IonMenu, IonButtons, IonList, IonListHeader, IonLabel, IonItem, IonIcon, IonAvatar, IonButton, IonAccordion, IonAccordionGroup, IonInput, IonText } from '@ionic/angular/standalone';
@@ -7,6 +9,7 @@ import { addIcons } from 'ionicons';
 
 import { AuthService } from '../../services/auth.service';
 import { MessageHubService } from '../../services/messageHub.service';
+import { PushService } from '../../services/push.service';
 import { MyCustomAnimation } from '../../services/myCustom.animation';
 import { defaultShowPathEffecttimeout, IConfigShowTimeoutMessage } from '../../interfaces/IMessage';
 
@@ -21,7 +24,7 @@ import { defaultShowPathEffecttimeout, IConfigShowTimeoutMessage } from '../../i
     RouterLink, RouterLinkActive, IonTitle, IonContent,
     ReactiveFormsModule, IonInput]
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent {
   @Input({ required: true, transform: booleanAttribute }) loggedIn!: boolean;
   @Input({ required: true, transform: booleanAttribute }) userValidated!: boolean;
   @Input({ required: true, transform: booleanAttribute }) displayNameDefined!: boolean;
@@ -41,6 +44,7 @@ export class MenuComponent implements OnInit {
     private router: Router,
     private menuCtrl: MenuController,
     private navCtrl: NavController,
+    private pushService: PushService,
     private messageService: MessageHubService,
     private myCustomAnimation: MyCustomAnimation
   ) {
@@ -61,13 +65,9 @@ export class MenuComponent implements OnInit {
     this.showTimeoutForm.patchValue({ "showTimeout": this.showTimeout_setValue });
   }
 
-  // async menuView() {
-  //   console.log("menuView");
-  //   if (!await this.menuCtrl.isOpen()) {
-  //     console.log("menu closed, value restored")
-  //     this.showTimeoutForm.patchValue({ "showTimeout": this.showTimeout_setValue });
-  //   }
-  // }
+  get pushNotificationsAvailable(): boolean {
+    return Capacitor.isPluginAvailable('PushNotifications');
+  }
 
   get profileImgUrl() {
     const usr = this.authService.currentUser;
@@ -112,6 +112,7 @@ export class MenuComponent implements OnInit {
     }
   }
 
+  /* controla el valor numeric de showTimeout en IonInput */
   async showingOnInput($event: any) {
     if (this.showTimeoutForm.valid) {
       this.showTimeout = $event.detail.value;
@@ -122,6 +123,7 @@ export class MenuComponent implements OnInit {
     }
   }
 
+  /* estableix el valor de showTimeout */
   async setShowTimeout() {
     if (this.showTimeoutForm.valid) {
       const message = {
@@ -134,6 +136,14 @@ export class MenuComponent implements OnInit {
     } else {
       // sempre ha de ser vàlid
       throw new Error("Detectat valor invalid");
+    }
+  }
+
+  /* Notificacions rebudes en tant que l'app no hi era activa */
+  async showNotifications() {
+    if (this.pushNotificationsAvailable) {
+      const notifications = await this.pushService.getDeliveredNotifications();
+      console.log('delivered notifications', notifications);
     }
   }
 
@@ -170,7 +180,4 @@ export class MenuComponent implements OnInit {
     throw new Error("Aquest error s'ha generat des-del menú!!")
   }
 
-  ngOnInit() {
-
-  }
 }

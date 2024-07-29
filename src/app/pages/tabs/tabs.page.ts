@@ -26,7 +26,9 @@ export class TabsPage implements OnInit {
     private authService: AuthService,
     private pushService: PushService
   ) {
-    this.authService.refreshCurrentUser().then(usrProfile => this.currentUser = usrProfile);
+    this.authService.refreshCurrentUser()
+      .then(usrProfile => this.currentUser = usrProfile)
+      .then(async () => { if (!!this.currentUser) { this.pushService.setUserToken(); } });
     addIcons({ mapOutline, starOutline });
     addIcons({
       lines: 'assets/icon/lines.svg'
@@ -34,16 +36,6 @@ export class TabsPage implements OnInit {
   }
 
   ngOnInit(): void {
-    if (Capacitor.isPluginAvailable('PushNotifications')) {
-      try {
-        this.pushService.registerNotifications();
-        this.pushService.addListeners();
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      console.log("PushNotifications plugin not available. Service: ", this.pushService);
-    }
   }
 
   get displayNameDefined() {

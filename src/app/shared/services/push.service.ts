@@ -1,24 +1,35 @@
 import { Injectable } from '@angular/core';
-import { PushNotificationSchema, PushNotifications, ActionPerformed, Token } from '@capacitor/push-notifications';
+import { PushNotificationSchema, PushNotifications, ActionPerformed, Token, DeliveredNotifications } from '@capacitor/push-notifications';
 import { AuthService } from './auth.service';
 import { ModalController } from '@ionic/angular/standalone';
 import { toErrorWithMessage } from '../util/errors';
-import { IPushNotification } from '../interfaces/IPushNotification';
+import { IPushNotificationData } from '../interfaces/IPushNotification';
 import { NotificationModalComponent } from '../components/notification-modal/notification-modal.component';
 import { INamedPlace } from '../interfaces/INamedPlace';
+import { Toast } from '@capacitor/toast';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PushService {
 
-  constructor(private authService: AuthService,
-              private modalCtrl: ModalController) { }
+  private notifications: IPushNotificationData[];
+
+  public get storedNotifications(): IPushNotificationData[] {
+    return this.notifications;
+  }
+
+  constructor(private localStorageService: LocalStorageService,
+              private authService: AuthService,
+              private modalCtrl: ModalController) {
+    this.notifications = [];
+  }
 
   async addListeners() {
     await PushNotifications.addListener('registration', async (token: Token) => {
       console.info('PUSH registration token: ', token.value);
-      await this.authService.setUserPushToken(token.value);
+      await this.localStorageService.setUserToken(token.value);
     });
 
     await PushNotifications.addListener('registrationError', (err: any) => {
@@ -26,23 +37,16 @@ export class PushService {
       throw toErrorWithMessage(err);
     });
 
-    await PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
-      console.log('Push notification received: ', notification);
+    await PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotificationSchema) => {
+      this.notifications.push(notification.data);
+      console.log('Push notification received: ', this.notifications);
+      await Toast.show({ text: notification.title?? notification.data.title, duration: 'long' });
     });
 
-    await PushNotifications.addListener('pushNotificationActionPerformed', (notification: IPushNotification) => {
-      console.log('PUSH Push notification action performed', JSON.stringify(notification));
-      const info: INamedPlace = {
-        textInfo: notification.notification.data.textInfo,
-        latLng: { lat: notification.notification.data.lat, lng: notification.notification.data.lng },
-        locationType: notification.notification.data.locationType,
-        operator: notification.notification.data.operator,
-        locationName: notification.notification.data.locationName,
-      }
-      console.log('notification info: ', info);
-      this.openModal(info);
+    await PushNotifications.addListener('pushNotificationActionPerformed', async (notification: ActionPerformed) => {
+      console.log('PUSH Push notification action performed', notification);
+      this.openModal(notification.notification.data);
     });
-
   }
 
   async registerNotifications() {
@@ -56,17 +60,56 @@ export class PushService {
     await PushNotifications.register();
   }
 
-  async getDeliveredNotifications() {
-    const notificationList = await PushNotifications.getDeliveredNotifications();
-    console.log('delivered notifications', notificationList);
+  async setUserToken() {
+    let token = await this.localStorageService.getUserToken();
+    if (!!token) {
+      await this.authService.setUserPushToken(token);
+      console.log("user token set");
+    } else {
+      throw new Error("No token found to use for push notifications.");
+    }
   }
 
-  async openModal(info: INamedPlace) {
+  async getDeliveredNotifications(): Promise<IPushNotificationData[]> {
+    await this.pushDeliveredNotifications();
+    return this.notifications;
+  }
+
+  private async openModal(notificationData: IPushNotificationData) {
+    console.log("Notification to show: ", notificationData);
+    // const latLng: google.maps.LatLngLiteral = {
+    //   lat: parseFloat(notificationData.lat),
+    //   lng: parseFloat(notificationData.lng),
+    // }
+    const place: INamedPlace = {
+      info: notificationData.info,
+      latLng: <google.maps.LatLngLiteral>{
+        lat: parseFloat(notificationData.lat),
+        lng: parseFloat(notificationData.lng),
+      },
+      locationType: notificationData.locationType,
+      operator: notificationData.operator,
+      locationName: notificationData.locationName,
+    };
     const modal = await this.modalCtrl.create({
       component: NotificationModalComponent,
-      componentProps: { info }
+      componentProps: { title: notificationData.title,
+                        place: place,
+                        urlImage: notificationData.image,
+                        subtitle: notificationData.subtitle }
     });
-    modal.present();
+    await modal.present();
+  }
+
+  private async pushDeliveredNotifications() {
+    const { notifications } = await PushNotifications.getDeliveredNotifications();
+    console.log('delivered notifications to push: ', notifications);
+    if (notifications.length > 0) {
+      while (notifications.length > 0) {
+        this.notifications.push(notifications.shift()?.data);
+      }
+      await PushNotifications.removeAllDeliveredNotifications();
+    }
   }
 
 

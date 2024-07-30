@@ -106,22 +106,6 @@ export function getPolylines(from: google.maps.LatLngLiteral,
         result.push(polyLineEtapa(value.etapes[i]));
     }
     return result;
-
-    /*
-    let p1: google.maps.LatLngLiteral[] = [{lat:from.lat, lng:from.lng}, ...getPolyline(value.etapes[0])];
-    if (value.etapes.length > 1) {
-        result.push(polyLineEtapa(p1, value.etapes[0]));
-        for (let i = 1; i < value.etapes.length - 1; i++) {
-            result.push(polyLineEtapa(getPolyline(value.etapes[i]), value.etapes[i]));
-        }
-        const pn: google.maps.LatLngLiteral[] = [...getPolyline(value.etapes[value.etapes.length - 1]), {lat:to.lat, lng:to.lng}];
-        result.push(polyLineEtapa(pn, value.etapes[0]));
-    } else {
-        p1 = [...p1, {lat:to.lat, lng:to.lng}]
-        result.push(polyLineEtapa(p1, value.etapes[0]));
-    }
-    return result;
-    */
 }
 
 //Note it's not exported

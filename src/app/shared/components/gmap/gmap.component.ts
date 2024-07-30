@@ -11,6 +11,7 @@ import { LatLngFromTupla } from '../../model/internalTuples';
 import { NavigationExtras, Router } from '@angular/router';
 import { defaultShowPathEffecttimeout } from '../../interfaces/IMessage';
 import { removeLineBreaks } from '../../util/util';
+import { IPolyline } from '../../interfaces/IPolyline';
 
 
 @Component({
@@ -31,6 +32,7 @@ export class GmapComponent implements OnInit {
   public location: google.maps.LatLngLiteral = PredefinedGeoPositions[geoPlaces.BarcelonaCenter];
   private yourLocationVisible: boolean = false;
   private drawStack!: google.maps.Polyline[];
+  private polylinesDrawnStack: google.maps.Polyline[] = [];
   private drawStackIdTimeout?: any;
   private map!: google.maps.Map;
   private infoWindow!: google.maps.InfoWindow;
@@ -81,6 +83,62 @@ export class GmapComponent implements OnInit {
 
   public set center(latlng: google.maps.LatLngLiteral) {
     this.map.setCenter(latlng);
+  }
+
+  public set polyLineSet(value: IPolyline[]) {
+    const lineSymbol = {
+      path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+      strokeOpacity: 1.0,
+    };
+    const lineDotSymbol = {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillOpacity: 1.0,
+      strokeOpacity: 0.0,
+    };
+    this.hidePolylinesDrawn();
+    console.log(value);
+    value.forEach(element => {
+      console.log(element);
+      if (element.style == "dotted") {
+        const movePlan = new google.maps.Polyline({
+          path: element.points,
+          geodesic: true,
+          strokeColor: "#0000FF",
+          strokeOpacity: 0,
+          strokeWeight: 1.5,
+          icons: [{
+            icon: lineSymbol,
+            offset: '100%'
+          }, {
+            icon: lineDotSymbol,
+            offset: '0',
+            repeat: '10px'
+          }],
+          map: this.map
+        });
+        this.polylinesDrawnStack.push(movePlan);
+      } else if (element.style == "thin") {
+        const movePlan = new google.maps.Polyline({
+          path: element.points,
+          geodesic: true,
+          strokeColor: "#"+element.color,
+          strokeOpacity: 1,
+          strokeWeight: 1.5,
+          map: this.map
+        });
+        this.polylinesDrawnStack.push(movePlan);
+      } else if (element.style == "thick") {
+        const movePlan = new google.maps.Polyline({
+          path: element.points,
+          geodesic: true,
+          strokeColor: "#" + element.color,
+          strokeOpacity: 1,
+          strokeWeight: 3.5,
+          map: this.map
+        });
+        this.polylinesDrawnStack.push(movePlan);
+      }
+    });
   }
 
   private async centerOnCurrentLocation() {
@@ -463,6 +521,15 @@ export class GmapComponent implements OnInit {
     console.log("all paths hidden");
     while (this.drawStack.length > 0) {
       let polyline = this.drawStack.shift();
+      polyline?.setMap(null);
+      polyline = undefined;
+    }
+  }
+
+  private hidePolylinesDrawn() {
+    console.log("all paths hidden");
+    while (this.polylinesDrawnStack.length > 0) {
+      let polyline = this.polylinesDrawnStack.shift();
       polyline?.setMap(null);
       polyline = undefined;
     }

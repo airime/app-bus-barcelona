@@ -1,5 +1,6 @@
 import { retry } from "rxjs";
 import { INamedPlace } from "./INamedPlace";
+import { IPolyline } from "./IPolyline";
 
 
 export interface IShareableData {
@@ -34,16 +35,6 @@ export interface IEtapa {
     intermediateStops?: INamedPlace[],
 }
 
-export function textModeEtapa(value: ModeEtapa) {
-    switch (value) {
-        case "WALK": return "CAMINANT";
-        case "SUBWAY": return "METRO";
-        case "RAIL": return "TREN";
-        case "BUS": return "BUS";
-        case "TRAM": return "TRAM";
-    }
-}
-
 export function convertPlan(value: any[]): IItinerari[] {
     console.log(value);
     let result: IItinerari[] = [];
@@ -52,6 +43,16 @@ export function convertPlan(value: any[]): IItinerari[] {
     }
     result.sort((x, y) => { return x.duration < y.duration ? -1 : 1 })
     return result;
+}
+
+export function textModeEtapa(value: ModeEtapa) {
+    switch (value) {
+        case "WALK": return "CAMINANT";
+        case "SUBWAY": return "METRO";
+        case "RAIL": return "TREN";
+        case "BUS": return "BUS";
+        case "TRAM": return "TRAM";
+    }
 }
 
 export function modesItinerari(value: IItinerari) {
@@ -68,6 +69,52 @@ export function descriuItinerari(value: IItinerari) {
     minutes = minutes % 60;
     const strTemps = (hores > 0 ? hores.toString() + "h " : "") + minutes.toString().padStart(2, '0') + "'"
     return `Durada: ${strTemps} mode: ${modesItinerari(value)}`
+}
+
+export function getPolylines(from: google.maps.LatLngLiteral,
+                             to: google.maps.LatLngLiteral,
+                             value: IItinerari) {
+    let result: IPolyline[] = [];
+
+    function getPolyline(value: IEtapa, firstPoint?: google.maps.LatLngLiteral) {
+        let pEtapa: google.maps.LatLngLiteral[] = [];
+        if (!!firstPoint) {
+            pEtapa.push({ lat:firstPoint.lat, lng:firstPoint.lng });
+        }
+        if (!!value.intermediateStops) {
+            for (let i = 0; i < value.intermediateStops.length; i++) {
+                pEtapa.push({lat:value.intermediateStops[i].latLng.lat, lng:value.intermediateStops[i].latLng.lng});
+            }
+        } else {
+            for (let i = 0; i < value.steps.length; i++) {
+                pEtapa.push({lat:value.steps[i].lat, lng:value.steps[i].lng});
+            }
+        }
+        return pEtapa;
+    }
+
+    function polyLineEtapa(p: google.maps.LatLngLiteral[], e: IEtapa) {
+        return <IPolyline>{
+            points: p,
+            color: e.routeColor,
+            style: e.mode == 'WALK' ? 'dotted'
+                 : e.mode == 'BUS' ? 'thin'
+                 : 'thick'
+        }
+    }
+    let p1: google.maps.LatLngLiteral[] = [{lat:from.lat, lng:from.lng}, ...getPolyline(value.etapes[0])];
+    if (value.etapes.length > 1) {
+        result.push(polyLineEtapa(p1, value.etapes[0]));
+        for (let i = 1; i < value.etapes.length - 1; i++) {
+            result.push(polyLineEtapa(getPolyline(value.etapes[i]), value.etapes[i]));
+        }
+        const pn: google.maps.LatLngLiteral[] = [...getPolyline(value.etapes[value.etapes.length - 1]), {lat:to.lat, lng:to.lng}];
+        result.push(polyLineEtapa(pn, value.etapes[0]));
+    } else {
+        p1 = [...p1, {lat:to.lat, lng:to.lng}]
+        result.push(polyLineEtapa(p1, value.etapes[0]));
+    }
+    return result;
 }
 
 //Note it's not exported

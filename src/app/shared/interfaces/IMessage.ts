@@ -1,3 +1,5 @@
+import { IPolyline } from "./IPolyline";
+
 export const defaultShowPathEffecttimeout = 5000;
 
 export interface IMessage<T> {
@@ -17,6 +19,9 @@ export interface IErrorDismissedMessage extends IMessage<undefined> {
 }
 export interface IPositionMessage extends IMessage<google.maps.LatLngLiteral> {
     tag: "position"
+}
+export interface ISetOfPolylines extends IMessage<IPolyline[]> {
+    tag: "setOfPolylines"
 }
 export interface IConfigShowTimeoutMessage extends IMessage<number> {
     tag: "configShowTimeout"

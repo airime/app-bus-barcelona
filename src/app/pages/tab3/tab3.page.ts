@@ -134,7 +134,6 @@ export class Tab3Page implements OnInit {
     console.log(message.content);
     this.messageService.sendMessage(message);
     this.parentTabs.select("tab1");
-    //this.app.getRootNav().getActiveChildNav().select(1);
 }
 
   async clickParada(e: Event, codiParada: number, nomParada: string, coordParada: TupleCoordinates) {

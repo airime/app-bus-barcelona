@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { IonContent, IonText, IonItem, IonSelect, IonSelectOption, IonButton, IonToolbar, IonTitle, IonList, IonHeader, IonBadge, IonIcon } from '@ionic/angular/standalone';
+import { IonTabs, IonContent, IonText, IonItem, IonSelect, IonSelectOption, IonButton, IonToolbar, IonTitle, IonList, IonHeader, IonBadge, IonIcon } from '@ionic/angular/standalone';
 import { ModalController } from '@ionic/angular/standalone';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
@@ -9,12 +9,14 @@ import { MenuComponent } from 'src/app/shared/components/menu/menu.component';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ContentHeaderComponent } from '../../shared/components/content-header/content-header.component';
 import { TmbService } from 'src/app/shared/services/tmb.service';
-import { IItinerari, IEtapa, ModeEtapa, convertPlan, descriuItinerari, textModeEtapa, IShareableData, modesItinerari } from 'src/app/shared/interfaces/IItinerari';
+import { IItinerari, IEtapa, ModeEtapa, convertPlan, descriuItinerari, textModeEtapa, IShareableData, modesItinerari, getPolylines } from 'src/app/shared/interfaces/IItinerari';
 import { INamedPlace } from 'src/app/shared/interfaces/INamedPlace';
 import { formatAMPM } from 'src/app/shared/util/util';
 import { toErrorWithMessage } from 'src/app/shared/util/errors';
 import { ShareDataComponent } from 'src/app/shared/components/share-data/share-data.component';
 import { AuthService } from 'src/app/shared/services/auth.service';
+import { MessageHubService } from 'src/app/shared/services/messageHub.service';
+import { ISetOfPolylines } from 'src/app/shared/interfaces/IMessage';
 
 @Component({
   selector: 'app-tab2',
@@ -67,8 +69,10 @@ export class Tab2Page implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private parentTabs: IonTabs,
     private tmbService: TmbService,
     private authService: AuthService,
+    private messageService: MessageHubService,
     private modalCtrl: ModalController
   ) {
   }
@@ -80,11 +84,11 @@ export class Tab2Page implements OnInit {
     let lng: number;
     this.route.queryParams.subscribe(params => {
       this._nomParada = params['nom'] ?? "";
-      this._codiParada = params['codi'] ?? 0;
-      fromLat = params['fromLat'] ?? 0;
-      fromLng = params['fromLng'] ?? 0;
-      lat = params['lat'] ?? 0;
-      lng = params['lng'] ?? 0;
+      this._codiParada = Number(params['codi'] ?? 0);
+      fromLat = Number(params['fromLat'] ?? 0);
+      fromLng = Number(params['fromLng'] ?? 0);
+      lat = Number(params['lat'] ?? 0);
+      lng = Number(params['lng'] ?? 0);
       this._fromLatLng = { lat: fromLat, lng: fromLng };
       this._latLng = { lat: lat, lng: lng };
     }
@@ -165,6 +169,20 @@ export class Tab2Page implements OnInit {
       }
     } else {
       console.log("this.it: ", this.it);
+    }
+  }
+
+  async drawItinerari() {
+    if (!!this.it) {
+      console.log(this.parentTabs, this.parentTabs.getSelected());
+      const poly = getPolylines(this.fromLatLng, this.latLng, this.it);
+      const message = {
+            tag: "setOfPolylines",
+            content: poly
+        } as ISetOfPolylines;
+      console.log(message.content);
+      this.messageService.sendMessage(message);
+      this.parentTabs.select("tab1");  
     }
   }
 

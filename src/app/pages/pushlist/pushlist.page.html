@@ -1,0 +1,27 @@
+<main class="ion-page" id="main-content">
+
+  <ion-content [fullscreen]="true">
+    <ion-list>
+      <ion-item [button]="true" (click)="goBack()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        <ion-label>Enrere</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          {{ notifications.length | i18nPlural: pluralMapping }}
+        </ion-label>
+      </ion-item>
+      <ion-item>
+      </ion-item>
+      @for (notif of notifications; track notif) {
+        <ion-item (click)="openModal($index)">
+          <ion-label>
+            {{notif.title}}
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+
+  </ion-content>
+
+</main>

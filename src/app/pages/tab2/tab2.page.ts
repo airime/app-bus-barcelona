@@ -14,13 +14,15 @@ import { INamedPlace } from 'src/app/shared/interfaces/INamedPlace';
 import { formatAMPM } from 'src/app/shared/util/util';
 import { toErrorWithMessage } from 'src/app/shared/util/errors';
 import { ShareDataComponent } from 'src/app/shared/components/share-data/share-data.component';
+import { AuthService } from 'src/app/shared/services/auth.service';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   standalone: true,
-  imports: [IonIcon, IonBadge, IonHeader, IonList, IonTitle, IonToolbar, IonButton, IonItem, IonText, IonSelect, IonSelectOption,
+  imports: [IonIcon, IonBadge, IonHeader, IonList, IonIcon, IonBadge, IonHeader, IonList, IonTitle, IonToolbar, IonButton, IonItem, IonText, IonSelect, IonSelectOption,
+    IonSelect, IonSelectOption,
     MenuComponent, HeaderComponent, ContentHeaderComponent, IonContent]
 })
 export class Tab2Page implements OnInit {
@@ -66,6 +68,7 @@ export class Tab2Page implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private tmbService: TmbService,
+    private authService: AuthService,
     private modalCtrl: ModalController
   ) {
   }
@@ -128,9 +131,10 @@ export class Tab2Page implements OnInit {
         arrivalTime: formatAMPM(date)
       };
       const title = `llegada a ${share.place.info}`;
-      const text = `Llegada esperada a ${share.place.info} a las ${share.arrivalTime}. ` +
-        `Coordenadas [${share.place.latLng.lat}, ${share.place.latLng.lng}]. ` +
-        `(${share.mode})`;
+      const text = `Llegada esperada de ${this.authService.currentUser?.displayName}` +
+        ` a ${share.place.info} a las ${share.arrivalTime}.` +
+        ` Coordenadas [ ${share.place.latLng.lat}, ${share.place.latLng.lng} ].` +
+        ` (${share.mode})`;
       const dialogTitle = "Compartir llegada";
       let capacitorPlugin: boolean = Capacitor.isPluginAvailable('Share');
       try {

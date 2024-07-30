@@ -61,6 +61,8 @@ Desenvolupat amb components *stand-alone*.
 - `npm install @capacitor/preferences`
 - `npm install @capacitor/app`
 - `npm install @capacitor/browser`
+- `npm install @capacitor/share`
+- `npm install @capacitor/clipboard`
 - [TMB API](https://developer.tmb.cat/) incorpora el seu id d'aplicació i una clau.
   - Veure [TMB samples](https://tmb-barcelona.github.io/TMB-API-samples/) (crides en javascript fent servir ajax)
 - Icones [fontawesome](https://fontawesome.com/search?m=free&o=r):

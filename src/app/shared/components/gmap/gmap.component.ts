@@ -10,6 +10,7 @@ import { StaticDataService } from '../../services/static-data.service'
 import { LatLngFromTupla } from '../../model/internalTuples';
 import { NavigationExtras, Router } from '@angular/router';
 import { defaultShowPathEffecttimeout } from '../../interfaces/IMessage';
+import { removeLineBreaks } from '../../util/util';
 
 
 @Component({
@@ -40,11 +41,11 @@ export class GmapComponent implements OnInit {
   private readonly faisalabad = { lat: 31.417777452015976, lng: 73.07985091103124 } //a tomar por saco
 
   constructor(private router: Router,
-              private ngZone: NgZone,
-              private elementRef: ElementRef,
-              private localStorage: LocalStorageService,
-              private staticData: StaticDataService,
-              private tmbService: TmbGenpropertiesService) {
+    private ngZone: NgZone,
+    private elementRef: ElementRef,
+    private localStorage: LocalStorageService,
+    private staticData: StaticDataService,
+    private tmbService: TmbGenpropertiesService) {
     async function getData(that: GmapComponent): Promise<void> {
       that.stops = await that.staticData.data;
     }
@@ -66,9 +67,9 @@ export class GmapComponent implements OnInit {
       loadAngularFunctionClickParadaLinia: (codiParada: number, codiLinia: number, nomLinia: string, colorLinia: string) =>
         this.clickParadaLinia(codiParada, codiLinia, nomLinia, colorLinia),
       loadAngularFunctionClickInterc: (lat: number, lng: number, toLat: number, toLng: number) =>
-        this.clickIntercanv(lat,lng,toLat,toLng),
-      loadAngularFunctionClickAjudaParada: (nomParada: string, codiParada: number, lat: number, lng: number) =>
-        this.clickAjudaParada(nomParada, codiParada, lat, lng),
+        this.clickIntercanv(lat, lng, toLat, toLng),
+      loadAngularFunctionClickAjudaParada: (nomParada: string, codiParada: number, fromLat: number, fromLng: number, lat: number, lng: number) =>
+        this.clickAjudaParada(nomParada, codiParada, fromLat, fromLng, lat, lng),
     };
     setTimeout(() => { this.initMap(); }, 200);
     if (!!this.lat && !!this.lng) {
@@ -94,8 +95,14 @@ export class GmapComponent implements OnInit {
         try {
           let geoPosPermision = await Geolocation.checkPermissions();
           console.log("geoPosPermision: ", geoPosPermision.location, geoPosPermision.coarseLocation);
-          if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt') {
-            geoPosPermision = await Geolocation.requestPermissions();
+          try {
+            if (geoPosPermision.location === 'prompt' || geoPosPermision.coarseLocation === 'prompt') {
+              geoPosPermision = await Geolocation.requestPermissions();
+            }
+          } catch {
+            console.log("error on geoPosPermision requestPermissions");
+            geoPosPermision.location = 'granted';
+            geoPosPermision.coarseLocation = 'granted'
           }
           if (geoPosPermision.location === 'granted' || geoPosPermision.coarseLocation === 'granted') {
             const pos = await Geolocation.getCurrentPosition({ maximumAge: 75000, timeout: 25000 });
@@ -192,7 +199,7 @@ export class GmapComponent implements OnInit {
                 this.infoWindow.close();
               } else {
                 await this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA,
-                                          stop.GEOMETRY[1], stop.GEOMETRY[0], stop.CODI_INTERC, stop.NOM_INTERC!)
+                  stop.GEOMETRY[1], stop.GEOMETRY[0], stop.CODI_INTERC, stop.NOM_INTERC!)
               }
             });
           }
@@ -202,7 +209,7 @@ export class GmapComponent implements OnInit {
                 this.infoWindow.close();
               } else {
                 this.openInfoWindow(marker, infoWindow, stop.CODI_PARADA, stop.NOM_PARADA,
-                                    stop.GEOMETRY[1], stop.GEOMETRY[0])
+                  stop.GEOMETRY[1], stop.GEOMETRY[0])
               }
             });
           }
@@ -217,10 +224,10 @@ export class GmapComponent implements OnInit {
   }
 
   async openInfoWindow(marker: google.maps.marker.AdvancedMarkerElement,
-                       infoWindow: google.maps.InfoWindow,
-                       codiParada: number, nomParada: string,
-                       lat: number, lng: number,
-                       codiInterc?: number, nomInterc?: string) {
+    infoWindow: google.maps.InfoWindow,
+    codiParada: number, nomParada: string,
+    lat: number, lng: number,
+    codiInterc?: number, nomInterc?: string) {
     const { liniesTram, liniesBus, liniesMetro, liniesFGC, liniesRodalies } = await this.tmbService.getBusStopConn(codiParada);
     let content: string = "";
     let files = 0;
@@ -274,10 +281,10 @@ export class GmapComponent implements OnInit {
       }
       files += 3;
     }
-    //
     const contentStart = `\
-<a style="cursor:pointer" onclick='callAngularClickAjudaParada("${nomParada}",${codiParada},${lat},${lng})'><ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon></a>\
-<div style="height:${10+3.9*files}ex; margin:0; padding:0">\
+<a style="cursor:pointer" onclick='callAngularClickAjudaParada("${escape(nomParada)}",${codiParada},${this.location.lat},${this.location.lng},${marker.position!.lat},${marker.position!.lng})'>\
+<ion-icon size="large" src="/assets/icon/Bus_Stop.svg"></ion-icon></a>\
+<div style="height:${10 + 3.9 * files}ex; margin:0; padding:0">\
   <a style="cursor:pointer" onclick='callAngularClickParada(${codiParada})'>\
   <h5>${nomParada}</h5></a>\
   <div>`
@@ -298,24 +305,29 @@ export class GmapComponent implements OnInit {
     console.log(`CLICK ${codiParada} en línia ${codiLinia} (${nomLinia})`);
     this.infoWindow.close();
     this.router.navigate(['/private/stop/', codiParada, codiLinia],
-                         { queryParams: { nomLinia: nomLinia, colorLinia: colorLinia } } as NavigationExtras);
+      { queryParams: { nomLinia: nomLinia, colorLinia: colorLinia } } as NavigationExtras);
   }
 
   clickIntercanv(lat: number, lng: number, toLat: number, toLng: number) {
     const latLng = { lat, lng };
     const toLatLng: google.maps.LatLngLiteral = { lat: toLat, lng: toLng };
-    this.showPathToMarker([ latLng, toLatLng ]);
+    this.showPathToMarker([latLng, toLatLng]);
     this.map.setCenter(toLatLng);
     this.infoWindow.close();
   }
 
-  clickAjudaParada(nomParada: string, codiParada: number, lat: number, lng: number) {
+  clickAjudaParada(nomParada: string, codiParada: number, fromLat: number, fromLng: number, lat: number, lng: number) {
     console.log(`CLICK AJUT ${codiParada}`);
     this.infoWindow.close();
     this.router.navigate(['/private/home/tab2'],
-                          { queryParams: { nom: nomParada,
-                                           codi: codiParada,
-                                           lat: lat, lng: lng } } as NavigationExtras);
+      {
+        queryParams: {
+          nom: unescape(nomParada),
+          codi: codiParada,
+          fromLat: fromLat, fromLng: fromLng,
+          lat: lat, lng: lng
+        }
+      } as NavigationExtras);
   }
 
   private get busStopIcon() {
@@ -379,17 +391,17 @@ export class GmapComponent implements OnInit {
   });
   */
 
- /*
-    // Hide the glyph.
-    const pinNoGlyph = new PinElement({
-        glyph: '',
-    });
-    const markerViewNoGlyph = new AdvancedMarkerElement({
-        map,
-        position: { lat: 37.415, lng: -122.01 },
-        content: pinNoGlyph.element,
-    });
- */
+  /*
+     // Hide the glyph.
+     const pinNoGlyph = new PinElement({
+         glyph: '',
+     });
+     const markerViewNoGlyph = new AdvancedMarkerElement({
+         map,
+         position: { lat: 37.415, lng: -122.01 },
+         content: pinNoGlyph.element,
+     });
+  */
 
   private get personIcon() {
     const content = document.createElement("div");
@@ -415,7 +427,7 @@ export class GmapComponent implements OnInit {
 
   private idTimeout?: any;
 
-  private showPathToMarker(movePlanCoordinates: [ google.maps.LatLngLiteral, google.maps.LatLngLiteral ]) {
+  private showPathToMarker(movePlanCoordinates: [google.maps.LatLngLiteral, google.maps.LatLngLiteral]) {
     const lineSymbol = {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
       strokeOpacity: 1.0,
@@ -454,7 +466,7 @@ export class GmapComponent implements OnInit {
       polyline?.setMap(null);
       polyline = undefined;
     }
-}
+  }
 
   // https://stackoverflow.com/questions/24952593/how-to-add-my-location-button-in-google-maps
   addYourLocationButton(that: GmapComponent, map: google.maps.Map, marker: google.maps.marker.AdvancedMarkerElement) {

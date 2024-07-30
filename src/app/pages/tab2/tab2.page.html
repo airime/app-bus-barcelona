@@ -2,11 +2,71 @@
   <app-header [title]="title"></app-header>
   <ion-content [fullscreen]="true">
     <app-content-header [title]="title"></app-content-header>
-    @if (data.length > 0) {
+    @if (!!descripcio_itineraris && descripcio_itineraris.length > 0) {
       <ion-toolbar>
-      <ion-button slot="start">compartir</ion-button>
-      <ion-title>Parada {{codiParada}}: {{nomParada}}</ion-title>
+        <ion-title>{{nomParada}}</ion-title>
       </ion-toolbar>
+      <ion-toolbar>
+        {{codiParada}}
+        @if (isItinerariSelected) {
+          <ion-button slot="start" (click)="shareData()"><ion-icon name="share"></ion-icon></ion-button>
+          <ion-button slot="start"><ion-icon name="brush"></ion-icon></ion-button>
+        }
+      </ion-toolbar>
+      <ion-item>
+        <ion-select #secondary (ionChange)="itinerariSelect($event)">
+          @for (item of descripcio_itineraris; track $index) {
+            <ion-select-option [value]="$index">{{item}}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      @if (isItinerariSelected) {
+        <ion-list [inset]="true">
+          <ion-item>
+            <ion-header>
+              <ion-text>Durada: {{ strDuration(it!.duration) }}</ion-text> &nbsp;
+              <ion-text>Arribada: {{ strTime(it!.endTime) }}</ion-text> &nbsp;
+              <ion-text>Caminant: {{ it!.walkDistance }} m</ion-text>
+              @if (it?.tooSloped) {
+                <ion-text>FORTA PUJADA</ion-text>
+              }
+            </ion-header>
+          </ion-item>
+          <ion-list>
+          @for (item of it!.etapes; track $index) {
+            <ion-item>
+              <ion-list>
+                <ion-item>{{item.from.info}}</ion-item>
+                <ion-item>
+                  &nbsp; <ion-text>{{ textModeEtapa(item.mode) }}</ion-text>&nbsp;
+                  @if (item.routeShortName) {
+                    &nbsp;<ion-badge [style]="cssBadgeLinia(item.routeColor)">{{ item.routeShortName }}</ion-badge>&nbsp;
+                  }
+                  &nbsp;<ion-text color="secundary">hasta</ion-text>
+                </ion-item>
+                <ion-item>{{item.to.info}}</ion-item>
+                <ion-item>
+                </ion-item>
+              </ion-list>
+            </ion-item>
+            @if (!!item.intermediateStops) {
+              <ion-item>
+                <ion-list>
+                  <ion-item>Pasa de largo:</ion-item>
+                  <ion-item>
+                    <ion-list [inset]="true">
+                      @for (stop of item.intermediateStops; track $index) {
+                        <ion-item>{{ stop.info }}</ion-item>
+                      }
+                    </ion-list>
+                  </ion-item>
+                </ion-list>
+              </ion-item>
+            }
+          }
+          </ion-list>
+        </ion-list>
+      }
     } @else {
       <ion-item>
         <ion-text>Si selecciona una parada, aquí se indica el camino y el tiempo para llegar a ella.</ion-text>

@@ -10,7 +10,7 @@ function callAngularClickInterc(lat, lng, toLat, toLng) {
         { window.angularComponentReference.loadAngularFunctionClickInterc(lat, lng, toLat, toLng); });
 }
 
-function callAngularClickAjudaParada(nomParada, codiParada, lat, lng) {
+function callAngularClickAjudaParada(nomParada, codiParada, fromLat, fromLng, lat, lng) {
     window.angularComponentReference.zone.run(() =>
-        { window.angularComponentReference.loadAngularFunctionClickAjudaParada(nomParada, codiParada, lat, lng); });
+        { window.angularComponentReference.loadAngularFunctionClickAjudaParada(nomParada, codiParada, fromLat, fromLng, lat, lng); });
 }

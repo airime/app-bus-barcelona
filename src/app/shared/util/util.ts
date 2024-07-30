@@ -9,6 +9,10 @@ export function isNullOrEmpty(value: string | undefined | null): boolean {
   return value === undefined || value === null || value == "" || value.trim() == "";
 }
 
+export function removeLineBreaks(value: string) : string {
+	return value.replace(/(\r\n|\n|\r)/gm, "");
+}
+
 export function removeSpacesAlsoNonbreakables(s: string): string {
 	return s.replace(/[\x08-\x14\x20]+/g,'');
 }
@@ -16,6 +20,17 @@ export function removeSpacesAlsoNonbreakables(s: string): string {
 export function isDefined<T>(argument: T | undefined): argument is T {
     return argument !== undefined
 }
+
+export function formatAMPM(date: Date) {
+	let hours = date.getHours();
+	let minutes = date.getMinutes();
+	let ampm = hours >= 12 ? 'pm' : 'am';
+	hours = hours % 12;
+	hours = hours ? hours : 12; // the hour '0' should be '12'
+	let strhours : string = hours < 10 ? '0'+hours : hours.toString();
+	let strminutes : string = minutes < 10 ? '0'+minutes : minutes.toString();
+	return strhours + ':' + strminutes + ampm;
+  }
 
 //==== COMPTE! =====================================================
 //- Aquesta funció no es pot modificar

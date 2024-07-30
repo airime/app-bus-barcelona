@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { urlTmbApi, TmbParamsType } from '../model/tmbParams';
+import { urlTmbApi, TmbParamsType, ITmbPlanParams } from '../model/tmbParams';
 import { IiBusStop, IiBusResponse, IiBusRouteStop } from '../model/ibusStop';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tmb_api_id, tmb_api_key } from 'src/app/api.key';
-import { isDefined } from '../util/util';
+import { formatAMPM, isDefined } from '../util/util';
 
 @Injectable({
   providedIn: 'root'
@@ -110,8 +110,8 @@ export class TmbService {
   /*****************************/
   /* interactive calls transit */
 
-  public getRouteNumbers(codiLinia?: number): Observable<any> {    
-    const request = `transit/linies/bus/${codiLinia?? ""}`;
+  public getRouteNumbers(codiLinia?: number): Observable<any> {
+    const request = `transit/linies/bus/${codiLinia ?? ""}`;
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesRouteNumbers));
     return this.http.get(url);
   }
@@ -123,7 +123,7 @@ export class TmbService {
   }
 
   /* very similar to getBusStopConn, but the origin route is fixed */
-  public getBusRouteStopConn(codiLinia: number, codiParada: number): Observable<any> {    
+  public getBusRouteStopConn(codiLinia: number, codiParada: number): Observable<any> {
     const request = `transit/linies/bus/${codiLinia}/parades/${codiParada}/corresp/`;
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesBusStopConn));
     return this.http.get(url);
@@ -132,6 +132,17 @@ export class TmbService {
   public getBusInterconnConn(codiIntercanvi: number): Observable<any> {
     const request = `transit/interc/${codiIntercanvi}/corresp/`;
     const url = urlTmbApi + request + this.encodeParams(this.getParams(this.propertiesInterconnConn));
+    return this.http.get(url);
+  }
+
+  /*****************************/
+  /* interactive calls planner */
+
+  public getPlan(date: Date, fromLatLng: google.maps.LatLngLiteral, latLng: google.maps.LatLngLiteral
+  ): Observable<any> {
+    const request = `planner/plan`;
+    const url = urlTmbApi + request + this.encodeParams(this.getPlanParams(date, fromLatLng, latLng));
+    console.log(url);
     return this.http.get(url);
   }
 
@@ -145,4 +156,19 @@ export class TmbService {
     }).filter(isDefined).join("&");
   }
 
+  private getPlanParams(date: Date, fromLatLng: google.maps.LatLngLiteral, latLng: google.maps.LatLngLiteral): ITmbPlanParams {
+    let fromPlace: string = `${fromLatLng.lat},${fromLatLng.lng}`;
+    let toPlace: string = `${latLng.lat},${latLng.lng}`;
+    let strDate: string = `${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}-${date.getFullYear().toString()}`;
+    return {
+      app_key: tmb_api_key,
+      app_id: tmb_api_id,
+      fromPlace: fromPlace,
+      toPlace: toPlace,
+      date: strDate,
+      time: formatAMPM(date),
+      arriveBy: "false",
+      mode: "TRANSIT,WALK"
+    }
+  }
 }

@@ -8,6 +8,10 @@ Desenvolupat amb components *stand-alone*.
 - [airime](https://github.com/airime) Mireia Martin
 - [S-Cesc](https://github.com/S-Cesc) Cesc Sasal
 
+## Repositori
+
+- Enllaç al repositori del projecte en [**Github**](https://github.com/airime/app-bus-barcelona)
+
 ## Característiques
 
 - `npm install -g @ionic/cli`

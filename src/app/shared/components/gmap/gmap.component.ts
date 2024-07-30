@@ -86,6 +86,8 @@ export class GmapComponent implements OnInit {
   }
 
   public set polyLineSet(value: IPolyline[]) {
+    console.log(value);
+    this.hidePolylinesDrawn();
     const lineSymbol = {
       path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
       strokeOpacity: 1.0,
@@ -95,11 +97,9 @@ export class GmapComponent implements OnInit {
       fillOpacity: 1.0,
       strokeOpacity: 0.0,
     };
-    this.hidePolylinesDrawn();
-    console.log(value);
     value.forEach(element => {
-      console.log(element);
       if (element.style == "dotted") {
+        console.log(element);
         const movePlan = new google.maps.Polyline({
           path: element.points,
           geodesic: true,
@@ -482,8 +482,6 @@ export class GmapComponent implements OnInit {
     content.classList.add("drop");
     return yourPositionMarker;
   }
-
-  private idTimeout?: any;
 
   private showPathToMarker(movePlanCoordinates: [google.maps.LatLngLiteral, google.maps.LatLngLiteral]) {
     const lineSymbol = {

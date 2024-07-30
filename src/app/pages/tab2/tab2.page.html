@@ -14,7 +14,7 @@
         }
       </ion-toolbar>
       <ion-item>
-        <ion-select #secondary (ionChange)="itinerariSelect($event)">
+        <ion-select placeholder="Selecciona un itinerario" (ionChange)="itinerariSelect($event)">
           @for (item of descripcio_itineraris; track $index) {
             <ion-select-option [value]="$index">{{item}}</ion-select-option>
           }

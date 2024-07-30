@@ -76,11 +76,9 @@ export function getPolylines(from: google.maps.LatLngLiteral,
                              value: IItinerari) {
     let result: IPolyline[] = [];
 
-    function getPolyline(value: IEtapa, firstPoint?: google.maps.LatLngLiteral) {
+    function getPolyline(value: IEtapa) {
         let pEtapa: google.maps.LatLngLiteral[] = [];
-        if (!!firstPoint) {
-            pEtapa.push({ lat:firstPoint.lat, lng:firstPoint.lng });
-        }
+        pEtapa.push({ lat:value.from.latLng.lat, lng:value.from.latLng.lng });
         if (!!value.intermediateStops) {
             for (let i = 0; i < value.intermediateStops.length; i++) {
                 pEtapa.push({lat:value.intermediateStops[i].latLng.lat, lng:value.intermediateStops[i].latLng.lng});
@@ -90,18 +88,26 @@ export function getPolylines(from: google.maps.LatLngLiteral,
                 pEtapa.push({lat:value.steps[i].lat, lng:value.steps[i].lng});
             }
         }
+        pEtapa.push({ lat:value.to.latLng.lat, lng:value.to.latLng.lng });
         return pEtapa;
     }
 
-    function polyLineEtapa(p: google.maps.LatLngLiteral[], e: IEtapa) {
+    function polyLineEtapa(e: IEtapa) {
         return <IPolyline>{
-            points: p,
+            points: getPolyline(e),
             color: e.routeColor,
             style: e.mode == 'WALK' ? 'dotted'
                  : e.mode == 'BUS' ? 'thin'
                  : 'thick'
         }
     }
+
+    for (let i = 0; i < value.etapes.length; i++) {
+        result.push(polyLineEtapa(value.etapes[i]));
+    }
+    return result;
+
+    /*
     let p1: google.maps.LatLngLiteral[] = [{lat:from.lat, lng:from.lng}, ...getPolyline(value.etapes[0])];
     if (value.etapes.length > 1) {
         result.push(polyLineEtapa(p1, value.etapes[0]));
@@ -115,6 +121,7 @@ export function getPolylines(from: google.maps.LatLngLiteral,
         result.push(polyLineEtapa(p1, value.etapes[0]));
     }
     return result;
+    */
 }
 
 //Note it's not exported

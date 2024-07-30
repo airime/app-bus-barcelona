@@ -100,11 +100,14 @@ export class Tab2Page implements OnInit {
     this._itinerariSelected = -1;
     this.descripcio_itineraris = [];
     let date = new Date();
+    //QUAN ES PROVA A LA NIT FEM SERVIR tomorrow
+    /*
     {
       let ms = date.getTime() + (60 * 60 * 12) * 1000;
       var tomorrow = new Date(ms);
     }
-    this.tmbService.getPlan(tomorrow, this.fromLatLng, this.latLng).subscribe((result: any) => {
+    */
+    this.tmbService.getPlan(date, this.fromLatLng, this.latLng).subscribe((result: any) => {
       this.itineraris = convertPlan(result.plan.itineraries);
       console.log("itineraries", this.itineraris);
       this.descripcio_itineraris = [];
